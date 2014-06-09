@@ -1,10 +1,12 @@
-//Genetic algorithm
-//
-
 #include <iostream>
+#include <vector>
+#include "Util/FuzzyCollection.cpp"
+#include "Util/FuzzySet.cpp"
 using namespace std;
 
 //variables
+vector <FuzzyCollection> collections;
+vector <FuzzyCollection>::iterator it;
 
 //functions
 void init();
@@ -14,26 +16,39 @@ void Selection();
 void Breed(int id);
 void Mutate(int id);
 
-int main(int argc, char * argv)
+int main(int argc, char *argv[])
 {
   init();
   GALoop();
 }
 
 //sets up the initial variables
-void init();
+void init() {
+  it = collections.begin();
+  collections.insert(it,FuzzyCollection("test",0,100) );
+}
 
 //Runs the GA until requirements met
-void GALoop();
+void GALoop() {
+
+}
 
 //Scores each genotype
-void ScoreFitness(int id);
+void ScoreFitness(int id) {
+
+}
 
 //Selects best genotypes
-void Selection();
+void Selection() {
+
+}
 
 //Breeds best genotypes
-void Breed(int id);
+void Breed(int id) {
+
+}
 
 //Mutate genotype for random variance
-void Mutate(int id);
+void Mutate(int id) {
+
+}
