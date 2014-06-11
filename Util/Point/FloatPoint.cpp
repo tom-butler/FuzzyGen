@@ -3,14 +3,13 @@
 class FloatPoint
 {
   public:
+    FloatPoint();
     FloatPoint(float x, float y);
-    float pointX;
-    float pointY;
+    float X;
+    float Y;
 };
-
+FloatPoint::FloatPoint() { }
 
 FloatPoint::FloatPoint(float x, float y) {
-  pointX = x;
-  pointY = y;
 }
 #endif
