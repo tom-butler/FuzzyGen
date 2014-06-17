@@ -71,15 +71,15 @@ typedef struct {
 //init
 void createController();
 void createCollection(int start, int end, int output, controller &parent);
-void createSet(int id, float centreX, float centreY. float height,
+void createSet(int ID, float centreX, float centreY. float height,
   float leftBase, float rightBase, float leftTop, float rightTop,
   collection &parent);
 void createRule(set *set1, set *set2, int *var1, int *var2, int *output);
 
 //evaluation
-float evaluateVar();
-float evaluateRule();
-float evaluateSet();
+float evaluateVar(int ID, float newValue);
+float evaluateRule(int ID);
+float evaluateSet(int setID);
 
 //breeding
 void breedController();

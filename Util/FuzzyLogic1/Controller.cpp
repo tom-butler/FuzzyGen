@@ -9,11 +9,11 @@ void createCollection(int start, int end, int output, controller &parent) {
   collections[currentCollection] = newCollection;
   currentCollection++;
 }
-void createSet(int id, float centreX, float centreY. float height,
+void createSet(int ID, float centreX, float centreY. float height,
   float leftBase, float rightBase, float leftTop, float rightTop,
   collection &parent) {
 
-  set newSet = {int id, float centreX, float centreY. float height,
+  set newSet = {int ID, float centreX, float centreY. float height,
     float leftBase, float rightBase, float leftTop, float rightTop,
     collection &parent};
   sets[currentSet] = newSet;
@@ -23,9 +23,15 @@ void createSet(int id, float centreX, float centreY. float height,
 void createRule(set *set1, set *set2, int *var1, int *var2, int *output);
 
 //evaluation
-float evaluateVar();
-float evaluateRule();
-float evaluateSet();
+float evaluateVar(int ID, float newValue) {
+  vars[ID] = newValue;
+}
+float evaluateRule(int ID) {
+
+}
+float evaluateSet(int collectionID, int setID, float variable) {
+
+}
 
 //breeding
 void breedController();
