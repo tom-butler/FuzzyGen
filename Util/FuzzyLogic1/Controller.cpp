@@ -1,36 +1,106 @@
 #include "Controller.h"
 
+//util
+void throwError(string error)
+{
+  cout << error;
+}
+
 //initialisation
 void createController(float vars[]) {
   controller.vars = vars;
 }
-void createCollection(int start, int end, int output, controller &parent) {
-  collection newCollection = {start, end, output, &parent};
+void createCollection(int start, int end, int outputID) {
+  collection newCollection = {start, end, outputID};
   collections[currentCollection] = newCollection;
   currentCollection++;
 }
-void createSet(int ID, float centreX, float centreY. float height,
+void createSet(int ID, float centreX, float centreY, float height,
   float leftBase, float rightBase, float leftTop, float rightTop,
-  collection &parent) {
+  int collection) {
 
-  set newSet = {int ID, float centreX, float centreY. float height,
-    float leftBase, float rightBase, float leftTop, float rightTop,
-    collection &parent};
+  set newSet = { ID, centreX, centreY, height, leftBase, rightBase, leftTop, rightTop, collection};
   sets[currentSet] = newSet;
   currentSet++;
-
 }
-void createRule(set *set1, set *set2, int *var1, int *var2, int *output);
+
+//if var1 is set1 (AND|OR) var2 is set2 then output is outputSet
+void createRule(int var1, int set1, string modifier int var2, int set2,  int output, int outputSet) {
+  rule newRule = {var1, set1, modifier, var2, set2, output, outputSet};
+  rules[currentRule] = newRule;
+  currentRule++;
+}
 
 //evaluation
 float evaluateVar(int ID, float newValue) {
   vars[ID] = newValue;
 }
-float evaluateRule(int ID) {
 
+//evaluate all rules that have a single output
+float evaluateRules(int outputID) {
+  float res1, res2, variable, result, rcount;
+  result, rcount = 0.0f;
+  //check all rules
+  for(int i = 0; i < NUM_RULES; i++) {
+
+    //if they target the same output
+    if(rules[i].output == outputID) {
+      rcount++;
+
+      //check the value for sets
+      res1 = evaluateSet(rules[i].set1, rules[i].var1);
+      res2 = evaluateSet(rules[i].set2, rules[i].var2);
+
+      //decide on the value to pass to output
+      switch(rules[i].modifier) {
+        case "AND":
+          if(res1 < res2)
+            variable = res1;
+          else
+            variable = res2;
+          break;
+        case "OR":
+          if(res1 > res2)
+            variable = res1;
+          else
+            variable = res2;
+          break;
+        default:
+
+          break;
+      }
+      //add result
+      result += evaluateSet(rules[i].outputSet,variable);
+    }
+  }
+  //average result
+  return result / rcount;
 }
-float evaluateSet(int collectionID, int setID, float variable) {
 
+float evaluateSet(int setID, float variable) {
+  if(variable > leftBase - centreX && variable < rightBase + centreX)
+    if(variable < centreX)
+      if(variable < leftTop - centreX)
+        return intersect(leftBase, 0, leftTop, height, variable);
+      else //variable > leftTop - centreX
+        return height;
+    else //variable > centreX
+      if(variable > rightTop + centreX)
+        returnValue = intersect(rightBase, 0, rightTop, height, variable);
+      else
+        return height;
+  else
+    return 0;
+}
+
+//find the intersection of two lines
+float intersect(float x1, float y1, float x2, float y2, float input) {
+  float m, b;
+  //find line equation y = mx + b
+  m = (y2-y1)/(x2-x1);
+  b = y1 -m*x1;
+  //get the y value of the intersection
+  return m * input + b; ;
 }
 
 //breeding

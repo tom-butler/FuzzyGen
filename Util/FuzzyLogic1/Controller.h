@@ -40,7 +40,6 @@ typedef struct {
 	int start;
 	int end;
 	int output;
-	controller *parent;
 } collection;
 
 //set
@@ -53,25 +52,30 @@ typedef struct {
   float rightBase;
   float leftTop;
   float rightTop;
-	collection *parent;
+	int collection;
 } set;
 
 //rule
 typedef struct {
-	set *set1;
-	set *set2;
-	int *var1;
-	int *var2;
-	int *output;
+  int var1;
+	int set1;
+  string modifier;
+  int var2;
+	int set2;
+	int output;
+  int outputSet;
 } rule;
 
 
 //functions--------------------------------------------------------------------
 
+//util
+void throwError(string error);
+
 //init
 void createController();
-void createCollection(int start, int end, int output, controller &parent);
-void createSet(int ID, float centreX, float centreY. float height,
+void createCollection(int start, int end, int outputID);
+void createSet(int ID, float centreX, float centreY, float height,
   float leftBase, float rightBase, float leftTop, float rightTop,
   collection &parent);
 void createRule(set *set1, set *set2, int *var1, int *var2, int *output);
@@ -80,6 +84,7 @@ void createRule(set *set1, set *set2, int *var1, int *var2, int *output);
 float evaluateVar(int ID, float newValue);
 float evaluateRule(int ID);
 float evaluateSet(int setID);
+float intersect(float x1, float y1, float x2, float y2, float input);
 
 //breeding
 void breedController();
