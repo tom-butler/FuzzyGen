@@ -13,4 +13,5 @@ controller.o: $(SRC_DIR)\controller.cpp $(SRC_DIR)\controller.h
 	g++ -c $(SRC_DIR)\controller.cpp
 
 .PHONY : clean
-clean: rm -f \*.o
+clean:
+	del *.o
