@@ -8,7 +8,7 @@ void throwError(string error)
 
 //initialisation
 void createController(float vars[]) {
-  controller.vars = vars;
+    vars = vars;
 }
 void createCollection(int start, int end, int outputID) {
   collection newCollection = {start, end, outputID};
@@ -25,7 +25,7 @@ void createSet(int ID, float centreX, float centreY, float height,
 }
 
 //if var1 is set1 (AND|OR) var2 is set2 then output is outputSet
-void createRule(int var1, int set1, string modifier int var2, int set2,  int output, int outputSet) {
+void createRule(int var1, int set1, string modifier, int var2, int set2,  int output, int outputSet) {
   rule newRule = {var1, set1, modifier, var2, set2, output, outputSet};
   rules[currentRule] = newRule;
   currentRule++;
@@ -52,22 +52,18 @@ float evaluateRules(int outputID) {
       res2 = evaluateSet(rules[i].set2, rules[i].var2);
 
       //decide on the value to pass to output
-      switch(rules[i].modifier) {
-        case "AND":
+
+      if(rules[i].modifier.compare("AND") == 0) {
           if(res1 < res2)
             variable = res1;
           else
             variable = res2;
-          break;
-        case "OR":
+      }
+      else if(rules[i].modifier.compare("OR") == 0) {
           if(res1 > res2)
             variable = res1;
           else
             variable = res2;
-          break;
-        default:
-
-          break;
       }
       //add result
       result += evaluateSet(rules[i].outputSet,variable);
@@ -76,19 +72,19 @@ float evaluateRules(int outputID) {
   //average result
   return result / rcount;
 }
-
+//@TODO: repalce sets[setID] with a pointer
 float evaluateSet(int setID, float variable) {
-  if(variable > leftBase - centreX && variable < rightBase + centreX)
-    if(variable < centreX)
-      if(variable < leftTop - centreX)
-        return intersect(leftBase, 0, leftTop, height, variable);
+  if(variable > sets[setID].leftBase - sets[setID].centreX && variable < sets[setID].rightBase + sets[setID].centreX)
+    if(variable < sets[setID].centreX)
+      if(variable < sets[setID].leftTop - sets[setID].centreX)
+        return intersect(sets[setID].leftBase, 0, sets[setID].leftTop, sets[setID].height, variable);
       else //variable > leftTop - centreX
-        return height;
+        return sets[setID].height;
     else //variable > centreX
-      if(variable > rightTop + centreX)
-        returnValue = intersect(rightBase, 0, rightTop, height, variable);
+      if(variable > sets[setID].rightTop + sets[setID].centreX)
+        return intersect(sets[setID].rightBase, 0, sets[setID].rightTop, sets[setID].height, variable);
       else
-        return height;
+        return sets[setID].height;
   else
     return 0;
 }
