@@ -7,17 +7,12 @@ const int THRUST_MAX = 50;
 const int TERMINAL_VELOCITY = 50;
 const int FORCE = 5;
 
-//Lander
-//
-typedef struct {
-    int x;
-    int y;
-    int vel;
-    int fuelRemaining;
-}Lander ;
+//globals
+static Lander lander;
+static int xPos;
+static int velocity;
+static int fuelRemaining;
 
-initSim(int x, int y, int vel, int fuel);
-void checkInput(int argc, char *argv[]);
-void nextStep();
-
+initSim(int height, int vel, int fuel);
+int nextStep();
 #endif

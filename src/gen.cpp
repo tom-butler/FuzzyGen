@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
-#include "Util/FuzzyCollection.cpp"
-#include "Util/FuzzySet.cpp"
+#include "sim.h"
+#include "controller.h"
 using namespace std;
 
 //variables
