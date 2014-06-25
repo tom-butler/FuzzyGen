@@ -2,9 +2,8 @@
 
 using namespace std;
 
-void initSim(int height, int y, int vel, int fuel) {
-  xPos = height;
-  yPos = y;
+void initSim(int height, int vel, int fuel) {
+  yPos = height;
   velocity = vel;
   fuelRemaining = fuel;
 }
@@ -14,7 +13,7 @@ int nextStep(int thrust) {
     fuelRemaining -= thrust;
     velocity = velocity + FORCE;
     velocity = velocity - thrust;
-    xPos += velcocity;
+    yPos += velcocity;
     return 0;
   }
   else

@@ -8,8 +8,7 @@ const int TERMINAL_VELOCITY = 50;
 const int FORCE = 5;
 
 //globals
-static Lander lander;
-static int xPos;
+static int yPos;
 static int velocity;
 static int fuelRemaining;
 

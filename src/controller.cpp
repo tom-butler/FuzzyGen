@@ -21,16 +21,52 @@ void throwError(string error)
 void createController(float vars[]) {
     vars = vars;
 }
-void createCollection(int start, int end, int outputID) {
+int createCollection(int start, int end, int outputID) {
   collection newCollection = {start, end, outputID};
   collections[currentCollection] = newCollection;
+  initSets(currentCollection, NUM_SETS);
+
   currentCollection++;
+  return currentCollection -1;
 }
-void createSet(int ID, float centreX, float centreY, float height,
+void initSets(int parentID, int numSets) {
+  //create initial variables
+  int start = collections[parentID].start;
+  int end = collections[parentID].end;
+  int space = (end - start)  / (numSets - 1);
+  int centre = start;
+  int bWidth = 0.7 * space;
+  int tWidth = 0.3 * space
+
+  for(j = 0; j < numSets; j++) {
+    //attempt to create set variables
+    int lbase = bWidth - centre;
+    int rbase = bWidth + centre;
+    int ltop = tWidth - centre;
+    int rtop = tWidth + centre;
+
+    //check set variables for compliance
+    if(lbase  < start)
+      lbase = intersect(0f, lbase, 0f, centre, start);
+    if(rbase > end)
+      rbase = intersect(0f, centre, 0f, rbase, end)
+    if(ltop < start)
+      lbase = intersect(HEIGHT, ltop, HEIGHT, centre, start);
+    if(rtop > end)
+      rtop = intersect(HEIGHT, centre, HEIGHT, rtop, end);
+
+    //build the set
+    createSet(centre, HEIGHT, lbase, rbase, ltop, rtop , parentID);
+    //increment the centre for next set
+    centre += space;
+  }
+}
+
+void createSet(float centreX, float height,
   float leftBase, float rightBase, float leftTop, float rightTop,
   int collection) {
 
-  set newSet = { ID, centreX, centreY, height, leftBase, rightBase, leftTop, rightTop, collection};
+  set newSet = { centreX, centreY, height, leftBase, rightBase, leftTop, rightTop, collection};
   sets[currentSet] = newSet;
   currentSet++;
 }

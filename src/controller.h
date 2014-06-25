@@ -13,6 +13,8 @@ const int NUM_SETS_PER_COL = 3;
 const int NUM_SETS = NUM_SETS_PER_COL * NUM_COL;
 const int NUM_RULES = NUM_COL * NUM_SETS;
 
+static int HEIGHT = 1;
+
 //classes----------------------------------------------------------------------
 
 //collection
@@ -55,9 +57,10 @@ void throwError(string error);
 //init
 void createController(float vars[]);
 void createCollection(int start, int end, int outputID);
-void createSet(int ID, float centreX, float centreY, float height,
+void initSets(int parentID, int numSets);
+void createSet(float centreX, float height,
   float leftBase, float rightBase, float leftTop, float rightTop,
-  collection &parent);
+  int collection);
 void createRule(set *set1, set *set2, int *var1, int *var2, int *output);
 
 //evaluation
