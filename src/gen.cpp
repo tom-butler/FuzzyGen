@@ -29,7 +29,7 @@ void initGen() {
 void initController() {
   //create collections
   createController(yPos, velocity, fuelRemaining, 0);
-  for(i = 0; i < NUM_COL; i++)
+  for(i = 0; i < NUM_INPUT; i++)
   {
     createCollection(0,1000,3);
   }

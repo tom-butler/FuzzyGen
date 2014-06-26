@@ -1,0 +1,5 @@
+@TODO:
+check if 3 output sets are enough, or if a number of output sets (one for each rule) is better.
+
+
+@BROKEN:

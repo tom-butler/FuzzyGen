@@ -6,11 +6,9 @@ static int currentSet = 0;
 static int currentRule = 0;
 
 //libraries
-static collection collections[NUM_COL];
-static float input[NUM_RULES];
-static float output[NUM_OUTPUT];
-static set sets[NUM_SETS];
-static rule rules[NUM_RULES];
+static FuzzyVar vars[NUM_INPUT];
+static Set sets[NUM_SETS];
+static Rule rules[NUM_RULES];
 
 //util
 void throwError(string error)
@@ -23,19 +21,21 @@ int getRandInt(int low, int high){
 }
 
 //initialisation
-void createController(float vars[]) {
-    vars = vars;
+void createController(FuzzyVars newVars[]) {
+    vars = newVars;
+    for(i = 0; i < NUM_VARS; i++)
+    {
+      initSets(i, NUM_SETS_PER_COL);
+      //if this is an output make some rules
+      if(vars[i].output = i)
+        initRules(i);
+    }
 }
-void createCollection(bool isOutput, int start, int end, int outputID) {
-  collection newCollection = { isOutput, start, end, outputID};
-  collections[currentCollection] = newCollection;
-  initSets(currentCollection, NUM_SETS_PER_COLS);
-  currentCollection++;
-}
-void initSets(int parentID, int numSets) {
+
+void initSets(int variable, int numSets) {
   //create initial variables
-  int start = collections[parentID].start;
-  int end = collections[parentID].end;
+  int start = vars[variable].low;
+  int end = vars[variable].high;
   int space = (end - start)  / (numSets - 1);
   int centre = start;
   int bWidth = 0.7 * space;
@@ -59,7 +59,7 @@ void initSets(int parentID, int numSets) {
       rtop = intersect(HEIGHT, centre, HEIGHT, rtop, end);
 
     //build the set
-    createSet(centre, HEIGHT, lbase, rbase, ltop, rtop , parentID);
+    createSet(centre, HEIGHT, lbase, rbase, ltop, rtop , variable);
     //increment the centre for next set
     centre += space;
   }
@@ -69,17 +69,24 @@ void createSet(float centreX, float height,
   float leftBase, float rightBase, float leftTop, float rightTop,
   int collection) {
 
-  set newSet = { centreX, centreY, height, leftBase, rightBase, leftTop, rightTop, collection};
+  Set newSet = { centreX, centreY, height, leftBase, rightBase, leftTop, rightTop, collection};
   sets[currentSet] = newSet;
   currentSet++;
 }
+
 //initialises all rules for a given output
-void initRule(int output) {
-  for(int i = 0; i < NUM_SETS; i++) {
-    if(sets[i].output == output){
-      for(int j = 0; j < NUM_SETS; j++) {
-        if(sets[j].output == output){
-          createRule(sets[i].input, i, "AND", sets[j].input, j, output, )
+void initRules(int output) {
+  for(int j = 0; j < NUM_SETS; j++) {
+    if(vars[sets[j].variable].output != sets[j].variable) {
+      for int k = 0; k < NUM_SETS; k++) {
+        if(vars[sets[k].variable].output != sets[k].variable) {
+          int out = 0;
+          do {
+            int random = getRandInt(0, NUM_SETS - 1);
+            if(vars[sets[random].variable].output == sets[random].variable)
+              out = random;
+          } while(out == 0);
+          createRule(j,"AND," k, out);
         }
       }
     }
@@ -87,8 +94,8 @@ void initRule(int output) {
 }
 
 //if var1 is set1 (AND|OR) var2 is set2 then output is outputSet
-void createRule(int var1, int set1, string modifier, int var2, int set2,  int output, int outputSet) {
-  rule newRule = { var1, set1, modifier, var2, set2, output, outputSet};
+void createRule(int set1, string modifier, int set2, int outputSet) {
+  Rule newRule = { set1, modifier, set2, outputSet};
   rules[currentRule] = newRule;
   currentRule++;
 }
@@ -110,8 +117,8 @@ float evaluateRules(int outputID) {
       rcount++;
 
       //check the value for sets
-      res1 = evaluateSet(rules[i].set1, rules[i].var1);
-      res2 = evaluateSet(rules[i].set2, rules[i].var2);
+      res1 = evaluateSet(rules[i].set1);
+      res2 = evaluateSet(rules[i].set2);
 
       //decide on the value to pass to output
 
@@ -136,7 +143,8 @@ float evaluateRules(int outputID) {
 }
 
 //@TODO: repalce sets[setID] with a pointer
-float evaluateSet(int setID, float variable) {
+float evaluateSet(int setID) {
+  float variable = vars[sets[setID].variable];
   if(variable > sets[setID].leftBase - sets[setID].centreX && variable < sets[setID].rightBase + sets[setID].centreX)
     if(variable < sets[setID].centreX)
       if(variable < sets[setID].leftTop - sets[setID].centreX)
