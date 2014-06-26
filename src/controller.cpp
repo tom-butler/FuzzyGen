@@ -17,14 +17,18 @@ void throwError(string error)
   cout << error;
 }
 
+int getRandInt(int low, int high){
+  return rand() % (high - low) + low;
+}
+
 //initialisation
 void createController(float vars[]) {
     vars = vars;
 }
-int createCollection(int start, int end, int outputID) {
+void createCollection(int start, int end, int outputID) {
   collection newCollection = {start, end, outputID};
   collections[currentCollection] = newCollection;
-  initSets(currentCollection, NUM_SETS);
+  initSets(currentCollection, NUM_SETS_PER_COLS);
 
   currentCollection++;
   return currentCollection -1;
@@ -69,6 +73,18 @@ void createSet(float centreX, float height,
   set newSet = { centreX, centreY, height, leftBase, rightBase, leftTop, rightTop, collection};
   sets[currentSet] = newSet;
   currentSet++;
+}
+//initialises all rules for a given output
+void initRule(int output) {
+  for(int i = 0; i < NUM_SETS; i++) {
+    if(sets[i].output == output){
+      for(int j = 0; j < NUM_SETS; j++) {
+        if(sets[j].output == output){
+          createRule(sets[i].input, i, "AND", sets[j].input, j, output, )
+        }
+      }
+    }
+  }
 }
 
 //if var1 is set1 (AND|OR) var2 is set2 then output is outputSet
@@ -119,6 +135,7 @@ float evaluateRules(int outputID) {
   //average result
   return result / rcount;
 }
+
 //@TODO: repalce sets[setID] with a pointer
 float evaluateSet(int setID, float variable) {
   if(variable > sets[setID].leftBase - sets[setID].centreX && variable < sets[setID].rightBase + sets[setID].centreX)
@@ -137,6 +154,7 @@ float evaluateSet(int setID, float variable) {
 }
 
 //find the intersection of two lines
+//@TODO: check if parallel lines picks the highest point
 float intersect(float x1, float y1, float x2, float y2, float input) {
   float m, b;
   //find line equation y = mx + b
@@ -153,4 +171,63 @@ void breedSet();
 
 //mutation
 float mutateCollection();
-float mutateSet();
+
+void mutateSet(int setID) {
+  int mut = getRandInt(0,3);
+  switch(mut){
+    case 0:
+
+      break;
+    case 1:
+      break;
+    case 2:
+      break;
+    case 3:
+      break;
+  }
+}
+
+void mutateSetGrowTop(int setID) {
+  int diff = getRandInt(-VARIANCE, VARIANCE);
+
+  sets[setID].leftTop -=diff;
+  sets[setID].rightTop +=diff;
+
+  if(sets[setID].leftTop < collections[sets[setID].collection].start)
+    sets[setID].leftTop = collections[sets[setID].collection].start;
+  if(sets[setID].rightTop > collections[sets[setID].collection].end)
+    sets[setID].rightTop = collections[sets[setID].collection].end;
+}
+void mutateSetGrowBase(int setID) {
+  int diff = getRandInt(-VARIANCE, VARIANCE);
+
+  sets[setID].leftBase -=diff;
+  sets[setID].rightBase +=diff;
+
+  if(sets[setID].leftBase < collections[sets[setID].collection].start)
+    sets[setID].leftBase = collections[sets[setID].collection].start;
+  if(sets[setID].rightBase > collections[sets[setID].collection].end)
+    sets[setID].rightBase = collections[sets[setID].collection].end;
+}
+void mutateSetSlideTop(int setID) {
+  int diff = getRandInt(-VARIANCE, VARIANCE);
+
+  sets[setID].leftTop +=diff;
+  sets[setID].rightTop +=diff;
+
+  if(sets[setID].leftTop < collections[sets[setID].collection].start)
+    sets[setID].leftTop = collections[sets[setID].collection].start;
+  if(sets[setID].rightTop > collections[sets[setID].collection].end)
+    sets[setID].rightTop = collections[sets[setID].collection].end;
+}
+void mutateSetSlideBase(int setID) {
+  int diff = getRandInt(-VARIANCE, VARIANCE);
+
+  sets[setID].leftBase +=diff;
+  sets[setID].rightBase +=diff;
+
+  if(sets[setID].leftBase < collections[sets[setID].collection].start)
+    sets[setID].leftBase = collections[sets[setID].collection].start;
+  if(sets[setID].rightBase > collections[sets[setID].collection].end)
+    sets[setID].rightBase = collections[sets[setID].collection].end;
+}

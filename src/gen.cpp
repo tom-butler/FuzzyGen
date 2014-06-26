@@ -27,24 +27,31 @@ void initGen() {
 }
 
 void initController() {
+  //create collections
   createController(yPos, velocity, fuelRemaining, 0);
   for(i = 0; i < NUM_COL; i++)
   {
-    int cid = createCollection(0,1000,3);
+    createCollection(0,1000,3);
   }
+  //create rules
+  initRules(4);
 }
 //Runs the GA until requirements met
 void GALoop() {
   for(i = 0; i < GENERATIONS; i++) {
-
-    nextStep(thrust);
+    Update();
+    ScoreFitness();
+    Selection();
+    Breed();
   }
 
 }
+void Update() {
 
+}
 //Scores each genotype
-void ScoreFitness(int id) {
-
+void ScoreFitness() {
+  nextStep(thrust);
 }
 
 //Selects best genotypes

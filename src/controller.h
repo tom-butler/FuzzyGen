@@ -3,6 +3,7 @@
 
 #include <string>
 #include <iostream>
+#include <stdlib.h>
 using namespace std;
 //this file defines the structs that are used in the fuzzy logic controller
 
@@ -12,6 +13,7 @@ const int NUM_COL = 3;
 const int NUM_SETS_PER_COL = 3;
 const int NUM_SETS = NUM_SETS_PER_COL * NUM_COL;
 const int NUM_RULES = NUM_COL * NUM_SETS;
+const int VARIANCE = 3;
 
 static int HEIGHT = 1;
 
@@ -26,7 +28,7 @@ typedef struct {
 
 //set
 typedef struct {
-	int id;
+  bool isOutput;
 	float centreX;
 	float centreY;
   float height;
@@ -53,6 +55,7 @@ typedef struct {
 
 //util
 void throwError(string error);
+int getRandInt(int low, int high);
 
 //init
 void createController(float vars[]);
@@ -61,6 +64,7 @@ void initSets(int parentID, int numSets);
 void createSet(float centreX, float height,
   float leftBase, float rightBase, float leftTop, float rightTop,
   int collection);
+void initRules(int output);
 void createRule(set *set1, set *set2, int *var1, int *var2, int *output);
 
 //evaluation
@@ -76,7 +80,17 @@ void breedSet();
 
 //mutation
 float mutateCollection();
-float mutateSet();
 
+
+float mutateSet(int setID);
+
+void mutateSetGrowTop(int setID);
+void mutateSetGrowBase(int setID);
+void mutateSetSlideTop(int setID);
+void mutateSetSlideBase(int setID);
+
+void mutateRule(int ruleID);
+
+void mutateRuleOutput(int ruleID);
 
 #endif
