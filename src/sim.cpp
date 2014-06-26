@@ -1,5 +1,5 @@
 #include "sim.h"
-
+#include "controller.h"
 using namespace std;
 
 void initSim(int height, int vel, int fuel) {

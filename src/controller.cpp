@@ -21,7 +21,7 @@ int getRandInt(int low, int high){
 }
 
 //initialisation
-void createController(FuzzyVars newVars[]) {
+void createController(FuzzyVars newVars[NUM_VARS]) {
     vars = newVars;
     for(i = 0; i < NUM_VARS; i++)
     {
@@ -32,6 +32,9 @@ void createController(FuzzyVars newVars[]) {
     }
 }
 
+void updateVars(FuzzyVars newVars[NUM_VARS]) {
+  vars = newVars;
+}
 void initSets(int variable, int numSets) {
   //create initial variables
   int start = vars[variable].low;
