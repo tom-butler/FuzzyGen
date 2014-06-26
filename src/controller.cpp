@@ -7,7 +7,8 @@ static int currentRule = 0;
 
 //libraries
 static collection collections[NUM_COL];
-static float vars[NUM_RULES];
+static float input[NUM_RULES];
+static float output[NUM_OUTPUT];
 static set sets[NUM_SETS];
 static rule rules[NUM_RULES];
 
@@ -25,13 +26,11 @@ int getRandInt(int low, int high){
 void createController(float vars[]) {
     vars = vars;
 }
-void createCollection(int start, int end, int outputID) {
-  collection newCollection = {start, end, outputID};
+void createCollection(bool isOutput, int start, int end, int outputID) {
+  collection newCollection = { isOutput, start, end, outputID};
   collections[currentCollection] = newCollection;
   initSets(currentCollection, NUM_SETS_PER_COLS);
-
   currentCollection++;
-  return currentCollection -1;
 }
 void initSets(int parentID, int numSets) {
   //create initial variables
@@ -89,7 +88,7 @@ void initRule(int output) {
 
 //if var1 is set1 (AND|OR) var2 is set2 then output is outputSet
 void createRule(int var1, int set1, string modifier, int var2, int set2,  int output, int outputSet) {
-  rule newRule = {var1, set1, modifier, var2, set2, output, outputSet};
+  rule newRule = { var1, set1, modifier, var2, set2, output, outputSet};
   rules[currentRule] = newRule;
   currentRule++;
 }
@@ -176,13 +175,19 @@ void mutateSet(int setID) {
   int mut = getRandInt(0,3);
   switch(mut){
     case 0:
-
+      mutateSetGrowTop(setID);
       break;
     case 1:
+      mutateSetGrowBase(setID);
       break;
     case 2:
+      mutateSetSlideTop(setID);
       break;
     case 3:
+      mutateSetSlideBase(setID);
+      break;
+    default:
+      return;
       break;
   }
 }
@@ -230,4 +235,26 @@ void mutateSetSlideBase(int setID) {
     sets[setID].leftBase = collections[sets[setID].collection].start;
   if(sets[setID].rightBase > collections[sets[setID].collection].end)
     sets[setID].rightBase = collections[sets[setID].collection].end;
+}
+
+void mutateRule(int ruleID) {
+  int mut = getRandInt(0,3);
+  switch(mut){
+    case 0:
+      mutateSetGrowTop(setID);
+      break;
+    default:
+      return;
+      break;
+  }
+}
+
+void mutateRuleOutput(int ruleID) {
+  do {
+    int test = getRandInt(0, NUM_SETS);
+    if(sets[test].isOutput) {
+      rules[ruleID].output = test;
+      return;
+    }
+  } while(1);
 }

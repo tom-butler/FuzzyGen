@@ -8,7 +8,8 @@ using namespace std;
 //this file defines the structs that are used in the fuzzy logic controller
 
 //constants
-const int NUM_VARS = 3;
+const int NUM_INPUT = 3;
+const int NUM_OUTPUT = 1;
 const int NUM_COL = 3;
 const int NUM_SETS_PER_COL = 3;
 const int NUM_SETS = NUM_SETS_PER_COL * NUM_COL;
@@ -21,6 +22,7 @@ static int HEIGHT = 1;
 
 //collection
 typedef struct {
+  bool isOutput;
 	int start;
 	int end;
 	int output;
@@ -28,7 +30,6 @@ typedef struct {
 
 //set
 typedef struct {
-  bool isOutput;
 	float centreX;
 	float centreY;
   float height;
@@ -61,9 +62,7 @@ int getRandInt(int low, int high);
 void createController(float vars[]);
 void createCollection(int start, int end, int outputID);
 void initSets(int parentID, int numSets);
-void createSet(float centreX, float height,
-  float leftBase, float rightBase, float leftTop, float rightTop,
-  int collection);
+void createSet(float centreX, float height, float leftBase, float rightBase, float leftTop, float rightTop, int collection);
 void initRules(int output);
 void createRule(set *set1, set *set2, int *var1, int *var2, int *output);
 
@@ -79,18 +78,16 @@ void breedCollection();
 void breedSet();
 
 //mutation
-float mutateCollection();
+void mutate();
+void mutateCollection();
 
-
-float mutateSet(int setID);
-
+void mutateSet(int setID);
 void mutateSetGrowTop(int setID);
 void mutateSetGrowBase(int setID);
 void mutateSetSlideTop(int setID);
 void mutateSetSlideBase(int setID);
 
 void mutateRule(int ruleID);
-
 void mutateRuleOutput(int ruleID);
 
 #endif
