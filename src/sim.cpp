@@ -7,20 +7,21 @@ void initSim(int height, int vel, int fuel) {
   velocity = vel;
   fuelRemaining = fuel;
 }
-int runSim( ) {
-  while(yPos >= 0 && fuelRemaining > 0) {
-    nextStep(thrust);
 
-  }
-}
-int nextStep(int thrust) {
+void nextStep(int thrust) {
   if(fuelRemaining > 0) {
     fuelRemaining -= thrust;
     velocity = velocity + FORCE;
     velocity = velocity - thrust;
     yPos += velcocity;
-    return 0;
+
+    if(fuelRemaining <= 0)
+      return 0; //fail
+    else if(ypos <= 0 && velocity < CRASH_SPEED)
+      return 1; //succeed
+    else
+      return 2; //continue
   }
   else
-    return 1;
+
 }

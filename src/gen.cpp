@@ -45,10 +45,11 @@ void GALoop() {
 void ScoreFitness() {
   for(i = 0; i < POP; i++) {
     initSim(1000, 0, 1000);
-    while(!done) {
+    int result = 3;
+    while(var != 3) {
       UpdateVars({thrust, height, velocity, fuelRemaining});
       thrust.value = evaluateRules(0);
-      nextStep(thrust.value);
+      result = nextStep(thrust.value);
       cont[i].score = fuelRemaining;
     }
   }

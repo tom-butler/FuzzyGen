@@ -3,7 +3,6 @@
 //counters
 static int currentController = 0;
 static int currentCollection = 0;
-static int currentSet = 0;
 static int currentRule = 0;
 
 //libraries
@@ -22,28 +21,40 @@ int getRandInt(int low, int high){
   return rand() % (high - low) + low;
 }
 
-//initialisation
-void createController(FuzzyVars newVars[NUM_VARS]) {
-   cont[currentController] = {0,0};
-
-    vars = newVars;
-    for(i = 0; i < NUM_VARS; i++)
-    {
-      initSets(i, NUM_SETS_PER_COL);
-      //if this is an output make some rules
-      if(vars[i].output = i)
-        initRules(i);
-    }
-    currentController++;
+//find the intersection of two lines
+//@TODO: check if parallel lines picks the highest point
+float intersect(float x1, float y1, float x2, float y2, float input) {
+  float m, b;
+  //find line equation y = mx + b
+  m = (y2-y1)/(x2-x1);
+  b = y1 -m*x1;
+  //get the y value of the intersection
+  return m * input + b; ;
 }
 
 void updateVars(FuzzyVars newVars[NUM_VARS]) {
   vars = newVars;
 }
+
+//initialisation
+void createController(FuzzyVars newVars[NUM_VARS]) {
+   cont[currentController] = {0,0};
+
+    cont[currentController].vars = newVars;
+    for(i = 0; i < NUM_VARS; i++)
+    {
+      initSets(i, NUM_SETS);
+      //if this is an output make some rules
+      if(cont[currentController].vars[i].output = i)
+        initRules(i);
+    }
+    currentController++;
+}
+//@TODO: REPLACE MULTIPLE ARRAY CALLS WITH POINTER
 void initSets(int variable, int numSets) {
   //create initial variables
-  int start = vars[variable].low;
-  int end = vars[variable].high;
+  int start = cont[currentController].vars[variable].low;
+  int end = cont[currentController].vars[variable].high;
   int space = (end - start)  / (numSets - 1);
   int centre = start;
   int bWidth = 0.7 * space;
@@ -67,61 +78,40 @@ void initSets(int variable, int numSets) {
       rtop = intersect(HEIGHT, centre, HEIGHT, rtop, end);
 
     //build the set
-    createSet(centre, HEIGHT, lbase, rbase, ltop, rtop , variable);
+    cont[currentController].vars[variable].sets[j] = {centre, HEIGT, rbase, ltop, rtop, variable};
     //increment the centre for next set
     centre += space;
   }
 }
 
-void createSet(float centreX, float height,
-  float leftBase, float rightBase, float leftTop, float rightTop,
-  int collection) {
-
-  Set newSet = { centreX, centreY, height, leftBase, rightBase, leftTop, rightTop, collection};
-  sets[currentSet] = newSet;
-  currentSet++;
-}
-
 //initialises all rules for a given output
 void initRules(int output) {
-  for(int j = 0; j < NUM_SETS; j++) {
-    if(vars[sets[j].variable].output != sets[j].variable) {
-      for int k = 0; k < NUM_SETS; k++) {
-        if(vars[sets[k].variable].output != sets[k].variable) {
-          int out = 0;
-          do {
-            int random = getRandInt(0, NUM_SETS - 1);
-            if(vars[sets[random].variable].output == sets[random].variable)
-              out = random;
-          } while(out == 0);
-          createRule(j,"AND," k, out);
+  for(int i = 0; i < NUM_VARS; i++) {
+    if(cont[currentController].vars[i].output != i) {
+      for(int j = 0; j < NUM_SETS; j++) {
+
+        for(int k = 0; k < NUM_VARS; k++) {
+          if(cont[currentController].vars[k].output != k && i != k) {
+            for(int l = 0; l < NUM_SETS; l++) {
+              int m = getRandInt(0, NUM_SETS);
+              cont[currentController].rules[currentRule] = {i, j, "AND", k, l, output, cont[currentController].vars[output].sets[m]};
+              currentRule++;
+            }
+          }
         }
       }
     }
   }
 }
 
-//if var1 is set1 (AND|OR) var2 is set2 then output is outputSet
-void createRule(int set1, string modifier, int set2, int outputSet) {
-  Rule newRule = { set1, modifier, set2, outputSet};
-  rules[currentRule] = newRule;
-  currentRule++;
-}
-
 //evaluate all rules that have a single output
-float evaluateRules(int outputID) {
-  float res1, res2, variable, result, rcount;
-  result, rcount = 0.0f;
-  //check all rules
+float evaluateRules(int controller, int outputID) {
+  float res1, res2, result, rcount = 0f;
   for(int i = 0; i < NUM_RULES; i++) {
-
-    //if they target the same output
-    if(rules[i].output == outputID) {
+    if(cont[controller].rules[i].outputvar = outputID) {
       rcount++;
-
-      //check the value for sets
-      res1 = evaluateSet(rules[i].set1);
-      res2 = evaluateSet(rules[i].set2);
+      res1 = evaluateSet(rules[i].inputset);
+      res2 = evaluateSet(rules[i].inputset2);
 
       //decide on the value to pass to output
 
@@ -139,47 +129,55 @@ float evaluateRules(int outputID) {
       }
       //add result
       result += evaluateSet(rules[i].outputSet,variable);
+
     }
   }
-  //average result
   return result / rcount;
 }
 
 //@TODO: repalce sets[setID] with a pointer
-float evaluateSet(int setID) {
-  float variable = vars[sets[setID].variable];
-  if(variable > sets[setID].leftBase - sets[setID].centreX && variable < sets[setID].rightBase + sets[setID].centreX)
-    if(variable < sets[setID].centreX)
-      if(variable < sets[setID].leftTop - sets[setID].centreX)
-        return intersect(sets[setID].leftBase, 0, sets[setID].leftTop, sets[setID].height, variable);
+float evaluateSet(int controller, int inputVar, int setID) {
+  float variable = cont[controller].var[inputVar];
+  Set set = cont[controller].vars[var].sets[set];
+  if(variable > set.leftBase - set.centreX && variable < set.rightBase + set.centreX)
+    if(variable < set.centreX)
+      if(variable < set.leftTop - sets[setID].centreX)
+        return intersect(set.leftBase, 0, set.leftTop, set.height, variable);
       else //variable > leftTop - centreX
-        return sets[setID].height;
+        return set.height;
     else //variable > centreX
-      if(variable > sets[setID].rightTop + sets[setID].centreX)
-        return intersect(sets[setID].rightBase, 0, sets[setID].rightTop, sets[setID].height, variable);
+      if(variable > set.rightTop + set.centreX)
+        return intersect(set.rightBase, 0, set.rightTop, set.height, variable);
       else
-        return sets[setID].height;
+        return set.height;
   else
     return 0;
 }
 
-//find the intersection of two lines
-//@TODO: check if parallel lines picks the highest point
-float intersect(float x1, float y1, float x2, float y2, float input) {
-  float m, b;
-  //find line equation y = mx + b
-  m = (y2-y1)/(x2-x1);
-  b = y1 -m*x1;
-  //get the y value of the intersection
-  return m * input + b; ;
-}
-
 //breeding
-void breedController();
-void breedCollection() {
+void breedController(int id1, int id2) {
+  //find a random var
+  int r = getRandInt(0, 4);
+  int col = getRandInt(0, NUM_VARS -1);
+  switch(r) {
+    case 0: //swap collections
+      FuzzyVar temp = cont[id2].vars[col];
+      cont[id2].vars[col] = cont[id1].vars[col];
+      cont[id1].vars[col] = temp;
+      break;
+    case 1: //swap sets
+      int set = getRandInt(0, NUM_SETS -1);
+      Set temp = cont[id2].vars[col].sets[set];
+      cont[id2].vars[col].sets[set] = cont[id1].vars[col].sets[set];
+      cont[id1].vars[col].sets[set] = temp;
+      break;
+    case 2:
+
+      break;
+  }
 
 }
-void breedSet();
+
 
 //mutation
 float mutateCollection();
