@@ -16,19 +16,19 @@ void Mutate(int id);
 
 int main(int argc, char *argv[])
 {
-  initGen();
+  initControllers();
   GALoop();
 }
-
-//sets up the initial variables
-void initGen() {
-  initSim(1000, 3, 300);
-
-}
-
-void initController() {
+//@TODO: THIS SHIT IS WEIRD
+void initControllers() {
   //create vars
-  createController(thrust, height, velocity, fuelRemaining);
+  for(i = 0; i < POP; i++) {
+    thrust.controller = i;
+    height.controller = i;
+    velocity.controller = i;
+    fuelRemaining.controller = i;
+    createController({thrust, height, velocity, fuelRemaining});
+  }
 }
 //Runs the GA until requirements met
 void GALoop() {
@@ -40,12 +40,18 @@ void GALoop() {
   }
 
 }
-void Update() {
 
-}
 //Scores each genotype
 void ScoreFitness() {
-  nextStep(thrust);
+  for(i = 0; i < POP; i++) {
+    initSim(1000, 0, 1000);
+    while(!done) {
+      UpdateVars({thrust, height, velocity, fuelRemaining});
+      thrust.value = evaluateRules(0);
+      nextStep(thrust.value);
+      cont[i].score = fuelRemaining;
+    }
+  }
 }
 
 //Selects best genotypes

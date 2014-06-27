@@ -7,7 +7,12 @@ void initSim(int height, int vel, int fuel) {
   velocity = vel;
   fuelRemaining = fuel;
 }
+int runSim( ) {
+  while(yPos >= 0 && fuelRemaining > 0) {
+    nextStep(thrust);
 
+  }
+}
 int nextStep(int thrust) {
   if(fuelRemaining > 0) {
     fuelRemaining -= thrust;

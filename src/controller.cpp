@@ -1,11 +1,13 @@
 #include "controller.h"
 
 //counters
+static int currentController = 0;
 static int currentCollection = 0;
 static int currentSet = 0;
 static int currentRule = 0;
 
 //libraries
+static Controller cont[POP];
 static FuzzyVar vars[NUM_INPUT];
 static Set sets[NUM_SETS];
 static Rule rules[NUM_RULES];
@@ -22,6 +24,8 @@ int getRandInt(int low, int high){
 
 //initialisation
 void createController(FuzzyVars newVars[NUM_VARS]) {
+   cont[currentController] = {0,0};
+
     vars = newVars;
     for(i = 0; i < NUM_VARS; i++)
     {
@@ -30,6 +34,7 @@ void createController(FuzzyVars newVars[NUM_VARS]) {
       if(vars[i].output = i)
         initRules(i);
     }
+    currentController++;
 }
 
 void updateVars(FuzzyVars newVars[NUM_VARS]) {
@@ -103,11 +108,6 @@ void createRule(int set1, string modifier, int set2, int outputSet) {
   currentRule++;
 }
 
-//evaluation
-float evaluateVar(int ID, float newValue) {
-  vars[ID] = newValue;
-}
-
 //evaluate all rules that have a single output
 float evaluateRules(int outputID) {
   float res1, res2, variable, result, rcount;
@@ -176,7 +176,9 @@ float intersect(float x1, float y1, float x2, float y2, float input) {
 
 //breeding
 void breedController();
-void breedCollection();
+void breedCollection() {
+
+}
 void breedSet();
 
 //mutation
@@ -184,6 +186,7 @@ float mutateCollection();
 
 void mutateSet(int setID) {
   int mut = getRandInt(0,3);
+  cont[vars[setID.variable].controller].mutations++;
   switch(mut){
     case 0:
       mutateSetGrowTop(setID);
@@ -249,7 +252,8 @@ void mutateSetSlideBase(int setID) {
 }
 
 void mutateRule(int ruleID) {
-  int mut = getRandInt(0,3);
+  int mut = getRandInt(0,0);
+  cont[vars[setID.variable].controller].mutations++;
   switch(mut){
     case 0:
       mutateSetGrowTop(setID);

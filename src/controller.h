@@ -8,6 +8,7 @@ using namespace std;
 //this file defines the structs that are used in the fuzzy logic controller
 
 //constants
+const int POP = 100;
 const int NUM_VARS = 4;
 const int NUM_SETS_PER_COL = 3;
 const int NUM_SETS = NUM_VARS * NUM_SETS_PER_COL;
@@ -17,6 +18,11 @@ static int VARIANCE = 3;
 static int HEIGHT = 1;
 
 //classes----------------------------------------------------------------------
+typedef struct {
+  int score;
+  int mutations;
+} Controller;
+
 
 //var
 typedef struct {
@@ -24,6 +30,7 @@ typedef struct {
   int high;
   int value;
   int output;
+  int controller;
 } FuzzyVar;
 
 //set
