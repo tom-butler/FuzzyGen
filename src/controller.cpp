@@ -156,7 +156,7 @@ float EvaluateSet(int controller, int inputVar, int setID) {
 
 void SelectController() {
   //select highest half and breed them
-  Controller parents[POP/2];
+  Controller parents[NUM_PARENT];
   int count, avg = 0;
 
   //find the average score
@@ -167,15 +167,15 @@ void SelectController() {
 
   //get all controllers with >= avg score
   for(int i = 0; i < POP; i++) {
-    if(cont[i].score >= avg) {
+    if(cont[i].score >= avg && count < NUM_PARENT) {
       parents[count] = cont[i];
       count++
     }
   }
 
-  //if the average didn't give half the pop, add some more randomly
-  if(count < POP/2){
-    for(i = count; i < POP/2, i++){
+  //if the average didn't give enough parents, add some more randomly
+  if(count < NUM_PARENT){
+    for(i = count; i < NUM_PARENT, i++){
       parents[i] = cont[getRandInt(0,POP)];
     }
   }
@@ -183,12 +183,46 @@ void SelectController() {
 
   //breed the parents
   currentController = 0;
-  for(i = 0; i < POP/2, i++) {
-
+  for(i = 0; i < POP/2, i += 2) {
+    BreedController(i, i+1);
   }
 }
 //breeding
 void BreedController(Controller cont1, Controller cont2) {
+
+  //save the parents
+  cont[currentController] = cont1;
+  currentController++;
+  cont[currentController] = cont2;
+  currentController++;
+
+  //create two children from two parents
+  cont[currentController] = cont1;
+  currentController++;
+  cont[currentController] = cont2;
+  currentController++;
+
+  //get the id's of the children
+  int id1 = currentController -1;
+  int id2 = currentController;
+
+
+  //parent mutation, twice for extra variation
+  ParentMutation(id1, id2);
+  ParentMutation(id1, id2);
+
+  //self mutation
+  ChildMutation(id1);
+  ChildMutation(id2);
+
+  }
+}
+
+
+//mutation
+void ParentMutation(int id1, int id2) {
+  //randomly merge two genes
+
   //find a random var
   int r = getRandInt(0, 4);
   int col = getRandInt(0, NUM_VARS -1);
@@ -218,17 +252,10 @@ void BreedController(Controller cont1, Controller cont2) {
       int rule2 = getRandInt(0,NUM_RULES -1);
       cont[id2].rules[rule].output = cont[id1].rules[rule2].output;
       break;
-
-    r = getRandInt(0, 100);
-    if(r * 0.01 < MUT_CHANCE) {
-      mutateCollection(id1);
     }
-  }
 }
 
-
-//mutation
-float MutateCollection(int id) {
+void ChildMutation(int id) {
   int r = getRandInt(0, 1);
   if(r == 0)
     mutateSet(id, getRandInt(0,NUM_VARS), getRandInt(0,NUM_SETS))

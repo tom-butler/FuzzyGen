@@ -9,6 +9,7 @@ using namespace std;
 
 //constants
 const int POP = 100;
+const int NUM_PARENT = POP/2;
 const int NUM_VARS = 4;
 const int NUM_SETS = 3;
 const int NUM_RULES = NUM_VARS * NUM_SETS;

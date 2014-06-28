@@ -7,20 +7,20 @@ using namespace std;
 const int GENERATIONS = 100;
 
 //functions
-void initGen();
+void InitGen();
 void GALoop();
 void ScoreFitness(int id);
 void Selection();
 void Breed(int id);
 void Mutate(int id);
 
-int main(int argc, char *argv[])
+int Main(int argc, char *argv[])
 {
   initControllers();
   GALoop();
 }
 //@TODO: THIS SHIT IS WEIRD
-void initControllers() {
+void InitControllers() {
   //create vars
   for(i = 0; i < POP; i++) {
     thrust.controller = i;
@@ -34,8 +34,7 @@ void initControllers() {
 void GALoop() {
   for(i = 0; i < GENERATIONS; i++) {
     ScoreFitness();
-    Selection();
-    Breed();
+    SelectController();
   }
 
 }
@@ -52,13 +51,4 @@ void ScoreFitness() {
       cont[i].score = fuelRemaining;
     }
   }
-}
-
-//Selects best genotypes
-void Selection() {
-}
-
-//Breeds best genotypes
-void Breed(int id) {
-
 }
