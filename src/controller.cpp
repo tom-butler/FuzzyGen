@@ -12,18 +12,18 @@ static Set sets[NUM_SETS];
 static Rule rules[NUM_RULES];
 
 //util
-void throwError(string error)
+void ThrowError(string error)
 {
   cout << error;
 }
 
-int getRandInt(int low, int high){
+int GetRandInt(int low, int high){
   return rand() % (high - low) + low;
 }
 
 //find the intersection of two lines
 //@TODO: check if parallel lines picks the highest point
-float intersect(float x1, float y1, float x2, float y2, float input) {
+float Intersect(float x1, float y1, float x2, float y2, float input) {
   float m, b;
   //find line equation y = mx + b
   m = (y2-y1)/(x2-x1);
@@ -32,12 +32,12 @@ float intersect(float x1, float y1, float x2, float y2, float input) {
   return m * input + b; ;
 }
 
-void updateVars(FuzzyVars newVars[NUM_VARS]) {
+void UpdateVars(FuzzyVars newVars[NUM_VARS]) {
   vars = newVars;
 }
 
 //initialisation
-void createController(FuzzyVars newVars[NUM_VARS]) {
+void CreateController(FuzzyVars newVars[NUM_VARS]) {
    cont[currentController] = {0,0};
 
     cont[currentController].vars = newVars;
@@ -51,7 +51,7 @@ void createController(FuzzyVars newVars[NUM_VARS]) {
     currentController++;
 }
 //@TODO: REPLACE MULTIPLE ARRAY CALLS WITH POINTER
-void initSets(int variable, int numSets) {
+void InitSets(int variable, int numSets) {
   //create initial variables
   int start = cont[currentController].vars[variable].low;
   int end = cont[currentController].vars[variable].high;
@@ -85,7 +85,7 @@ void initSets(int variable, int numSets) {
 }
 
 //initialises all rules for a given output
-void initRules(int output) {
+void InitRules(int output) {
   for(int i = 0; i < NUM_VARS; i++) {
     if(cont[currentController].vars[i].output != i) {
       for(int j = 0; j < NUM_SETS; j++) {
@@ -105,7 +105,7 @@ void initRules(int output) {
 }
 
 //evaluate all rules that have a single output
-float evaluateRules(int controller, int outputID) {
+float EvaluateRules(int controller, int outputID) {
   float res1, res2, result, rcount = 0f;
   for(int i = 0; i < NUM_RULES; i++) {
     if(cont[controller].rules[i].outputvar = outputID) {
@@ -136,7 +136,7 @@ float evaluateRules(int controller, int outputID) {
 }
 
 //@TODO: repalce sets[setID] with a pointer
-float evaluateSet(int controller, int inputVar, int setID) {
+float EvaluateSet(int controller, int inputVar, int setID) {
   float variable = cont[controller].var[inputVar];
   Set set = cont[controller].vars[var].sets[set];
   if(variable > set.leftBase - set.centreX && variable < set.rightBase + set.centreX)
@@ -154,49 +154,103 @@ float evaluateSet(int controller, int inputVar, int setID) {
     return 0;
 }
 
+void SelectController() {
+  //select highest half and breed them
+  Controller parents[POP/2];
+  int count, avg = 0;
+
+  //find the average score
+  for(int i = 0; i < POP; i++)
+    avg += cont[i].score;
+
+  avg /= i;
+
+  //get all controllers with >= avg score
+  for(int i = 0; i < POP; i++) {
+    if(cont[i].score >= avg) {
+      parents[count] = cont[i];
+      count++
+    }
+  }
+
+  //if the average didn't give half the pop, add some more randomly
+  if(count < POP/2){
+    for(i = count; i < POP/2, i++){
+      parents[i] = cont[getRandInt(0,POP)];
+    }
+  }
+
+
+  //breed the parents
+  currentController = 0;
+  for(i = 0; i < POP/2, i++) {
+
+  }
+}
 //breeding
-void breedController(int id1, int id2) {
+void BreedController(Controller cont1, Controller cont2) {
   //find a random var
   int r = getRandInt(0, 4);
   int col = getRandInt(0, NUM_VARS -1);
+
   switch(r) {
     case 0: //swap collections
       FuzzyVar temp = cont[id2].vars[col];
       cont[id2].vars[col] = cont[id1].vars[col];
       cont[id1].vars[col] = temp;
       break;
-    case 1: //swap sets
+    case 1: //copy collection
+      cont[id2].vars[col] = cont[id1].vars[col];
+      break;
+    case 2: //swap set
       int set = getRandInt(0, NUM_SETS -1);
       Set temp = cont[id2].vars[col].sets[set];
       cont[id2].vars[col].sets[set] = cont[id1].vars[col].sets[set];
       cont[id1].vars[col].sets[set] = temp;
       break;
-    case 2:
-
+    case 3: //copy set
+      int set = getRandInt(0, NUM_SETS -1);
+      cont[id2].vars[col].sets[set] = cont[id1].vars[col].sets[set];
       break;
-  }
+    case 4: //change rule output
+      int rule = getRandInt(0,NUM_RULES -1);
+      Rule temp = cont[id2].rules[rule];
+      int rule2 = getRandInt(0,NUM_RULES -1);
+      cont[id2].rules[rule].output = cont[id1].rules[rule2].output;
+      break;
 
+    r = getRandInt(0, 100);
+    if(r * 0.01 < MUT_CHANCE) {
+      mutateCollection(id1);
+    }
+  }
 }
 
 
 //mutation
-float mutateCollection();
+float MutateCollection(int id) {
+  int r = getRandInt(0, 1);
+  if(r == 0)
+    mutateSet(id, getRandInt(0,NUM_VARS), getRandInt(0,NUM_SETS))
+  else
+    mutateRule(id, getRandInt(0, NUM_RULES));
+}
 
-void mutateSet(int setID) {
+void MutateSet(int controller, int var, int setID) {
   int mut = getRandInt(0,3);
-  cont[vars[setID.variable].controller].mutations++;
+  cont[controller].mutations++;
   switch(mut){
     case 0:
-      mutateSetGrowTop(setID);
+      mutateSetGrowTop(controller, var, setID);
       break;
     case 1:
-      mutateSetGrowBase(setID);
+      mutateSetGrowBase(controller, var, setID);
       break;
     case 2:
-      mutateSetSlideTop(setID);
+      mutateSetSlideTop(controller, var, setID);
       break;
     case 3:
-      mutateSetSlideBase(setID);
+      mutateSetSlideBase(controller, var, setID);
       break;
     default:
       return;
@@ -204,57 +258,63 @@ void mutateSet(int setID) {
   }
 }
 
-void mutateSetGrowTop(int setID) {
+void MutateSetGrowTop(int controller,int var,int setID) {
   int diff = getRandInt(-VARIANCE, VARIANCE);
+  Set set = cont[controller].vars[var].sets[setID];
+  set.leftTop -=diff;
+  set.rightTop +=diff;
 
-  sets[setID].leftTop -=diff;
-  sets[setID].rightTop +=diff;
+  if(set.leftTop < cont[controller].vars[var].start)
+    set.leftTop = cont[controller].vars[var].start;
+  if(set.rightTop > cont[controller].vars[var].end)
+    set.rightTop = cont[controller].vars[var].end;
 
-  if(sets[setID].leftTop < collections[sets[setID].collection].start)
-    sets[setID].leftTop = collections[sets[setID].collection].start;
-  if(sets[setID].rightTop > collections[sets[setID].collection].end)
-    sets[setID].rightTop = collections[sets[setID].collection].end;
+  cont[controller].vars[var].sets[setID] = set;
 }
-void mutateSetGrowBase(int setID) {
+void MutateSetGrowBase(int controller,int var,int setID) {
   int diff = getRandInt(-VARIANCE, VARIANCE);
+  Set set = cont[controller].vars[var].sets[setID];
+  set.leftBase -=diff;
+  set.rightBase +=diff;
 
-  sets[setID].leftBase -=diff;
-  sets[setID].rightBase +=diff;
+  if(set.leftBase < cont[controller].vars[var].start)
+    set.leftBase = cont[controller].vars[var].start;
+  if(set.rightBase > cont[controller].vars[var].end)
+    set.rightBase = cont[controller].vars[var].end;
 
-  if(sets[setID].leftBase < collections[sets[setID].collection].start)
-    sets[setID].leftBase = collections[sets[setID].collection].start;
-  if(sets[setID].rightBase > collections[sets[setID].collection].end)
-    sets[setID].rightBase = collections[sets[setID].collection].end;
+  cont[controller].vars[var].sets[setID] = set;
 }
-void mutateSetSlideTop(int setID) {
+void MutateSetSlideTop(int controller,int var,int setID) {
   int diff = getRandInt(-VARIANCE, VARIANCE);
+  Set set = cont[controller].vars[var].sets[setID];
+  set.leftTop +=diff;
+  set.rightTop +=diff;
 
-  sets[setID].leftTop +=diff;
-  sets[setID].rightTop +=diff;
+  if(set.leftTop < cont[controller].vars[var].start)
+    set.leftTop = cont[controller].vars[var].start;
+  if(set.rightTop > cont[controller].vars[var].end)
+    set.rightTop = cont[controller].vars[var].end;
 
-  if(sets[setID].leftTop < collections[sets[setID].collection].start)
-    sets[setID].leftTop = collections[sets[setID].collection].start;
-  if(sets[setID].rightTop > collections[sets[setID].collection].end)
-    sets[setID].rightTop = collections[sets[setID].collection].end;
+  cont[controller].vars[var].sets[setID] = set;
 }
-void mutateSetSlideBase(int setID) {
+void MutateSetSlideBase(int controller,int var,int setID) {
   int diff = getRandInt(-VARIANCE, VARIANCE);
+  Set set = cont[controller].vars[var].sets[setID];
+  set.leftBase +=diff;
+  set.rightBase +=diff;
 
-  sets[setID].leftBase +=diff;
-  sets[setID].rightBase +=diff;
-
-  if(sets[setID].leftBase < collections[sets[setID].collection].start)
-    sets[setID].leftBase = collections[sets[setID].collection].start;
-  if(sets[setID].rightBase > collections[sets[setID].collection].end)
-    sets[setID].rightBase = collections[sets[setID].collection].end;
+  if(set.leftBase < cont[controller].vars[var].start)
+    set.leftBase = cont[controller].vars[var].start;
+  if(set.rightBase > cont[controller].vars[var].end)
+    set.rightBase = cont[controller].vars[var].end;
 }
 
-void mutateRule(int ruleID) {
+void MutateRule(int controller, int ruleID) {
   int mut = getRandInt(0,0);
-  cont[vars[setID.variable].controller].mutations++;
+  cont[controller].mutations++;
   switch(mut){
     case 0:
-      mutateSetGrowTop(setID);
+      mutateRuleOutput(int controller, ruleID);
       break;
     default:
       return;
@@ -262,10 +322,11 @@ void mutateRule(int ruleID) {
   }
 }
 
-void mutateRuleOutput(int ruleID) {
+void MutateRuleOutput(int controller, int ruleID) {
+  int var = cont[controller].rules[ruleID].outputvar;
   do {
     int test = getRandInt(0, NUM_SETS);
-    if(sets[test].isOutput) {
+    if(test != cont[controller].rules[ruleID].outputSet) {
       rules[ruleID].output = test;
       return;
     }

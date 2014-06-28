@@ -33,7 +33,6 @@ void initControllers() {
 //Runs the GA until requirements met
 void GALoop() {
   for(i = 0; i < GENERATIONS; i++) {
-    Update();
     ScoreFitness();
     Selection();
     Breed();
@@ -57,15 +56,9 @@ void ScoreFitness() {
 
 //Selects best genotypes
 void Selection() {
-
 }
 
 //Breeds best genotypes
 void Breed(int id) {
-
-}
-
-//Mutate genotype for random variance
-void Mutate(int id) {
 
 }

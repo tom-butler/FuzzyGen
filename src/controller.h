@@ -15,6 +15,7 @@ const int NUM_RULES = NUM_VARS * NUM_SETS;
 
 static int VARIANCE = 3;
 static int HEIGHT = 1;
+static float MUT_CHANCE = 0.3f;
 
 //classes----------------------------------------------------------------------
 
@@ -61,37 +62,31 @@ typedef struct {
 //functions--------------------------------------------------------------------
 
 //util
-void throwError(string error);
-int getRandInt(int low, int high);
-float intersect(float x1, float y1, float x2, float y2, float input);
+void ThrowError(string error);
+int GetRandInt(int low, int high);
+float Intersect(float x1, float y1, float x2, float y2, float input);
+void UpdateVars(FuzzyVar vars[]);
 
 //init
-void createController(float vars[]);
-void UpdateVars(float vars[]);
-void initSets(int parentID, int numSets);
-void initRules(int output);
+void CreateController(FuzzyVar vars[]);
+void InitSets(int variable, int numSets);
+void InitRules(int output);
 
 //evaluation
-float evaluateRule(int ID);
-float evaluateSet(int setID, float variable);
-
+float EvaluateRule(int ID);
+float EvaluateSet(int controller, int inputVar, int setID);
 
 //breeding
-void breedController();
-void breedCollection();
-void breedSet();
+void BreedController(int id1, int id2);
+void MutateCollection(int id);
 
-//mutation
-void mutate();
-void mutateCollection();
+void MutateSet(int controller, int var, int setID);
+void MutateSetGrowTop(int controller, int var, int setID);
+void MutateSetGrowBase(int controller, int var, int setID);
+void MutateSetSlideTop(int controller, int var, int setID);
+void MutateSetSlideBase(int controller, int var, int setID);
 
-void mutateSet(int setID);
-void mutateSetGrowTop(int setID);
-void mutateSetGrowBase(int setID);
-void mutateSetSlideTop(int setID);
-void mutateSetSlideBase(int setID);
-
-void mutateRule(int ruleID);
-void mutateRuleOutput(int ruleID);
+void MutateRule(int controller, int ruleID);
+void MutateRuleOutput(int controller, int ruleID);
 
 #endif
