@@ -16,9 +16,62 @@ void Mutate(int id);
 
 int Main(int argc, char *argv[])
 {
-  initControllers();
+  InitSystem(argc, argv);
+  InitControllers();
   GALoop();
 }
+void InitSystem(int argc,char *argv[]) {
+  //loop through and set any defined options
+  int c;
+  while((c = getopt(argc, argv, "pacsrhmftvfx:")) != -1) {
+    switch(c){
+      case 'p':
+        POP = atoi(optarg);
+        ANCESTOR = POP/2;
+        break;
+      case 'a':
+        ANCESTOR = atoi(optarg);
+        break;
+      case 'c':
+        NUM_VARS = atoi(optarg);
+        break;
+      case 's':
+        NUM_SETS = atoi(optarg);
+        break;
+      case 'r':
+        VARIANCE = atoi(optarg);
+        break;
+      case 'h'
+        HEIGHT = atoi(optarg);
+        break;
+      case 'm'
+        MUT_CHANCE = atoi(optarg);
+        break;
+      case 'f'
+        START_FUEL = atoi(optarg);
+        break;
+      case 't'
+        THRUST_MAX = atoi(optarg);
+        break;
+      case 'v'
+        TERMINAL_VELOCITY = atoi(optarg);
+        break;
+      case 'f'
+        FORCE = atoi(optarg);
+        break;
+      case 'x'
+        CHRASH_SPEED = atoi(optarg);
+        break;
+      case '?':
+        fprintf(stderr, "Bad option -%c\n", optopt);
+        break;
+      default:
+        fprintf(stderr, "Option -%c does not exist\n",optopt );
+        break;
+    }
+  }
+}
+
 //@TODO: THIS SHIT IS WEIRD
 void InitControllers() {
   //create vars

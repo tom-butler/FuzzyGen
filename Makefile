@@ -1,10 +1,13 @@
 SRC_DIR = src
 BUILD_DIR = bin
 
-all: test clean
+all: gen clean
 
-test: test.o controller.o sim.o
+gen: gen.o controller.o sim.o
 	g++ -o $(BUILD_DIR)\test test.o controller.o
+
+gen.o: $(SRC_DIR)\gen.cpp $(SRC_DIR)\gen.h
+	g++ -c $(SRC_DIR)\gen.cpp
 
 test.o: $(SRC_DIR)\test.cpp
 	g++ -c $(SRC_DIR)\test.cpp

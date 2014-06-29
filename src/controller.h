@@ -7,16 +7,6 @@
 using namespace std;
 //this file defines the structs that are used in the fuzzy logic controller
 
-//constants
-const int POP = 100;
-const int NUM_PARENT = POP/2;
-const int NUM_VARS = 4;
-const int NUM_SETS = 3;
-const int NUM_RULES = NUM_VARS * NUM_SETS;
-
-static int VARIANCE = 3;
-static int HEIGHT = 1;
-static float MUT_CHANCE = 0.3f;
 
 //classes----------------------------------------------------------------------
 
