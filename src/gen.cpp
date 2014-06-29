@@ -6,8 +6,6 @@
 
 using namespace std;
 
-
-
 int main(int argc, char *argv[])
 {
   InitSystem(argc, argv);
@@ -37,6 +35,7 @@ void InitSystem(int argc,char *argv[]) {
       case 'm':
         MUT_CHANCE = atoi(optarg);
         break;
+
       //fuzzy
       case 'c':
         NUM_VARS = atoi(optarg);
@@ -88,13 +87,13 @@ void InitControllers() {
 //Runs the GA until requirements met
 void GALoop() {
   for(int i = 0; i < GENERATIONS; i++) {
-    ScoreFitness();
-    SelectController();
+    ScoreFitnesses();
+    BreedControllers();
   }
 }
 
 //Scores each genotype
-void ScoreFitness() {
+void ScoreFitnesses() {
   for(int i = 0; i < POP; i++) {
     InitSim();
     int result = 2;

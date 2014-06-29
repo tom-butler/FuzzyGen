@@ -3,7 +3,6 @@
 
 #include <string>
 #include <iostream>
-#include <stdlib.h>
 #include "gen.h"
 using namespace std;
 //this file defines the structs that are used in the fuzzy logic controller
@@ -24,13 +23,13 @@ typedef struct {
 
 //set
 typedef struct {
-  float centreX;
-  float centreY;
-  float height;
-  float leftBase;
-  float rightBase;
-  float leftTop;
-  float rightTop;
+  int centreX;
+  int centreY;
+  int height;
+  int leftBase;
+  int rightBase;
+  int leftTop;
+  int rightTop;
   int variable;
 } Set;
 
@@ -62,16 +61,15 @@ void UpdateVars(int controller, int vars[]);
 void ScoreController(int controller, int score);
 //init
 void CreateControllers(int num, FuzzyVar vars[]);
-void InitSets(int variable, int numSets);
-void InitRules(int output);
+void InitSets(int controller, int variable, int numSets);
+void InitRules(int controller, int output);
 
 //evaluation
 float EvaluateRules(int controller, int ID);
 float EvaluateSet(int controller, int inputVar, int setID);
 
 //breeding
-void SelectController();
-void BreedController(Controller id1, Controller id2);
+void BreedControllers();
 
 void ParentMutation(int id1, int id2);
 void ChildMutation(int id);

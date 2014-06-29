@@ -1,7 +1,7 @@
 #ifndef GEN_H
 #define GEN_H
 
-
+#include <stdlib.h>
 
 //options-------------------------------------------
 
@@ -35,5 +35,5 @@ void InitGen();
 void InitSystem(int argc, char *argv[]);
 void InitControllers();
 void GALoop();
-void ScoreFitness();
+void ScoreFitnesses();
 #endif

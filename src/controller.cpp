@@ -1,9 +1,7 @@
 #include "controller.h"
 
 static Controller *cont;
-//counters
-static int currentController = 0;
-static int currentRule = 0;
+int currentRule =0;
 
 //util
 void ThrowError(string error)
@@ -39,29 +37,27 @@ void ScoreController(int controller, int score) {
 //initialisation
 void CreateControllers(int num_controllers, FuzzyVar newVars[]) {
    cont = new Controller[num_controllers];
-   while(currentController < num_controllers) {
-    //cont[currentController] = {0,0};
-    cont[currentController].vars = newVars;
-    for(int i = 0; i < NUM_VARS; i++)
+   for(int i = 0; i < num_controllers;i++) {
+    cont[i].vars = newVars;
+    for(int j = 0; j < NUM_VARS; j++)
     {
-      cont[currentController].vars[i].sets = new Set[NUM_SETS];
-      InitSets(i, NUM_SETS);
+      cont[i].vars[i].sets = new Set[NUM_SETS];
+      InitSets(i, j, NUM_SETS);
 
       //if this is an output make some rules
-      if(cont[currentController].vars[i].output = i) {
-        cont[currentController].rules = new Rule[NUM_SETS];
-        InitRules(i);
+      if(cont[i].vars[j].output = i) {
+        cont[i].rules = new Rule[NUM_SETS];
+        InitRules(i, j);
       }
     }
-    currentController++;
   }
 }
 
 //@TODO: REPLACE MULTIPLE ARRAY CALLS WITH POINTER
-void InitSets(int variable, int numSets) {
+void InitSets(int controller, int variable, int numSets) {
   //create initial variables
-  int start = cont[currentController].vars[variable].low;
-  int end = cont[currentController].vars[variable].high;
+  int start = cont[controller].vars[variable].low;
+  int end = cont[controller].vars[variable].high;
   int space = (end - start)  / (numSets - 1);
   int centre = start;
   int bWidth = 0.7 * space;
@@ -86,24 +82,24 @@ void InitSets(int variable, int numSets) {
 
     //build the set
     Set s = {centre, HEIGHT, rbase, ltop, rtop, variable};
-    cont[currentController].vars[variable].sets[j] = s;
+    cont[controller].vars[variable].sets[j] = s;
     //increment the centre for next set
     centre += space;
   }
 }
 
 //initialises all rules for a given output
-void InitRules(int output) {
+void InitRules(int controller, int output) {
   for(int i = 0; i < NUM_VARS; i++) {
-    if(cont[currentController].vars[i].output != i) {
+    if(cont[controller].vars[i].output != i) {
       for(int j = 0; j < NUM_SETS; j++) {
 
         for(int k = 0; k < NUM_VARS; k++) {
-          if(cont[currentController].vars[k].output != k && i != k) {
+          if(cont[controller].vars[k].output != k && i != k) {
             for(int l = 0; l < NUM_SETS; l++) {
               random = GetRandInt(0, NUM_SETS);
               Rule r = {i, j, "AND", k, l, output, random};
-              cont[currentController].rules[currentRule] = r;
+              cont[controller].rules[currentRule] = r;
               currentRule++;
             }
           }
@@ -118,12 +114,12 @@ float EvaluateRules(int controller, int outputID) {
   int variable, res1, res2, result, rcount = 0;
   for(int i = 0; i < NUM_RULES; i++) {
     if(cont[controller].rules[i].outputvar = outputID) {
+
       rcount++;
       res1 = EvaluateSet(controller, cont[controller].rules[i].inputvar, cont[controller].rules[i].inputset);
       res2 = EvaluateSet(controller, cont[controller].rules[i].inputvar2, cont[controller].rules[i].inputset2);
 
       //decide on the value to pass to output
-
       if(cont[controller].rules[i].modifier.compare("AND") == 0) {
           if(res1 < res2)
             variable = res1;
@@ -164,7 +160,7 @@ float EvaluateSet(int controller, int inputVar, int setID) {
     return 0;
 }
 
-void SelectController() {
+void BreedControllers() {
   //select highest half and breed them
   Controller parents[ANCESTOR];
   int count, avg = 0;
@@ -190,31 +186,22 @@ void SelectController() {
     }
   }
 
-
+  int c = 0;
   //breed the parents
-  currentController = 0;
   for(int i = 0; i < POP/2; i += 2) {
-    BreedController(parents[i], parents[i+1]);
-  }
-}
-//breeding
-void BreedController(Controller cont1, Controller cont2) {
 
   //save the parents
-  cont[currentController] = cont1;
-  currentController++;
-  cont[currentController] = cont2;
-  currentController++;
+  cont[++c] = parents[i];
+  cont[++c] = parents[i + 1];
 
   //create two children from two parents
-  cont[currentController] = cont1;
-  currentController++;
-  cont[currentController] = cont2;
-  currentController++;
+  cont[++c] = parents[i];
+  cont[++c] = parents[i + 1];
+
 
   //get the id's of the children
-  int id1 = currentController -1;
-  int id2 = currentController;
+  int id1 = c;
+  int id2 = c - 1;
 
 
   //parent mutation, twice for extra variation
@@ -224,8 +211,8 @@ void BreedController(Controller cont1, Controller cont2) {
   //self mutation
   ChildMutation(id1);
   ChildMutation(id2);
+  }
 }
-
 
 //mutation
 void ParentMutation(int id1, int id2) {
