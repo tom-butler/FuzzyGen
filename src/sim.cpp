@@ -1,27 +1,28 @@
 #include "sim.h"
-#include "controller.h"
+
 using namespace std;
 
-void initSim(int height, int vel, int fuel) {
-  yPos = height;
-  velocity = vel;
-  fuelRemaining = fuel;
+void InitSim() {
+  height.value = START_HEIGHT;
+  velocity.value = START_VEL;
+  fuelRemaining.value = START_FUEL;
 }
 
-void nextStep(int thrust) {
-  if(fuelRemaining > 0) {
-    fuelRemaining -= thrust;
-    velocity = velocity + FORCE;
-    velocity = velocity - thrust;
-    yPos += velcocity;
+int NextStep() {
+  if(fuelRemaining.value > 0) {
+    fuelRemaining.value -= thrust.value;
+    velocity.value = velocity.value + FORCE;
+    velocity.value = velocity.value - thrust.value;
+    height.value += velocity.value;
 
-    if(fuelRemaining <= 0)
+    if(fuelRemaining.value <= 0)
       return 0; //fail
-    else if(ypos <= 0 && velocity < CRASH_SPEED)
+    else if(height.value <= 0 && velocity.value < CRASH_SPEED)
       return 1; //succeed
     else
       return 2; //continue
   }
   else
+    return 0;
 
 }

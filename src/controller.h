@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <stdlib.h>
+#include "gen.h"
 using namespace std;
 //this file defines the structs that are used in the fuzzy logic controller
 
@@ -39,45 +40,43 @@ typedef struct {
   int high;
   int value;
   int output;
-  Set sets[NUM_SETS_PER_COL]
+  Set *sets;
 } FuzzyVar;
 
 //Controller
 typedef struct {
   int score;
   int mutations;
-  FuzzyVar vars[NUM_VARS];
-  Rule rules[NUM_RULES];
+  FuzzyVar *vars;
+  Rule *rules;
 } Controller;
+
 
 //functions--------------------------------------------------------------------
 
 //util
 void ThrowError(string error);
 int GetRandInt(int low, int high);
-float Intersect(float x1, float y1, float x2, float y2, float input);
-void UpdateVars(FuzzyVar vars[]);
-
+float Intersect(int x1, int y1, int x2, int y2, int input);
+void UpdateVars(int controller, int vars[]);
+void ScoreController(int controller, int score);
 //init
-void CreateController(FuzzyVar vars[]);
+void CreateControllers(int num, FuzzyVar vars[]);
 void InitSets(int variable, int numSets);
 void InitRules(int output);
 
 //evaluation
-float EvaluateRule(int ID);
+float EvaluateRules(int controller, int ID);
 float EvaluateSet(int controller, int inputVar, int setID);
 
 //breeding
-void BreedController(int id1, int id2);
+void SelectController();
+void BreedController(Controller id1, Controller id2);
+
+void ParentMutation(int id1, int id2);
+void ChildMutation(int id);
 void MutateCollection(int id);
-
 void MutateSet(int controller, int var, int setID);
-void MutateSetGrowTop(int controller, int var, int setID);
-void MutateSetGrowBase(int controller, int var, int setID);
-void MutateSetSlideTop(int controller, int var, int setID);
-void MutateSetSlideBase(int controller, int var, int setID);
-
 void MutateRule(int controller, int ruleID);
-void MutateRuleOutput(int controller, int ruleID);
 
 #endif

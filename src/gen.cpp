@@ -1,107 +1,112 @@
 #include <iostream>
+#include "gen.h"
 #include "sim.h"
 #include "controller.h"
+#include <GetOpt.h>
 
 using namespace std;
 
-const int GENERATIONS = 100;
 
-//functions
-void InitGen();
-void GALoop();
-void ScoreFitness(int id);
-void Selection();
-void Breed(int id);
-void Mutate(int id);
 
-int Main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
   InitSystem(argc, argv);
   InitControllers();
   GALoop();
 }
+
 void InitSystem(int argc,char *argv[]) {
   //loop through and set any defined options
   int c;
-  while((c = getopt(argc, argv, "pacsrhmftvfx:")) != -1) {
+  while((c = getopt(argc, argv, "pgarmcshyfvt0x:")) != -1) {
     switch(c){
+      //GENETIC
       case 'p':
         POP = atoi(optarg);
         ANCESTOR = POP/2;
         break;
+      case 'g':
+        GENERATIONS = atoi(optarg);
+        break;
       case 'a':
         ANCESTOR = atoi(optarg);
         break;
+      case 'r':
+        VARIANCE = atoi(optarg);
+        break;
+      case 'm':
+        MUT_CHANCE = atoi(optarg);
+        break;
+      //fuzzy
       case 'c':
         NUM_VARS = atoi(optarg);
         break;
       case 's':
         NUM_SETS = atoi(optarg);
         break;
-      case 'r':
-        VARIANCE = atoi(optarg);
-        break;
-      case 'h'
+      case 'h':
         HEIGHT = atoi(optarg);
         break;
-      case 'm'
-        MUT_CHANCE = atoi(optarg);
+
+      //sim
+      case 'y':
+        START_HEIGHT = atoi(optarg);
         break;
-      case 'f'
+      case 'f':
         START_FUEL = atoi(optarg);
         break;
-      case 't'
+      case 't':
         THRUST_MAX = atoi(optarg);
         break;
-      case 'v'
-        TERMINAL_VELOCITY = atoi(optarg);
+      case 'v':
+        START_VEL = atoi(optarg);
         break;
-      case 'f'
+      case 'o':
         FORCE = atoi(optarg);
         break;
-      case 'x'
-        CHRASH_SPEED = atoi(optarg);
+      case 'x':
+        CRASH_SPEED = atoi(optarg);
         break;
       case '?':
-        fprintf(stderr, "Bad option -%c\n", optopt);
+        cout << "Bad option -" << optopt;
         break;
       default:
-        fprintf(stderr, "Option -%c does not exist\n",optopt );
+        cout << "Option -" << optopt << " does not exist";
         break;
     }
+    //re-caclulate after change
+    TERMINAL_VELOCITY = START_VEL * 10;
+    NUM_RULES = NUM_VARS * NUM_SETS;
   }
 }
 
 //@TODO: THIS SHIT IS WEIRD
 void InitControllers() {
-  //create vars
-  for(i = 0; i < POP; i++) {
-    thrust.controller = i;
-    height.controller = i;
-    velocity.controller = i;
-    fuelRemaining.controller = i;
-    createController({thrust, height, velocity, fuelRemaining});
-  }
+    FuzzyVar variables[] = {thrust, height, velocity, fuelRemaining};
+    CreateControllers(POP, variables);
 }
 //Runs the GA until requirements met
 void GALoop() {
-  for(i = 0; i < GENERATIONS; i++) {
+  for(int i = 0; i < GENERATIONS; i++) {
     ScoreFitness();
     SelectController();
   }
-
 }
 
 //Scores each genotype
 void ScoreFitness() {
-  for(i = 0; i < POP; i++) {
-    initSim(1000, 0, 1000);
-    int result = 3;
-    while(var != 3) {
-      UpdateVars({thrust, height, velocity, fuelRemaining});
-      thrust.value = evaluateRules(0);
-      result = nextStep(thrust.value);
-      cont[i].score = fuelRemaining;
+  for(int i = 0; i < POP; i++) {
+    InitSim();
+    int result = 2;
+    while(result == 2) {
+      int variables[] = {thrust.value, height.value, velocity.value, fuelRemaining.value};
+      UpdateVars(i, variables);
+      thrust.value = EvaluateRules(i, 0);
+      result = NextStep();
     }
+    if(result == 0) //failed
+      ScoreController(i, fuelRemaining.value /2);
+    if(result == 1)
+      ScoreController(i, fuelRemaining.value);
   }
 }

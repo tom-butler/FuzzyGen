@@ -4,13 +4,10 @@ BUILD_DIR = bin
 all: gen clean
 
 gen: gen.o controller.o sim.o
-	g++ -o $(BUILD_DIR)\test test.o controller.o
+	g++ -o $(BUILD_DIR)\test gen.o controller.o sim.o
 
 gen.o: $(SRC_DIR)\gen.cpp $(SRC_DIR)\gen.h
 	g++ -c $(SRC_DIR)\gen.cpp
-
-test.o: $(SRC_DIR)\test.cpp
-	g++ -c $(SRC_DIR)\test.cpp
 
 controller.o: $(SRC_DIR)\controller.cpp $(SRC_DIR)\controller.h
 	g++ -c $(SRC_DIR)\controller.cpp
