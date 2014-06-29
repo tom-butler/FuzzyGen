@@ -93,7 +93,7 @@ void InitRules(int output) {
         for(int k = 0; k < NUM_VARS; k++) {
           if(cont[currentController].vars[k].output != k && i != k) {
             for(int l = 0; l < NUM_SETS; l++) {
-              int m = getRandInt(0, NUM_SETS);
+              random = getRandInt(0, NUM_SETS);
               cont[currentController].rules[currentRule] = {i, j, "AND", k, l, output, cont[currentController].vars[output].sets[m]};
               currentRule++;
             }
@@ -224,10 +224,10 @@ void ParentMutation(int id1, int id2) {
   //randomly merge two genes
 
   //find a random var
-  int r = getRandInt(0, 4);
+  random = getRandInt(0, 4);
   int col = getRandInt(0, NUM_VARS -1);
 
-  switch(r) {
+  switch(random) {
     case 0: //swap collections
       FuzzyVar temp = cont[id2].vars[col];
       cont[id2].vars[col] = cont[id1].vars[col];
@@ -256,17 +256,17 @@ void ParentMutation(int id1, int id2) {
 }
 
 void ChildMutation(int id) {
-  int r = getRandInt(0, 1);
-  if(r == 0)
+  random = getRandInt(0, 1);
+  if(random == 0)
     mutateSet(id, getRandInt(0,NUM_VARS), getRandInt(0,NUM_SETS))
   else
     mutateRule(id, getRandInt(0, NUM_RULES));
 }
 
 void MutateSet(int controller, int var, int setID) {
-  int mut = getRandInt(0,3);
+  random = getRandInt(0,3);
   cont[controller].mutations++;
-  switch(mut){
+  switch(random){
     case 0:
       mutateSetGrowTop(controller, var, setID);
       break;
@@ -286,10 +286,10 @@ void MutateSet(int controller, int var, int setID) {
 }
 
 void MutateSetGrowTop(int controller,int var,int setID) {
-  int diff = getRandInt(-VARIANCE, VARIANCE);
+  random = getRandInt(-VARIANCE, VARIANCE);
   Set set = cont[controller].vars[var].sets[setID];
-  set.leftTop -=diff;
-  set.rightTop +=diff;
+  set.leftTop -= random;
+  set.rightTop += random;
 
   if(set.leftTop < cont[controller].vars[var].start)
     set.leftTop = cont[controller].vars[var].start;
@@ -299,10 +299,10 @@ void MutateSetGrowTop(int controller,int var,int setID) {
   cont[controller].vars[var].sets[setID] = set;
 }
 void MutateSetGrowBase(int controller,int var,int setID) {
-  int diff = getRandInt(-VARIANCE, VARIANCE);
+  random = getRandInt(-VARIANCE, VARIANCE);
   Set set = cont[controller].vars[var].sets[setID];
-  set.leftBase -=diff;
-  set.rightBase +=diff;
+  set.leftBase -=random;
+  set.rightBase +=random;
 
   if(set.leftBase < cont[controller].vars[var].start)
     set.leftBase = cont[controller].vars[var].start;
@@ -312,10 +312,10 @@ void MutateSetGrowBase(int controller,int var,int setID) {
   cont[controller].vars[var].sets[setID] = set;
 }
 void MutateSetSlideTop(int controller,int var,int setID) {
-  int diff = getRandInt(-VARIANCE, VARIANCE);
+  random = getRandInt(-VARIANCE, VARIANCE);
   Set set = cont[controller].vars[var].sets[setID];
-  set.leftTop +=diff;
-  set.rightTop +=diff;
+  set.leftTop +=random;
+  set.rightTop +=random;
 
   if(set.leftTop < cont[controller].vars[var].start)
     set.leftTop = cont[controller].vars[var].start;
@@ -325,10 +325,10 @@ void MutateSetSlideTop(int controller,int var,int setID) {
   cont[controller].vars[var].sets[setID] = set;
 }
 void MutateSetSlideBase(int controller,int var,int setID) {
-  int diff = getRandInt(-VARIANCE, VARIANCE);
+  random = getRandInt(-VARIANCE, VARIANCE);
   Set set = cont[controller].vars[var].sets[setID];
-  set.leftBase +=diff;
-  set.rightBase +=diff;
+  set.leftBase +=random;
+  set.rightBase +=random;
 
   if(set.leftBase < cont[controller].vars[var].start)
     set.leftBase = cont[controller].vars[var].start;
@@ -337,9 +337,9 @@ void MutateSetSlideBase(int controller,int var,int setID) {
 }
 
 void MutateRule(int controller, int ruleID) {
-  int mut = getRandInt(0,0);
+  random = getRandInt(0,0);
   cont[controller].mutations++;
-  switch(mut){
+  switch(random){
     case 0:
       mutateRuleOutput(int controller, ruleID);
       break;
@@ -352,9 +352,9 @@ void MutateRule(int controller, int ruleID) {
 void MutateRuleOutput(int controller, int ruleID) {
   int var = cont[controller].rules[ruleID].outputvar;
   do {
-    int test = getRandInt(0, NUM_SETS);
-    if(test != cont[controller].rules[ruleID].outputSet) {
-      rules[ruleID].output = test;
+    random = getRandInt(0, NUM_SETS);
+    if(random != cont[controller].rules[ruleID].outputSet) {
+      rules[ruleID].output = random;
       return;
     }
   } while(1);
