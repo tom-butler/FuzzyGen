@@ -1,14 +1,14 @@
 #include "controller.h"
+#include <iostream>
+#include <stdlib.h>
+
+using namespace std;
+
 
 static Controller *cont;
 int currentRule =0;
 
 //util
-void ThrowError(string error)
-{
-  cout << error;
-}
-
 int GetRandInt(int low, int high){
   return rand() % (high - low) + low;
 }
@@ -16,12 +16,24 @@ int GetRandInt(int low, int high){
 //find the intersection of two lines
 //@TODO: check if parallel lines picks the highest point
 float Intersect(int x1, int y1, int x2, int y2, int input) {
-  float m, b;
+  int m, b;
   //find line equation y = mx + b
-  m = (y2-y1)/(x2-x1);
+  int x = x2 - x1;
+  int y = y2 - y1;
+  if(x == 0 || y == 0)
+    m = 0;
+  else
+    m = y/x;
   b = y1 -m*x1;
+  int out = m * input + b;
+
+  cout << "x1 " << x1 << " y1 " << y1 << " x2 " << x2 << " y2 " << y2 << "\n";
+  cout << "y = mx+b  " << "y= " << m << " * x + " << b << "\n";
+
+
+
   //get the y value of the intersection
-  return m * input + b; ;
+  return out;
 }
 
 void UpdateVars(int controller, int newValues[]) {
@@ -48,6 +60,7 @@ void CreateControllers(int num_controllers, FuzzyVar newVars[]) {
       if(cont[i].vars[j].output = i) {
         cont[i].rules = new Rule[NUM_SETS];
         InitRules(i, j);
+
       }
     }
   }
@@ -63,7 +76,7 @@ void InitSets(int controller, int variable, int numSets) {
   int bWidth = 0.7 * space;
   int tWidth = 0.3 * space;
 
-  for(int j = 0; j < numSets; j++) {
+  for(int j = 0; j < numSets; ++j) {
     //attempt to create set variables
     int lbase = bWidth - centre;
     int rbase = bWidth + centre;
@@ -72,7 +85,7 @@ void InitSets(int controller, int variable, int numSets) {
 
     //check set variables for compliance
     if(lbase  < start)
-      lbase = Intersect(0, lbase, 0, centre, start);
+      lbase = Intersect(lbase, 0, 0, centre, start);
     if(rbase > end)
       rbase = Intersect(0, centre, 0, rbase, end);
     if(ltop < start)

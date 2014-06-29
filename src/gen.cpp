@@ -1,8 +1,9 @@
-#include <iostream>
 #include "gen.h"
 #include "sim.h"
 #include "controller.h"
+#include <iostream>
 #include <GetOpt.h>
+#include <stdlib.h>
 
 using namespace std;
 
@@ -13,11 +14,22 @@ int main(int argc, char *argv[])
   GALoop();
 }
 
+void Print(string msg)
+{
+  if(DEBUG)
+    cout << msg;
+}
+
 void InitSystem(int argc,char *argv[]) {
+  Print("Initialising System...\n");
   //loop through and set any defined options
   int c;
   while((c = getopt(argc, argv, "pgarmcshyfvt0x:")) != -1) {
     switch(c){
+      //system
+      case 'd':
+        DEBUG = true;
+        break;
       //GENETIC
       case 'p':
         POP = atoi(optarg);
@@ -67,22 +79,25 @@ void InitSystem(int argc,char *argv[]) {
         CRASH_SPEED = atoi(optarg);
         break;
       case '?':
-        cout << "Bad option -" << optopt;
+        cout << "Bad option -" << c;
         break;
       default:
-        cout << "Option -" << optopt << " does not exist";
+        cout << "Option -" << c << " does not exist";
         break;
     }
     //re-caclulate after change
     TERMINAL_VELOCITY = START_VEL * 10;
     NUM_RULES = NUM_VARS * NUM_SETS;
   }
+  Print("System Initialised\n");
 }
 
 //@TODO: THIS SHIT IS WEIRD
 void InitControllers() {
+  Print("Initialising Controllers\n");
     FuzzyVar variables[] = {thrust, height, velocity, fuelRemaining};
     CreateControllers(POP, variables);
+  Print("Controllers Initialised\n");
 }
 //Runs the GA until requirements met
 void GALoop() {

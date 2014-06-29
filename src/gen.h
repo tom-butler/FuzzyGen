@@ -1,9 +1,10 @@
 #ifndef GEN_H
 #define GEN_H
 
-#include <stdlib.h>
-
+#include <string>
 //options-------------------------------------------
+//system
+static bool DEBUG = true;                    //-d
 
 //genetic
 static int POP = 100;                         //-p
@@ -31,6 +32,7 @@ static int CRASH_SPEED = 5;                   //-x
 static int random;
 
 //functions
+void Print(std::string error);
 void InitGen();
 void InitSystem(int argc, char *argv[]);
 void InitControllers();

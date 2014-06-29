@@ -1,10 +1,8 @@
 #ifndef FUZZY_CONTROLLER_H
 #define FUZZY_CONTROLLER_H
 
-#include <string>
-#include <iostream>
 #include "gen.h"
-using namespace std;
+#include <string>
 //this file defines the structs that are used in the fuzzy logic controller
 
 
@@ -14,7 +12,7 @@ using namespace std;
 typedef struct {
   int inputvar;
   int inputset;
-  string modifier;
+  std::string modifier;
   int inputvar2;
   int inputset2;
   int outputvar;
@@ -53,8 +51,6 @@ typedef struct {
 
 //functions--------------------------------------------------------------------
 
-//util
-void ThrowError(string error);
 int GetRandInt(int low, int high);
 float Intersect(int x1, int y1, int x2, int y2, int input);
 void UpdateVars(int controller, int vars[]);
