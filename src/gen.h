@@ -18,4 +18,6 @@ static int THRUST_MAX = 50;                   //-t
 static int TERMINAL_VELOCITY = 50;            //-v
 static int FORCE = 5;                         //-f
 static int CRASH_SPEED = 5;                   //-x
+
+int random;
 #endif
