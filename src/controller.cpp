@@ -25,20 +25,13 @@ float Intersect(int x1, int y1, int x2, int y2, int input) {
   else
     m = y/x;
   b = y1 -m*x1;
-  int out = m * input + b;
-
-  cout << "x1 " << x1 << " y1 " << y1 << " x2 " << x2 << " y2 " << y2 << "\n";
-  cout << "y = mx+b  " << "y= " << m << " * x + " << b << "\n";
-
-
-
   //get the y value of the intersection
-  return out;
+  return m * input + b;
 }
 
-void UpdateVars(int controller, int newValues[]) {
-  for(int i = 0; i < NUM_VARS; i++) {
-    cont[controller].vars[i].value = newValues[i];
+void UpdateVars(int controller, float newValues[]) {
+  for(int i = 0; i < NUM_INPUT; i++) {
+    cont[controller].input[i].value = newValues[i];
   }
 }
 
@@ -47,118 +40,131 @@ void ScoreController(int controller, int score) {
 }
 
 //initialisation
-void CreateControllers(int num_controllers, FuzzyVar newVars[]) {
+void CreateControllers(int num_controllers, FuzzyVar input[], Singleton output) {
    cont = new Controller[num_controllers];
    for(int i = 0; i < num_controllers;i++) {
-    cont[i].vars = newVars;
-    for(int j = 0; j < NUM_VARS; j++)
+
+    //create input sets
+    cont[i].input = input;
+    for(int j = 0; j < NUM_INPUT; j++)
     {
-      cont[i].vars[i].sets = new Set[NUM_SETS];
+      cont[i].input[j].sets = new Set[NUM_SETS];
       InitSets(i, j, NUM_SETS);
-
-      //if this is an output make some rules
-      if(cont[i].vars[j].output = i) {
-        cont[i].rules = new Rule[NUM_SETS];
-        InitRules(i, j);
-
-      }
     }
+
+    //create output singletons
+    cont[i].output = output;
+    cont[i].output.singles = new float[NUM_RULES];
+    InitSingletons(i, NUM_RULES);
+
+    //make some rules
+    cont[i].rules = new Rule[NUM_RULES];
+    InitRules(i);
   }
 }
 
 //@TODO: REPLACE MULTIPLE ARRAY CALLS WITH POINTER
 void InitSets(int controller, int variable, int numSets) {
   //create initial variables
-  int start = cont[controller].vars[variable].low;
-  int end = cont[controller].vars[variable].high;
+  int start = cont[controller].input[variable].low;
+  int end = cont[controller].input[variable].high;
+
   int space = (end - start)  / (numSets - 1);
   int centre = start;
-  int bWidth = 0.7 * space;
-  int tWidth = 0.3 * space;
 
   for(int j = 0; j < numSets; ++j) {
-    //attempt to create set variables
-    int lbase = bWidth - centre;
-    int rbase = bWidth + centre;
-    int ltop = tWidth - centre;
-    int rtop = tWidth + centre;
+
+  int lbase, rbase = 0.7 * space;
+  int ltop, rtop = 0.3 * space;
 
     //check set variables for compliance
-    if(lbase  < start)
-      lbase = Intersect(lbase, 0, 0, centre, start);
-    if(rbase > end)
-      rbase = Intersect(0, centre, 0, rbase, end);
-    if(ltop < start)
-      lbase = Intersect(HEIGHT, ltop, HEIGHT, centre, start);
-    if(rtop > end)
-      rtop = Intersect(HEIGHT, centre, HEIGHT, rtop, end);
+    if(ltop - centre < start) {
+      ltop = centre - start;
+      lbase = centre - start;
+    }
+    if(rtop + centre > end) {
+      rtop = end - centre;
+      rbase = end - centre;
+    }
 
     //build the set
     Set s = {centre, HEIGHT, rbase, ltop, rtop, variable};
-    cont[controller].vars[variable].sets[j] = s;
+
+      cont[controller].input[variable].sets[j] = s;
     //increment the centre for next set
     centre += space;
   }
 }
 
-//initialises all rules for a given output
-void InitRules(int controller, int output) {
-  for(int i = 0; i < NUM_VARS; i++) {
-    if(cont[controller].vars[i].output != i) {
-      for(int j = 0; j < NUM_SETS; j++) {
+void InitSingletons(int controller, int numSingletons) {
+  for(int i = 0; i < numSingletons; i++) {
+    random = GetRandInt(cont[controller].output.low, cont[controller].output.high);
+    cont[controller].output.singles[i] = random;
+  }
+}
 
-        for(int k = 0; k < NUM_VARS; k++) {
-          if(cont[controller].vars[k].output != k && i != k) {
-            for(int l = 0; l < NUM_SETS; l++) {
-              random = GetRandInt(0, NUM_SETS);
-              Rule r = {i, j, "AND", k, l, output, random};
-              cont[controller].rules[currentRule] = r;
-              currentRule++;
-            }
-          }
+//initialises all rules for a given output
+void InitRules(int controller) {
+  int currentRule = 0;
+  for(int i = 0; i < NUM_INPUT; i++) {
+    for(int j = i; j < NUM_INPUT; j++) {
+      for(int k = 0; k < NUM_SETS; k++) {
+        for(int l = 0; l < NUM_SETS; l++) {
+          Rule r = {i, j,"AND", k, l, currentRule };
+          cont[controller].rules[currentRule] = r;
+          currentRule++;
         }
       }
     }
   }
 }
+
 //@TODO: THIS NEEDS A RE-WRITE (DAFUQ WAS I DOING?)
 //evaluate all rules that have a single output
-float EvaluateRules(int controller, int outputID) {
-  int variable, res1, res2, result, rcount = 0;
+float EvaluateRules(int controller) {
+  int  res1, res2, rcount = 0;
+  int returnValue = 0;
+  float variable;
   for(int i = 0; i < NUM_RULES; i++) {
-    if(cont[controller].rules[i].outputvar = outputID) {
+    res1 = EvaluateSet(controller, cont[controller].rules[i].inputvar, cont[controller].rules[i].inputset, cont[controller].input[cont[controller].rules[i].inputvar].value);
+    res2 = EvaluateSet(controller, cont[controller].rules[i].inputvar2, cont[controller].rules[i].inputset2, cont[controller].input[cont[controller].rules[i].inputvar].value);
 
+    //decide on the value to pass to output
+    if(cont[controller].rules[i].modifier.compare("AND") == 0) {
+        if(res1 < res2)
+          variable = res1;
+        else
+          variable = res2;
+    }
+    else if(cont[controller].rules[i].modifier.compare("OR") == 0) {
+        if(res1 > res2)
+          variable = res1;
+        else
+          variable = res2;
+    }
+    //add result
+    int r = EvaluateOutput( controller, cont[controller].rules[i].output, variable);
+    if(r > 0) {
       rcount++;
-      res1 = EvaluateSet(controller, cont[controller].rules[i].inputvar, cont[controller].rules[i].inputset);
-      res2 = EvaluateSet(controller, cont[controller].rules[i].inputvar2, cont[controller].rules[i].inputset2);
-
-      //decide on the value to pass to output
-      if(cont[controller].rules[i].modifier.compare("AND") == 0) {
-          if(res1 < res2)
-            variable = res1;
-          else
-            variable = res2;
-      }
-      else if(cont[controller].rules[i].modifier.compare("OR") == 0) {
-          if(res1 > res2)
-            variable = res1;
-          else
-            variable = res2;
-      }
-      cont[controller].vars[cont[controller].rules[i].outputvar].value = variable;
-      //add result
-      result += EvaluateSet(controller,  cont[controller].rules[i].outputvar, cont[controller].rules[i].outputset);
-
+      returnValue += r;
     }
   }
-  return result / rcount;
+   float temp = returnValue / rcount;
+   /*cout << returnValue;
+   cout << " ";
+   cout << rcount;
+   cout << " ";
+   cout << temp;
+   cout << "\n";
+*/
+
+   return temp;
 }
 
 //@TODO: repalce sets[setID] with a pointer
-float EvaluateSet(int controller, int inputVar, int setID) {
-  float variable = cont[controller].vars[inputVar].value;
-  Set set = cont[controller].vars[inputVar].sets[setID];
-  if(variable > set.leftBase - set.centreX && variable < set.rightBase + set.centreX)
+float EvaluateSet(int controller, int inputVar, int setID, int variable) {
+  Set set = cont[controller].input[inputVar].sets[setID];
+  if(variable > (set.leftBase - set.centreX) && variable < (set.rightBase + set.centreX))
     if(variable < set.centreX)
       if(variable < set.leftTop - set.centreX)
         return Intersect(set.leftBase, 0, set.leftTop, set.height, variable);
@@ -173,57 +179,65 @@ float EvaluateSet(int controller, int inputVar, int setID) {
     return 0;
 }
 
+float EvaluateOutput(int controller, int singleton, float scale) {
+return scale * cont[controller].output.singles[singleton];
+}
+
 void BreedControllers() {
   //select highest half and breed them
-  Controller parents[ANCESTOR];
-  int count, avg = 0;
+  Controller *parents;
+  parents = new Controller[ANCESTOR];
+  int count = 0;
+  int avg = 0;
 
   //find the average score
   for(int i = 0; i < POP; i++)
     avg += cont[i].score;
 
   avg /= POP;
-
   //get all controllers with >= avg score
   for(int i = 0; i < POP; i++) {
-    if(cont[i].score >= avg && count < ANCESTOR) {
+    if(cont[i].score >= avg) {
       parents[count] = cont[i];
       count++;
+      if(count > ANCESTOR)
+        break;
     }
   }
-
   //if the average didn't give enough parents, add some more randomly
   if(count < ANCESTOR){
     for(int i = count; i < ANCESTOR; i++){
-      parents[i] = cont[GetRandInt(0,POP)];
+      parents[i] = cont[GetRandInt(0,POP-1)];
     }
   }
-
   int c = 0;
   //breed the parents
-  for(int i = 0; i < POP/2; i += 2) {
+  for(int i = 0; i < ANCESTOR; i++) {
+    //save the parents
+    if(c < (POP -1))
+      cont[++c] = parents[i];
+    if(c < (POP -1))
+      cont[++c] = parents[i + 1];
 
-  //save the parents
-  cont[++c] = parents[i];
-  cont[++c] = parents[i + 1];
+    //create two children from two parents
+    if(c < (POP -1))
+      cont[++c] = parents[i];
+    if(c < (POP -1))
+    cont[++c] = parents[i + 1];
 
-  //create two children from two parents
-  cont[++c] = parents[i];
-  cont[++c] = parents[i + 1];
+    //get the id's of the children
+    int id1 = c;
+    int id2 = c - 1;
 
+    //parent mutation, twice for extra variation
+    ParentMutation(id1, id2);
+    ParentMutation(id1, id2);
 
-  //get the id's of the children
-  int id1 = c;
-  int id2 = c - 1;
-
-
-  //parent mutation, twice for extra variation
-  ParentMutation(id1, id2);
-  ParentMutation(id1, id2);
-
-  //self mutation
-  ChildMutation(id1);
-  ChildMutation(id2);
+    //self mutation
+    ChildMutation(id1);
+    ChildMutation(id2);
+    if(c >= (POP -1))
+      return;
   }
 }
 
@@ -233,31 +247,31 @@ void ParentMutation(int id1, int id2) {
 
   //find a random var
   random = GetRandInt(0, 4);
-  int col = GetRandInt(0, NUM_VARS -1);
+  int col = GetRandInt(0, NUM_INPUT -1);
 
   switch(random) {
     case 0: //swap collections
     {
-      FuzzyVar temp = cont[id2].vars[col];
-      cont[id2].vars[col] = cont[id1].vars[col];
-      cont[id1].vars[col] = temp;
+      FuzzyVar temp = cont[id2].input[col];
+      cont[id2].input[col] = cont[id1].input[col];
+      cont[id1].input[col] = temp;
       break;
     }
     case 1: //copy collection
-      cont[id2].vars[col] = cont[id1].vars[col];
+      cont[id2].input[col] = cont[id1].input[col];
       break;
     case 2: //swap set
     {
       int set = GetRandInt(0, NUM_SETS -1);
-      Set temp = cont[id2].vars[col].sets[set];
-      cont[id2].vars[col].sets[set] = cont[id1].vars[col].sets[set];
-      cont[id1].vars[col].sets[set] = temp;
+      Set temp = cont[id2].input[col].sets[set];
+      cont[id2].input[col].sets[set] = cont[id1].input[col].sets[set];
+      cont[id1].input[col].sets[set] = temp;
       break;
     }
     case 3: //copy set
     {
       int set = GetRandInt(0, NUM_SETS -1);
-      cont[id2].vars[col].sets[set] = cont[id1].vars[col].sets[set];
+      cont[id2].input[col].sets[set] = cont[id1].input[col].sets[set];
       break;
     }
     case 4: //change rule output
@@ -265,7 +279,7 @@ void ParentMutation(int id1, int id2) {
       int rule = GetRandInt(0,NUM_RULES -1);
       Rule temp = cont[id2].rules[rule];
       int rule2 = GetRandInt(0,NUM_RULES -1);
-      cont[id2].rules[rule].outputset = cont[id1].rules[rule2].outputset;
+      cont[id2].rules[rule].output = cont[id1].rules[rule2].output;
       break;
     }
   }
@@ -274,9 +288,9 @@ void ParentMutation(int id1, int id2) {
 void ChildMutation(int id) {
   random = GetRandInt(0, 1);
   if(random == 0)
-    MutateSet(id, GetRandInt(0,NUM_VARS), GetRandInt(0,NUM_SETS));
+    MutateSet(id, GetRandInt(0,NUM_INPUT -1), GetRandInt(0,NUM_SETS -1));
   else
-    MutateRule(id, GetRandInt(0, NUM_RULES));
+    MutateRule(id, GetRandInt(0, NUM_RULES -1));
 }
 
 //@TODO:POINTER THAT SHIZ
@@ -286,34 +300,34 @@ void MutateSet(int controller, int var, int setID) {
   cont[controller].mutations++;
   switch(mut){
     case 0: //grow top
-      cont[controller].vars[var].sets[setID].leftTop -= random;
-      cont[controller].vars[var].sets[setID].rightTop += random;
+      cont[controller].input[var].sets[setID].leftTop -= random;
+      cont[controller].input[var].sets[setID].rightTop += random;
       break;
     case 1: //grow bottom
-      cont[controller].vars[var].sets[setID].leftBase -=random;
-      cont[controller].vars[var].sets[setID].rightBase +=random;
+      cont[controller].input[var].sets[setID].leftBase -=random;
+      cont[controller].input[var].sets[setID].rightBase +=random;
       break;
     case 2: //slide top
-      cont[controller].vars[var].sets[setID].leftTop +=random;
-      cont[controller].vars[var].sets[setID].rightTop +=random;
+      cont[controller].input[var].sets[setID].leftTop +=random;
+      cont[controller].input[var].sets[setID].rightTop +=random;
       break;
     case 3: //slide bottom
-      cont[controller].vars[var].sets[setID].leftBase +=random;
-      cont[controller].vars[var].sets[setID].rightBase +=random;
+      cont[controller].input[var].sets[setID].leftBase +=random;
+      cont[controller].input[var].sets[setID].rightBase +=random;
       break;
     default:
       return;
       break;
   }
   //ensure they are in bounds
-  if(cont[controller].vars[var].sets[setID].leftTop < cont[controller].vars[var].low)
-    cont[controller].vars[var].sets[setID].leftTop = cont[controller].vars[var].low;
-  if(cont[controller].vars[var].sets[setID].rightTop > cont[controller].vars[var].low)
-    cont[controller].vars[var].sets[setID].rightTop = cont[controller].vars[var].high;
-  if(cont[controller].vars[var].sets[setID].leftBase < cont[controller].vars[var].low)
-    cont[controller].vars[var].sets[setID].leftBase = cont[controller].vars[var].low;
-  if(cont[controller].vars[var].sets[setID].rightBase > cont[controller].vars[var].high)
-    cont[controller].vars[var].sets[setID].rightBase = cont[controller].vars[var].high;
+  if(cont[controller].input[var].sets[setID].leftTop < cont[controller].input[var].low)
+    cont[controller].input[var].sets[setID].leftTop = cont[controller].input[var].low;
+  if(cont[controller].input[var].sets[setID].rightTop > cont[controller].input[var].low)
+    cont[controller].input[var].sets[setID].rightTop = cont[controller].input[var].high;
+  if(cont[controller].input[var].sets[setID].leftBase < cont[controller].input[var].low)
+    cont[controller].input[var].sets[setID].leftBase = cont[controller].input[var].low;
+  if(cont[controller].input[var].sets[setID].rightBase > cont[controller].input[var].high)
+    cont[controller].input[var].sets[setID].rightBase = cont[controller].input[var].high;
 }
 
 void MutateRule(int controller, int ruleID) {
@@ -323,9 +337,9 @@ void MutateRule(int controller, int ruleID) {
   switch(mut){
     case 0: //swap the output
       do {
-        random = GetRandInt(0, NUM_SETS);
-        if(random != cont[controller].rules[ruleID].outputset) {
-        cont[controller].rules[ruleID].outputset = random;
+        random = GetRandInt(0, NUM_RULES -1);
+        if(random != cont[controller].rules[ruleID].output) {
+        cont[controller].rules[ruleID].output = random;
       }
   } while(1);
       break;

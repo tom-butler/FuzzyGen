@@ -15,14 +15,12 @@ typedef struct {
   std::string modifier;
   int inputvar2;
   int inputset2;
-  int outputvar;
-  int outputset;
+  int output;
 } Rule;
 
 //set
 typedef struct {
   int centreX;
-  int centreY;
   int height;
   int leftBase;
   int rightBase;
@@ -35,16 +33,23 @@ typedef struct {
 typedef struct {
   int low;
   int high;
-  int value;
-  int output;
+  float value;
   Set *sets;
 } FuzzyVar;
+
+typedef struct {
+  int low;
+  int high;
+  float value;
+  float *singles;
+} Singleton;
 
 //Controller
 typedef struct {
   int score;
   int mutations;
-  FuzzyVar *vars;
+  FuzzyVar *input;
+  Singleton output;
   Rule *rules;
 } Controller;
 
@@ -53,16 +58,18 @@ typedef struct {
 
 int GetRandInt(int low, int high);
 float Intersect(int x1, int y1, int x2, int y2, int input);
-void UpdateVars(int controller, int vars[]);
+void UpdateVars(int controller, float vars[]);
 void ScoreController(int controller, int score);
 //init
-void CreateControllers(int num, FuzzyVar vars[]);
+void CreateControllers(int num, FuzzyVar input[], Singleton output);
 void InitSets(int controller, int variable, int numSets);
-void InitRules(int controller, int output);
+void InitSingletons(int controller, int numSingletons);
+void InitRules(int controller);
 
 //evaluation
-float EvaluateRules(int controller, int ID);
-float EvaluateSet(int controller, int inputVar, int setID);
+float EvaluateRules(int controller);
+float EvaluateSet(int controller, int inputVar, int setID, int variable);
+float EvaluateOutput(int controller, int singleton, float scale);
 
 //breeding
 void BreedControllers();

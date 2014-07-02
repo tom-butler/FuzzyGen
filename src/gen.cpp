@@ -94,16 +94,19 @@ void InitSystem(int argc,char *argv[]) {
 
 //@TODO: THIS SHIT IS WEIRD
 void InitControllers() {
-  Print("Initialising Controllers\n");
-    FuzzyVar variables[] = {thrust, height, velocity, fuelRemaining};
-    CreateControllers(POP, variables);
+  Print("Initialising Controllers...\n");
+    CreateControllers(POP, simInput, *simOutput);
   Print("Controllers Initialised\n");
 }
 //Runs the GA until requirements met
 void GALoop() {
   for(int i = 0; i < GENERATIONS; i++) {
+    cout << "Scoring controllers...\n";
     ScoreFitnesses();
+    Print("Controllers Scored\n");
+    cout << "Breeding Controllers...\n";
     BreedControllers();
+    cout << "Controllers Bred \n";
   }
 }
 
@@ -113,10 +116,8 @@ void ScoreFitnesses() {
     InitSim();
     int result = 2;
     while(result == 2) {
-      int variables[] = {thrust.value, height.value, velocity.value, fuelRemaining.value};
-      UpdateVars(i, variables);
-      thrust.value = EvaluateRules(i, 0);
-      result = NextStep();
+      UpdateVars(i, CheckSimValues());
+      result = NextStep(EvaluateRules(i));
     }
     if(result == 0) //failed
       ScoreController(i, fuelRemaining.value /2);

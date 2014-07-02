@@ -14,9 +14,11 @@ static int VARIANCE = 3;                      //-r
 static float MUT_CHANCE = 0.3f;               //-m
 
 //fuzzy
+static int NUM_INPUT = 3;
+static int NUM_OUTPUT = 1;
 static int NUM_VARS = 4;                      //-c
 static int NUM_SETS = 3;                      //-s
-static int NUM_RULES = NUM_VARS * NUM_SETS;
+static int NUM_RULES = 54;
 static int HEIGHT = 1;                        //-h
 
 //sim
@@ -25,7 +27,7 @@ static int START_FUEL = 1000;                 //-f
 static int START_VEL = 3;                     //-v
 static int THRUST_MAX = 50;                   //-t
 static int TERMINAL_VELOCITY = START_VEL * 10;
-static int FORCE = 5;                         //-o
+static int FORCE = 3;                         //-o
 static int CRASH_SPEED = 5;                   //-x
 
 //shared
