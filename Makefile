@@ -3,8 +3,16 @@ BUILD_DIR = bin
 
 all: gen clean
 
+test: test clean
+
+test: test.o controller.o sim.o gen.o
+	g++ -o $(BUILD_DIR)\test test.o controller.o sim.o gen.o
+
 gen: gen.o controller.o sim.o
-	g++ -o $(BUILD_DIR)\test gen.o controller.o sim.o -m64
+	g++ -o $(BUILD_DIR)\gen gen.o controller.o sim.o -m64
+
+test.o: $(SRC_DIR)\test.cpp
+	g++ -c $(SRC_DIR)\test.cpp -m64
 
 gen.o: $(SRC_DIR)\gen.cpp $(SRC_DIR)\gen.h
 	g++ -c $(SRC_DIR)\gen.cpp -m64

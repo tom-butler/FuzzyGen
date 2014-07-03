@@ -54,6 +54,8 @@ typedef struct {
 } Controller;
 
 
+static Controller *cont;
+
 //functions--------------------------------------------------------------------
 
 int GetRandInt(int low, int high);

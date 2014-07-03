@@ -18,22 +18,29 @@ int NextStep(float newThrust) {
   thrust.value = newThrust;
 
   if(fuelRemaining.value > 0) {
+
     fuelRemaining.value -= thrust.value;
+
     velocity.value = velocity.value + FORCE;
+/*
+    if(thrust.value < thrust.low)
+      thrust.value = thrust.low;
+    if(thrust.value > thrust.high)
+      thrust.value = thrust.high;
+*/
     velocity.value = velocity.value - thrust.value;
-    if(velocity.value < -TERMINAL_VELOCITY)
-      velocity.value = TERMINAL_VELOCITY;
-    if(velocity.value > TERMINAL_VELOCITY)
-      velocity.value = TERMINAL_VELOCITY;
+
+    if(velocity.value < velocity.low)
+      velocity.value = velocity.low;
+    if(velocity.value > velocity.high)
+      velocity.value = velocity.high;
+
     height.value -= velocity.value;
 /*
     cout << height.value;
-    cout << " ";
-    cout << fuelRemaining.value;
-    cout << " ";
-    cout << velocity.value;
-    cout << " ";
-    cout << thrust.value;
+    cout << " " << fuelRemaining.value;
+    cout << " " << velocity.value;
+    cout << " " << thrust.value;
     cout << "\n";
 */
     if(fuelRemaining.value <= 0)

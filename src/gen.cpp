@@ -119,6 +119,7 @@ void ScoreFitnesses() {
       UpdateVars(i, f);
       result = NextStep(EvaluateRules(i));
     }
+    //cout << "\n\n";
     if(result > BEST)
       BEST = result;
     ScoreController(i, result);

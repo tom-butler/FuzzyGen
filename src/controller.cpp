@@ -5,7 +5,7 @@
 using namespace std;
 
 
-static Controller *cont;
+
 int currentRule =0;
 
 //util
@@ -123,7 +123,7 @@ void InitRules(int controller) {
         for(int l = 0; l < NUM_SETS; l++) {
           Rule r = {i, j,"AND", k, l, currentRule };
           cont[controller].rules[currentRule] = r;
-          currentRule++;
+          ++currentRule;
         }
       }
     }

@@ -7,7 +7,7 @@
 static bool DEBUG = true;                    //-d
 
 //genetic
-static int POP = 100;                         //-p
+static int POP = 10000;                         //-p
 static int GENERATIONS = 10000;                 //-g
 static int ANCESTOR = POP/2;                  //-a
 static int VARIANCE = 3;                      //-r
@@ -23,7 +23,7 @@ static int NUM_RULES = 9;
 static int HEIGHT = 1;                        //-h
 
 //sim
-static int START_HEIGHT = 1000;               //-y
+static int START_HEIGHT = 100;               //-y
 static int START_FUEL = 1000;                 //-f
 static int START_VEL = 3;                     //-v
 static int THRUST_MAX = 50;                   //-t
