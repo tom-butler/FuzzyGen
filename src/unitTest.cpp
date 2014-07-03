@@ -13,7 +13,27 @@ int main ()
   int controllerErrors = 0;
   controllerErrors += TestGetRandInt();
   controllerErrors += TestIntersect();
+  controllerErrors += TestController();
+  cout << "Testing Controller Complete\n";
 
+  cout << "Testing Genetics\n";
+  cout << "------------------\n\n";
+  int genErrors = 0;
+  cout << "Testing Genetics Complete";
+
+    cout << "Testing Simulation\n";
+  cout << "------------------\n\n";
+  int simErrors = 0;
+  cout << "Testing Simulation Complete";
+
+  cout << "Testing Complete";
+  cout << "------------------\n\n";
+  if(controllerErrors > 0)
+    cout << "Found: " << controllerErrors  << " Controller Errors\n";
+  if(genErrors > 0)
+    cout << "Found: " << genErrors  << " Genetic Errors\n";
+  if(simErrors > 0)
+    cout << "Found: " << simErrors  << " Simulation Errors\n";
 }
 
 
@@ -72,7 +92,11 @@ int TestIntersect()
     cout << "Expected " << expected << "Actual Result " << result;
     return 1;
   }
+
+  cout << "OK\n";
+  return 0;
 }
+
 int TestController()
 {
   cout << "Testing CreateController      ";
@@ -99,9 +123,23 @@ int TestController()
     return 1;
   }
 
-  if(cont[0].output.low != -50){
+  if(cont[0].output.low != -10){
     cout << "FAILED at 3\n";
     return 1;
   }
+  if(cont[0].output.high != 10){
+    cout << "FAILED at 4\n";
+    return 1;
+  }
+  if(cont[0].output.value != 0){
+    cout << "FAILED at 5\n";
+    return 1;
+  }
+  cout << "OK\n";
+  return 0;
+}
+
+int TestSets()
+{
 
 }
