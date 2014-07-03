@@ -8,17 +8,18 @@ static bool DEBUG = true;                    //-d
 
 //genetic
 static int POP = 100;                         //-p
-static int GENERATIONS = 100;                 //-g
+static int GENERATIONS = 10000;                 //-g
 static int ANCESTOR = POP/2;                  //-a
 static int VARIANCE = 3;                      //-r
 static float MUT_CHANCE = 0.3f;               //-m
+static int BEST = 0;
 
 //fuzzy
-static int NUM_INPUT = 3;
+static int NUM_INPUT = 2;
 static int NUM_OUTPUT = 1;
 static int NUM_VARS = 4;                      //-c
 static int NUM_SETS = 3;                      //-s
-static int NUM_RULES = 54;
+static int NUM_RULES = 9;
 static int HEIGHT = 1;                        //-h
 
 //sim

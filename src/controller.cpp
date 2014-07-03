@@ -69,16 +69,20 @@ void InitSets(int controller, int variable, int numSets) {
   int start = cont[controller].input[variable].low;
   int end = cont[controller].input[variable].high;
 
+
+
   int space = (end - start)  / (numSets - 1);
   int centre = start;
 
   for(int j = 0; j < numSets; ++j) {
 
-  int lbase, rbase = 0.7 * space;
-  int ltop, rtop = 0.3 * space;
+  int lbase = 0.7 * space;
+  int rbase = 0.7 * space;
+  int ltop = 0.3 * space;
+  int rtop = 0.3 * space;
 
     //check set variables for compliance
-    if(ltop - centre < start) {
+    if(centre - ltop < start) {
       ltop = centre - start;
       lbase = centre - start;
     }
@@ -86,9 +90,16 @@ void InitSets(int controller, int variable, int numSets) {
       rtop = end - centre;
       rbase = end - centre;
     }
-
+    /*
+    cout << (centre - lbase);
+    cout << " " << (centre -ltop);
+    cout << " " << centre;
+    cout << " " << (centre + rtop);
+    cout << " " << (centre + rbase);
+    cout << "\n";
+    */
     //build the set
-    Set s = {centre, HEIGHT, rbase, ltop, rtop, variable};
+    Set s = {centre, HEIGHT, lbase, rbase, ltop, rtop, variable};
 
       cont[controller].input[variable].sets[j] = s;
     //increment the centre for next set
@@ -106,9 +117,9 @@ void InitSingletons(int controller, int numSingletons) {
 //initialises all rules for a given output
 void InitRules(int controller) {
   int currentRule = 0;
-  for(int i = 0; i < NUM_INPUT; i++) {
-    for(int j = i; j < NUM_INPUT; j++) {
-      for(int k = 0; k < NUM_SETS; k++) {
+  for(int i = 0; i < NUM_INPUT; ++i) {
+    for (int j = 0; j < NUM_SETS; ++j) {
+      for(int k = i + 1; k < NUM_INPUT; ++k) {
         for(int l = 0; l < NUM_SETS; l++) {
           Rule r = {i, j,"AND", k, l, currentRule };
           cont[controller].rules[currentRule] = r;
@@ -122,8 +133,9 @@ void InitRules(int controller) {
 //@TODO: THIS NEEDS A RE-WRITE (DAFUQ WAS I DOING?)
 //evaluate all rules that have a single output
 float EvaluateRules(int controller) {
-  int  res1, res2, rcount = 0;
-  int returnValue = 0;
+  int  res1, res2 = 0;
+  float rcount = 0;
+  float returnValue = 0;
   float variable;
   for(int i = 0; i < NUM_RULES; i++) {
     res1 = EvaluateSet(controller, cont[controller].rules[i].inputvar, cont[controller].rules[i].inputset, cont[controller].input[cont[controller].rules[i].inputvar].value);
@@ -149,7 +161,14 @@ float EvaluateRules(int controller) {
       returnValue += r;
     }
   }
-   float temp = returnValue / rcount;
+  int temp = 0;
+  if(returnValue != 0 && rcount != 0)
+    temp = returnValue / rcount;
+  else
+    temp = 0;
+  return temp;
+
+
    /*cout << returnValue;
    cout << " ";
    cout << rcount;
@@ -158,19 +177,19 @@ float EvaluateRules(int controller) {
    cout << "\n";
 */
 
-   return temp;
 }
 
 //@TODO: repalce sets[setID] with a pointer
 float EvaluateSet(int controller, int inputVar, int setID, int variable) {
   Set set = cont[controller].input[inputVar].sets[setID];
-  if(variable > (set.leftBase - set.centreX) && variable < (set.rightBase + set.centreX))
-    if(variable < set.centreX)
-      if(variable < set.leftTop - set.centreX)
+  //check if it is inside the set
+  if(variable > (set.centreX - set.leftBase) && variable < (set.rightBase + set.centreX))
+    if(variable < set.centreX) //left
+      if(variable < set.centreX - set.leftTop)
         return Intersect(set.leftBase, 0, set.leftTop, set.height, variable);
       else //variable > leftTop - centreX
         return set.height;
-    else //variable > centreX
+    else //right or centre
       if(variable > set.rightTop + set.centreX)
         return Intersect(set.rightBase, 0, set.rightTop, set.height, variable);
       else
@@ -185,25 +204,30 @@ return scale * cont[controller].output.singles[singleton];
 
 void BreedControllers() {
   //select highest half and breed them
-  Controller *parents;
-  parents = new Controller[ANCESTOR];
+
+
+
+  Controller parents[ANCESTOR];
   int count = 0;
   int avg = 0;
 
   //find the average score
-  for(int i = 0; i < POP; i++)
+  for(int i = 0; i < POP; i++) {
     avg += cont[i].score;
+  }
+  if(avg != 0)
+    avg /= POP;
 
-  avg /= POP;
   //get all controllers with >= avg score
   for(int i = 0; i < POP; i++) {
     if(cont[i].score >= avg) {
       parents[count] = cont[i];
       count++;
-      if(count > ANCESTOR)
+      if(count >= ANCESTOR -1)
         break;
     }
   }
+
   //if the average didn't give enough parents, add some more randomly
   if(count < ANCESTOR){
     for(int i = count; i < ANCESTOR; i++){
@@ -212,7 +236,8 @@ void BreedControllers() {
   }
   int c = 0;
   //breed the parents
-  for(int i = 0; i < ANCESTOR; i++) {
+
+  for(int i = 0; i < POP; i += 2) {
     //save the parents
     if(c < (POP -1))
       cont[++c] = parents[i];
@@ -226,8 +251,9 @@ void BreedControllers() {
     cont[++c] = parents[i + 1];
 
     //get the id's of the children
-    int id1 = c;
-    int id2 = c - 1;
+    int id1 = c - 1;
+    int id2 = c;
+
 
     //parent mutation, twice for extra variation
     ParentMutation(id1, id2);
@@ -236,6 +262,7 @@ void BreedControllers() {
     //self mutation
     ChildMutation(id1);
     ChildMutation(id2);
+
     if(c >= (POP -1))
       return;
   }
@@ -243,12 +270,12 @@ void BreedControllers() {
 
 //mutation
 void ParentMutation(int id1, int id2) {
+
   //randomly merge two genes
 
   //find a random var
   random = GetRandInt(0, 4);
   int col = GetRandInt(0, NUM_INPUT -1);
-
   switch(random) {
     case 0: //swap collections
     {
@@ -283,6 +310,7 @@ void ParentMutation(int id1, int id2) {
       break;
     }
   }
+
 }
 
 void ChildMutation(int id) {

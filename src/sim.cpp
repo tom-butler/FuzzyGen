@@ -7,13 +7,14 @@ void InitSim() {
   velocity.value = START_VEL;
   fuelRemaining.value = START_FUEL;
 }
-float* CheckSimValues() {
-  float *vars = new float[NUM_INPUT];
-vars[0] = height.value;
-vars[1] = velocity.value;
-return vars;
+float GetInputValue(int i) {
+  if(i == 0)
+    return height.value;
+  if(i == 1)
+    return velocity.value;
 }
 int NextStep(float newThrust) {
+
   thrust.value = newThrust;
 
   if(fuelRemaining.value > 0) {
@@ -25,22 +26,24 @@ int NextStep(float newThrust) {
     if(velocity.value > TERMINAL_VELOCITY)
       velocity.value = TERMINAL_VELOCITY;
     height.value -= velocity.value;
-    /*
+/*
     cout << height.value;
     cout << " ";
     cout << fuelRemaining.value;
     cout << " ";
     cout << velocity.value;
+    cout << " ";
+    cout << thrust.value;
     cout << "\n";
-    */
+*/
     if(fuelRemaining.value <= 0)
       return 0; //fail
     else if(height.value <= 0 && velocity.value < CRASH_SPEED)
-      return 1; //succeed
+      return fuelRemaining.value; //succeed
     else if(height.value <= 0)
       return 0; //fail
     else
-      return 2; //continue
+      return -1; //continue
   }
   else
     return 0;

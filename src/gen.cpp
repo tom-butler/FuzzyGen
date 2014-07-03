@@ -14,14 +14,8 @@ int main(int argc, char *argv[])
   GALoop();
 }
 
-void Print(string msg)
-{
-  if(DEBUG)
-    cout << msg;
-}
-
 void InitSystem(int argc,char *argv[]) {
-  Print("Initialising System...\n");
+  cout << "Initialising System...\n";
   //loop through and set any defined options
   int c;
   while((c = getopt(argc, argv, "pgarmcshyfvt0x:")) != -1) {
@@ -89,39 +83,44 @@ void InitSystem(int argc,char *argv[]) {
     TERMINAL_VELOCITY = START_VEL * 10;
     NUM_RULES = NUM_VARS * NUM_SETS;
   }
-  Print("System Initialised\n");
+  cout << "System Initialised\n";
 }
 
 //@TODO: THIS SHIT IS WEIRD
 void InitControllers() {
-  Print("Initialising Controllers...\n");
+  cout << "Initialising Controllers...\n";
     CreateControllers(POP, simInput, *simOutput);
-  Print("Controllers Initialised\n");
+  cout << "Controllers Initialised\n";
 }
 //Runs the GA until requirements met
 void GALoop() {
   for(int i = 0; i < GENERATIONS; i++) {
+    cout << "\nGeneration " << i;
+    cout << "\n";
     cout << "Scoring controllers...\n";
     ScoreFitnesses();
-    Print("Controllers Scored\n");
+    cout << "Controllers Scored\n";
+    cout << "Best Score " << BEST;
+    cout << "\n";
     cout << "Breeding Controllers...\n";
     BreedControllers();
     cout << "Controllers Bred \n";
   }
+  cout << "Complete\n";
 }
 
 //Scores each genotype
 void ScoreFitnesses() {
   for(int i = 0; i < POP; i++) {
     InitSim();
-    int result = 2;
-    while(result == 2) {
-      UpdateVars(i, CheckSimValues());
+    int result = -1;
+    while(result == -1) {
+      float f[] = {GetInputValue(1), GetInputValue(2)};
+      UpdateVars(i, f);
       result = NextStep(EvaluateRules(i));
     }
-    if(result == 0) //failed
-      ScoreController(i, fuelRemaining.value /2);
-    if(result == 1)
-      ScoreController(i, fuelRemaining.value);
+    if(result > BEST)
+      BEST = result;
+    ScoreController(i, result);
   }
 }
