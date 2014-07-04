@@ -1,16 +1,26 @@
-@TODO:
-check if 3 output sets are enough, or if a number of output sets (one for each rule) is better.
+ABOUT
+~~~~~
+FuzzyGen
+Version 0.5
+Written by Tom Butler
+with assistance from Robert Cox
 
 
-@BROKEN:
 
+DEVELOPMENT INSTALLATION
+~~~~~~~~~~~~~~~~~~~~~~~~
+-install MinGW-w64 found here: http://sourceforge.net/projects/mingw-w64/
+-add the /bin folder to your system path variable
+-download freeGlut MinGW package found here: http://www.transmissionzero.co.uk/software/freeglut-devel/
+-place freeglut/bin/x64/freeeglut.dll in the mingw64/bin folder
+-place freeglut/include/GL in mingw64/include
+-place contents of freeglut/lib in mingw64/lib
 
+-check Makefile for the correct path in gui and gui.o
 
-@Breed:
-swap collection
-copy collection
-swap set
-copy set
-change rule output
+BUILDING
+~~~~~~~~
+make will build the cmd version
+make t will build the cmd test version
+make g will build the gui test version
 
-@Mutate
