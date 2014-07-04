@@ -7,6 +7,25 @@
 
 using namespace std;
 
+void keyboard(unsigned char key, int x, int y);
+void display(void);
+
+int main(int argc, char *argv[])
+{
+  glutInit(&argc, argv);
+  glutCreateWindow("FuzzyGen Gui");
+  glutKeyboardFunc(&keyboard);
+  glutDisplayFunc(&display);
+  InitSystem(argc, argv);
+  InitControllers();
+  GALoop();
+}
+
+void display()
+{
+
+}
+
 void InitSystem(int argc,char *argv[]) {
   cout << "Initialising System...\n";
   //loop through and set any defined options
