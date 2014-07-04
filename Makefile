@@ -25,10 +25,10 @@ test.o: $(CMD_DIR)\test.cpp
 
 #GRAPHICAL USER INTERFACE
 gui: gui.o gen.o controller.o sim.o
-	g++ -o $(BUILD_DIR)\gui gui.o gen.o controller.o guisim.o -m64 -L"C:\Program Files\mingw-w64\freeglut\lib\x64" -lfreeglut -lopengl32 -Wl,--subsystem,windows
+	g++ -o $(BUILD_DIR)\gui gui.o gen.o controller.o sim.o -m64 -L"C:\Program Files\mingw-w64\x86_64-4.9.0-posix-sjlj-rt_v3-rev2\mingw64\lib\x64" -lfreeglut -lopengl32 -Wl,--subsystem,windows
 
 gui.o: $(GUI_DIR)\gui.cpp $(GUI_DIR)\gui.h
-	g++ -c $(GUI_DIR)\gui.cpp -m64 -D FREEGLUT_STATIC -I"C:\Program Files\Common Files\MinGW\freeglut\include"
+	g++ -c $(GUI_DIR)\gui.cpp -m64 -D FREEGLUT_STATIC -I"C:\Program Files\mingw-w64\x86_64-4.9.0-posix-sjlj-rt_v3-rev2\mingw64\include"
 
 #SHARED OBJECTS
 gen.o: $(OBJ_DIR)\gen.cpp $(OBJ_DIR)\gen.h

@@ -1,10 +1,6 @@
-#include "gen.h"
-#include "sim.h"
-#include "controller.h"
-#include <iostream>
-#include <GetOpt.h>
-#include <stdlib.h>
-
+#include "gui.h"
+#include "..\objects\gen.h"
+#include <GL\glut.h>
 using namespace std;
 
 void keyboard(unsigned char key, int x, int y);
@@ -12,128 +8,40 @@ void display(void);
 
 int main(int argc, char *argv[])
 {
+  //Init GLUT
   glutInit(&argc, argv);
   glutCreateWindow("FuzzyGen Gui");
   glutKeyboardFunc(&keyboard);
   glutDisplayFunc(&display);
-  InitSystem(argc, argv);
-  InitControllers();
-  GALoop();
+  glutMainLoop();
+
+  return EXIT_SUCCESS;
+  //INIT FuzzyGen
+  //InitSystem(argc, argv);
+  //InitControllers();
 }
 
-void display()
+void keyboard(unsigned char key, int x, int y)
 {
-
-}
-
-void InitSystem(int argc,char *argv[]) {
-  cout << "Initialising System...\n";
-  //loop through and set any defined options
-  int c;
-  while((c = getopt(argc, argv, "pgarmcshyfvt0x:")) != -1) {
-    switch(c){
-      //system
-      case 'd':
-        DEBUG = true;
-        break;
-      //GENETIC
-      case 'p':
-        POP = atoi(optarg);
-        ANCESTOR = POP/2;
-        break;
-      case 'g':
-        GENERATIONS = atoi(optarg);
-        break;
-      case 'a':
-        ANCESTOR = atoi(optarg);
-        break;
-      case 'r':
-        VARIANCE = atoi(optarg);
-        break;
-      case 'm':
-        MUT_CHANCE = atoi(optarg);
-        break;
-
-      //fuzzy
-      case 'c':
-        NUM_VARS = atoi(optarg);
-        break;
-      case 's':
-        NUM_SETS = atoi(optarg);
-        break;
-      case 'h':
-        HEIGHT = atoi(optarg);
-        break;
-
-      //sim
-      case 'y':
-        START_HEIGHT = atoi(optarg);
-        break;
-      case 'f':
-        START_FUEL = atoi(optarg);
-        break;
-      case 't':
-        THRUST_MAX = atoi(optarg);
-        break;
-      case 'v':
-        START_VEL = atoi(optarg);
-        break;
-      case 'o':
-        FORCE = atoi(optarg);
-        break;
-      case 'x':
-        CRASH_SPEED = atoi(optarg);
-        break;
-      case '?':
-        cout << "Bad option -" << c;
-        break;
-      default:
-        cout << "Option -" << c << " does not exist";
-        break;
-    }
-    //re-caclulate after change
-    TERMINAL_VELOCITY = START_VEL * 10;
-    NUM_RULES = NUM_VARS * NUM_SETS;
+  switch (key)
+  {
+    case '\x1B': //exit key
+      exit(EXIT_SUCCESS);
+      break;
   }
-  cout << "System Initialised\n";
 }
 
-//@TODO: THIS SHIT IS WEIRD
-void InitControllers() {
-  cout << "Initialising Controllers...\n";
-    CreateControllers(POP, simInput, *simOutput);
-  cout << "Controllers Initialised\n";
-}
-//Runs the GA until requirements met
-void GALoop() {
-  for(int i = 0; i < GENERATIONS; i++) {
-    cout << "\nGeneration " << i;
-    cout << "\n";
-    cout << "Scoring controllers...\n";
-    ScoreFitnesses();
-    cout << "Controllers Scored\n";
-    cout << "Best Score " << BEST;
-    cout << "\n";
-    cout << "Breeding Controllers...\n";
-    BreedControllers();
-    cout << "Controllers Bred \n";
-  }
-  cout << "Complete\n";
-}
+void display() {
+  glClear(GL_COLOR_BUFFER_BIT);
 
-//Scores each genotype
-void ScoreFitnesses() {
-  for(int i = 0; i < POP; i++) {
-    InitSim();
-    int result = -1;
-    while(result == -1) {
-      float f[] = {GetInputValue(1), GetInputValue(2)};
-      UpdateVars(i, f);
-      result = NextStep(EvaluateRules(i));
-    }
-    //cout << "\n\n";
-    if(result > BEST)
-      BEST = result;
-    ScoreController(i, result);
-  }
+  glColor3f(1.0f, 0.0f, 0.0f);
+
+  glBegin(GL_POLYGON);
+    glVertex2f(-0.5f, -0.5f);
+    glVertex2f( 0.5f, -0.5f);
+    glVertex2f( 0.5f,  0.5f);
+    glVertex2f(-0.5f,  0.5f);
+  glEnd();
+
+  glFlush();
 }
