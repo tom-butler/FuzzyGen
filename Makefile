@@ -1,37 +1,46 @@
-SRC_DIR = src
 BUILD_DIR = bin
+CMD_DIR = src\cmd
 GUI_DIR = src\gui
+OBJ_DIR = src\objects
 
-all: gen clean
+all: cmd clean
 
 t: test clean
 
 g: gui clean
 
-gen: gen.o controller.o sim.o
-	g++ -o $(BUILD_DIR)\gen gen.o controller.o sim.o -m64
+#CMD BUILD
+cmd: cmd.o gen.o controller.o sim.o
+	g++ -o $(BUILD_DIR)\cmd cmd.o gen.o controller.o sim.o -m64
 
+cmd.o: $(CMD_DIR)\cmd.cpp
+	g++ -c $(CMD_DIR)\cmd.cpp -m64
+
+#TEST BUILD
 test: test.o controller.o sim.o gen.o
 	g++ -o $(BUILD_DIR)\test test.o controller.o sim.o gen.o
 
-gui: gen.o controller.o guisim.o
-	g++ -o $(BUILD_DIR)\gui gen.o controller.o guisim.o -m64 -L"C:\Program Files\mingw-w64\freeglut\lib\x64" -lfreeglut -lopengl32 -Wl,--subsystem,windows
+test.o: $(CMD_DIR)\test.cpp
+	g++ -c $(CMD_DIR)\test.cpp -m64
 
-test.o: $(SRC_DIR)\test.cpp
-	g++ -c $(SRC_DIR)\test.cpp -m64
+#GRAPHICAL USER INTERFACE
+gui: gui.o gen.o controller.o sim.o
+	g++ -o $(BUILD_DIR)\gui gui.o gen.o controller.o guisim.o -m64 -L"C:\Program Files\mingw-w64\freeglut\lib\x64" -lfreeglut -lopengl32 -Wl,--subsystem,windows
 
-gen.o: $(SRC_DIR)\gen.cpp $(SRC_DIR)\gen.h
-	g++ -c $(SRC_DIR)\gen.cpp -m64
+gui.o: $(GUI_DIR)\gui.cpp $(GUI_DIR)\gui.h
+	g++ -c $(GUI_DIR)\gui.cpp -m64 -D FREEGLUT_STATIC -I"C:\Program Files\Common Files\MinGW\freeglut\include"
 
-controller.o: $(SRC_DIR)\controller.cpp $(SRC_DIR)\controller.h
-	g++ -c $(SRC_DIR)\controller.cpp -m64
+#SHARED OBJECTS
+gen.o: $(OBJ_DIR)\gen.cpp $(OBJ_DIR)\gen.h
+	g++ -c $(OBJ_DIR)\gen.cpp -m64
 
-sim.o: $(SRC_DIR)\sim.cpp $(SRC_DIR)\sim.h
-	g++ -c $(SRC_DIR)\sim.cpp -m64
+controller.o: $(OBJ_DIR)\controller.cpp $(OBJ_DIR)\controller.h
+	g++ -c $(OBJ_DIR)\controller.cpp -m64
 
-guisim.o: $(SRC_DIR)\sim.cpp $(GUI_DIR)\sim.h
-	g++ -c -o guisim.o $(SRC_DIR)\sim.cpp -m64 -D FREEGLUT_STATIC -I"C:\Program Files\Common Files\MinGW\freeglut\include"
+sim.o: $(OBJ_DIR)\sim.cpp $(OBJ_DIR)\sim.h
+	g++ -c $(OBJ_DIR)\sim.cpp -m64
 
+#UTIL FUNCTIONS
 .PHONY : clean
 clean:
 	del *.o
