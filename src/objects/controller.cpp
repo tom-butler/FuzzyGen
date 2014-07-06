@@ -4,13 +4,31 @@
 
 using namespace std;
 
+static int random;
+
 //util
+int GetRandInt(int low, int high);
+float Intersect(int x1, int y1, int x2, int y2, int input);
+void resetAccumulator(int controller, int numSingletons);
+//init
+void InitSets(int controller, int variable, int numSets);
+void InitRules(int controller);
+//evaluate
+float EvaluateSet(int controller, int inputVar, int setID, int variable);
+float EvaluateOutput(int controller);
+//mutate
+void ParentMutation(int id1, int id2);
+void ChildMutation(int id);
+void MutateCollection(int id);
+void MutateSet(int controller, int var, int setID);
+void MutateRule(int controller, int ruleID);
+
+//get a random integer between two low and high
 int GetRandInt(int low, int high){
   return rand() % (high - low) + low;
 }
 
 //find the intersection of two lines
-//@TODO: check if parallel lines picks the highest point
 float Intersect(int x1, int y1, int x2, int y2, int input) {
   int m, b;
   //find line equation y = mx + b
@@ -25,14 +43,15 @@ float Intersect(int x1, int y1, int x2, int y2, int input) {
   return m * input + b;
 }
 
-void UpdateVars(int controller, float newValues[]) {
-  for(int i = 0; i < NUM_INPUT; i++) {
-    cont[controller].input[i].value = newValues[i];
-  }
-}
+//clean the controller accumulator variable
+void resetAccumulator(int controller) {
+  delete[] cont[controller].output.value;
+  delete[] cont[controller].output.scale;
 
-void ScoreController(int controller, int score) {
-  cont[controller].score = score;
+  cont[controller].output.value = new float[NUM_RULES];
+  cont[controller].output.scale = new float[NUM_RULES];
+
+  cont[controller].output.active = 0;
 }
 
 //initialisation
@@ -101,15 +120,7 @@ void InitSets(int controller, int variable, int numSets) {
   }
 }
 
-void resetAccumulator(int controller) {
-  delete[] cont[controller].output.value;
-  delete[] cont[controller].output.scale;
 
-  cont[controller].output.value = new float[NUM_RULES];
-  cont[controller].output.scale = new float[NUM_RULES];
-
-  cont[controller].output.active = 0;
-}
 
 //initialises all rules for a given output
 void InitRules(int controller) {
@@ -130,7 +141,8 @@ void InitRules(int controller) {
 
 //@TODO: THIS NEEDS A RE-WRITE (DAFUQ WAS I DOING?)
 //evaluate all rules that have a single output
-float EvaluateRules(int controller) {
+void EvaluateRules(int controller) {
+  resetAccumulator(controller);
   int  res1, res2 = 0;
   float rcount = 0;
   float returnValue = 0;
@@ -167,7 +179,7 @@ float EvaluateRules(int controller) {
    cout << temp;
    cout << "\n";
 */
-   return EvaluateOutput(controller);
+  EvaluateOutput(controller);
 }
 
 //@TODO: repalce sets[setID] with a pointer
@@ -189,7 +201,7 @@ float EvaluateSet(int controller, int inputVar, int setID, int variable) {
     return 0;
 }
 
-float EvaluateOutput(int controller) {
+void EvaluateOutput(int controller) {
   if(cont[controller].output.active == 0)
     return 0.0f;
 
@@ -199,7 +211,6 @@ float EvaluateOutput(int controller) {
   }
   total /= cont[controller].output.active;
   cont[controller].output.output = total;
-  return total;
 }
 
 void BreedControllers() {

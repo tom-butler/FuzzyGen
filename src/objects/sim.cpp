@@ -2,10 +2,11 @@
 #include <iostream>
 using namespace std;
 
-void InitSim() {
-  height.value = START_HEIGHT;
-  velocity.value = START_VEL;
-  fuelRemaining.value = START_FUEL;
+void InitSim(int controller) {
+  thrust =  &cont[controller].output.output;
+  height =  &cont[controller].input[0].value;
+  velocity = &cont[controller].input[1].value;
+  fuel = &cont[controller].score;
 }
 float GetInputValue(int i) {
   if(i == 0)
@@ -15,30 +16,25 @@ float GetInputValue(int i) {
 }
 int NextStep(int controller) {
 
-  float thrust = cont[controller].output.output;
-  float fuel * cont[controller].input[]
-  float velocity *
+  if(*fuel > 0) {
 
+    *fuel -= *thrust;
 
-  if(fuel > 0) {
-
-    fuel -= thrust;
-
-    velocity.value = velocity.value + FORCE;
+    *velocity = *velocity + FORCE;
 /*
     if(thrust.value < thrust.low)
       thrust.value = thrust.low;
     if(thrust.value > thrust.high)
       thrust.value = thrust.high;
 */
-    velocity.value = velocity.value - thrust;
+    *velocity = *velocity - *thrust;
 
-    if(velocity.value < velocity.low)
-      velocity.value = velocity.low;
-    if(velocity.value > velocity.high)
-      velocity.value = velocity.high;
+    if(*velocity < 0)
+      *velocity = 0;
+    if(*velocity > TERMINAL_VELOCITY)
+      *velocity = TERMINAL_VELOCITY;
 
-    height.value -= velocity.value;
+    *height -= *velocity;
 /*
     cout << height.value;
     cout << " " << fuelRemaining.value;
@@ -46,12 +42,14 @@ int NextStep(int controller) {
     cout << " " << thrust.value;
     cout << "\n";
 */
-    if(fuelRemaining.value <= 0)
+    if(*fuel <= 0)
       return 0; //fail
-    else if(height.value <= 0 && velocity.value < CRASH_SPEED)
-      return fuelRemaining.value; //succeed
-    else if(height.value <= 0)
+    else if(*height <= 0 && *velocity < CRASH_SPEED)
+      return 0; //succeed
+    else if(*height <= 0) {
+      *fuel = -1;
       return 0; //fail
+    }
     else
       return -1; //continue
   }

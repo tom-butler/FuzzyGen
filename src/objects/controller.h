@@ -56,32 +56,13 @@ typedef struct {
 } Controller;
 
 
-static Controller *cont;
-
 //functions--------------------------------------------------------------------
 
-int GetRandInt(int low, int high);
-float Intersect(int x1, int y1, int x2, int y2, int input);
-void UpdateVars(int controller, float vars[]);
-void ScoreController(int controller, int score);
-//init
 void CreateControllers(int num, FuzzyVar input[], Accumulator output);
-void InitSets(int controller, int variable, int numSets);
-void resetAccumulator(int controller, int numSingletons);
-void InitRules(int controller);
 
-//evaluation
-float EvaluateRules(int controller);
-float EvaluateSet(int controller, int inputVar, int setID, int variable);
-float EvaluateOutput(int controller);
+void EvaluateRules(int controller);
 
-//breeding
 void BreedControllers();
 
-void ParentMutation(int id1, int id2);
-void ChildMutation(int id);
-void MutateCollection(int id);
-void MutateSet(int controller, int var, int setID);
-void MutateRule(int controller, int ruleID);
 
 #endif

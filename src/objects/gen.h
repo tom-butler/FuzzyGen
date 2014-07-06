@@ -32,7 +32,7 @@ static int FORCE = 3;                         //-o
 static int CRASH_SPEED = 5;                   //-x
 
 //shared
-static int random;
+static Controller *cont;
 
 //functions
 void Print(std::string error);

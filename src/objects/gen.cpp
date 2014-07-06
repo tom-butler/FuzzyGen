@@ -105,16 +105,16 @@ void GALoop() {
 //Scores each genotype
 void ScoreFitnesses() {
   for(int i = 0; i < POP; i++) {
-    InitSim();
+    InitSim(i);
     int result = -1;
     while(result == -1) {
-      float f[] = {GetInputValue(1), GetInputValue(2)};
-      UpdateVars(i, f);
-      result = NextStep(EvaluateRules(i));
+      EvaluateRules(i)
+      result = NextStep(i);
     }
     //cout << "\n\n";
-    if(result > BEST)
+    if(result > BEST){
       BEST = result;
-    ScoreController(i, result);
+      BEST_CONT = i;
+    }
   }
 }
