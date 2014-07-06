@@ -20,6 +20,5 @@ static float velocity *;
 static float fuel *;
 
 void InitSim();
-float GetInputValue(int i);
 int NextStep(float newThrust);
 #endif

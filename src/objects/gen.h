@@ -35,10 +35,8 @@ static int CRASH_SPEED = 5;                   //-x
 static Controller *cont;
 
 //functions
-void Print(std::string error);
-void InitGen();
 void InitSystem(int argc, char *argv[]);
 void InitControllers();
-void GALoop();
 void ScoreFitnesses();
+void Breed();
 #endif

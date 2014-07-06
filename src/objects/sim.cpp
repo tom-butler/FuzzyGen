@@ -8,12 +8,6 @@ void InitSim(int controller) {
   velocity = &cont[controller].input[1].value;
   fuel = &cont[controller].score;
 }
-float GetInputValue(int i) {
-  if(i == 0)
-    return height.value;
-  if(i == 1)
-    return velocity.value;
-}
 int NextStep(int controller) {
 
   if(*fuel > 0) {

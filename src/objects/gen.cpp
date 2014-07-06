@@ -81,25 +81,7 @@ void InitSystem(int argc,char *argv[]) {
 
 //@TODO: THIS SHIT IS WEIRD
 void InitControllers() {
-  cout << "Initialising Controllers...\n";
     CreateControllers(POP, simInput, *simOutput);
-  cout << "Controllers Initialised\n";
-}
-//Runs the GA until requirements met
-void GALoop() {
-  for(int i = 0; i < GENERATIONS; i++) {
-    cout << "\nGeneration " << i;
-    cout << "\n";
-    cout << "Scoring controllers...\n";
-    ScoreFitnesses();
-    cout << "Controllers Scored\n";
-    cout << "Best Score " << BEST;
-    cout << "\n";
-    cout << "Breeding Controllers...\n";
-    BreedControllers();
-    cout << "Controllers Bred \n";
-  }
-  cout << "Complete\n";
 }
 
 //Scores each genotype
@@ -117,4 +99,8 @@ void ScoreFitnesses() {
       BEST_CONT = i;
     }
   }
+}
+
+void Breed() {
+  BreedControllers();
 }
