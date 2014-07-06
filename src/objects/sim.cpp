@@ -13,13 +13,16 @@ float GetInputValue(int i) {
   if(i == 1)
     return velocity.value;
 }
-int NextStep(float newThrust) {
+int NextStep(int controller) {
 
-  thrust.value = newThrust;
+  float thrust = cont[controller].output.output;
+  float fuel * cont[controller].input[]
+  float velocity *
 
-  if(fuelRemaining.value > 0) {
 
-    fuelRemaining.value -= thrust.value;
+  if(fuel > 0) {
+
+    fuel -= thrust;
 
     velocity.value = velocity.value + FORCE;
 /*
@@ -28,7 +31,7 @@ int NextStep(float newThrust) {
     if(thrust.value > thrust.high)
       thrust.value = thrust.high;
 */
-    velocity.value = velocity.value - thrust.value;
+    velocity.value = velocity.value - thrust;
 
     if(velocity.value < velocity.low)
       velocity.value = velocity.low;

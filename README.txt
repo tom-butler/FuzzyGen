@@ -4,7 +4,7 @@ FuzzyGen
 Version 0.5
 Written by Tom Butler
 with assistance from Robert Cox
-
+Lander image is creative commons: source: http://historicspacecraft.com/Lunar_Module.html
 
 
 DEVELOPMENT INSTALLATION

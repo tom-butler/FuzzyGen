@@ -4,10 +4,6 @@
 
 using namespace std;
 
-
-
-int currentRule =0;
-
 //util
 int GetRandInt(int low, int high){
   return rand() % (high - low) + low;
@@ -40,7 +36,7 @@ void ScoreController(int controller, int score) {
 }
 
 //initialisation
-void CreateControllers(int num_controllers, FuzzyVar input[], Singleton output) {
+void CreateControllers(int num_controllers, FuzzyVar input[], Accumulator output) {
    cont = new Controller[num_controllers];
    for(int i = 0; i < num_controllers;i++) {
 
@@ -54,8 +50,8 @@ void CreateControllers(int num_controllers, FuzzyVar input[], Singleton output) 
 
     //create output singletons
     cont[i].output = output;
-    cont[i].output.singles = new float[NUM_RULES];
-    InitSingletons(i, NUM_RULES);
+    cont[i].output.value = new float[NUM_RULES];
+    cont[i].output.scale = new float[NUM_RULES];
 
     //make some rules
     cont[i].rules = new Rule[NUM_RULES];
@@ -68,8 +64,6 @@ void InitSets(int controller, int variable, int numSets) {
   //create initial variables
   int start = cont[controller].input[variable].low;
   int end = cont[controller].input[variable].high;
-
-
 
   int space = (end - start)  / (numSets - 1);
   int centre = start;
@@ -107,11 +101,14 @@ void InitSets(int controller, int variable, int numSets) {
   }
 }
 
-void InitSingletons(int controller, int numSingletons) {
-  for(int i = 0; i < numSingletons; i++) {
-    random = GetRandInt(cont[controller].output.low, cont[controller].output.high);
-    cont[controller].output.singles[i] = random;
-  }
+void resetAccumulator(int controller) {
+  delete[] cont[controller].output.value;
+  delete[] cont[controller].output.scale;
+
+  cont[controller].output.value = new float[NUM_RULES];
+  cont[controller].output.scale = new float[NUM_RULES];
+
+  cont[controller].output.active = 0;
 }
 
 //initialises all rules for a given output
@@ -121,7 +118,8 @@ void InitRules(int controller) {
     for (int j = 0; j < NUM_SETS; ++j) {
       for(int k = i + 1; k < NUM_INPUT; ++k) {
         for(int l = 0; l < NUM_SETS; l++) {
-          Rule r = {i, j,"AND", k, l, currentRule };
+          int output = GetRandInt(cont[controller].output.low,cont[controller].output.high);
+          Rule r = {i, j,"AND", k, l, output};
           cont[controller].rules[currentRule] = r;
           ++currentRule;
         }
@@ -155,19 +153,12 @@ float EvaluateRules(int controller) {
           variable = res2;
     }
     //add result
-    int r = EvaluateOutput( controller, cont[controller].rules[i].output, variable);
-    if(r > 0) {
-      rcount++;
-      returnValue += r;
+    if(variable > 0) {
+      cont[controller].output.scale[cont[controller].output.active] = variable;
+      cont[controller].output.value[cont[controller].output.active] = cont[controller].rules[i].output;
+      cont[controller].output.active++;
     }
   }
-  int temp = 0;
-  if(returnValue != 0 && rcount != 0)
-    temp = returnValue / rcount;
-  else
-    temp = 0;
-  return temp;
-
 
    /*cout << returnValue;
    cout << " ";
@@ -176,7 +167,7 @@ float EvaluateRules(int controller) {
    cout << temp;
    cout << "\n";
 */
-
+   return EvaluateOutput(controller);
 }
 
 //@TODO: repalce sets[setID] with a pointer
@@ -198,15 +189,21 @@ float EvaluateSet(int controller, int inputVar, int setID, int variable) {
     return 0;
 }
 
-float EvaluateOutput(int controller, int singleton, float scale) {
-return scale * cont[controller].output.singles[singleton];
+float EvaluateOutput(int controller) {
+  if(cont[controller].output.active == 0)
+    return 0.0f;
+
+  float total = 0.0f;
+  for(int i = 0; i < cont[controller].output.active; i++) {
+   total += cont[controller].output.scale[i] * cont[controller].output.value[i];
+  }
+  total /= cont[controller].output.active;
+  cont[controller].output.output = total;
+  return total;
 }
 
 void BreedControllers() {
   //select highest half and breed them
-
-
-
   Controller parents[ANCESTOR];
   int count = 0;
   int avg = 0;

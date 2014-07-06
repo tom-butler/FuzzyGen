@@ -40,16 +40,18 @@ typedef struct {
 typedef struct {
   int low;
   int high;
-  float value;
-  float *singles;
-} Singleton;
+  float output;
+  int active;
+  float *value;
+  float *scale;
+} Accumulator;
 
 //Controller
 typedef struct {
   int score;
   int mutations;
   FuzzyVar *input;
-  Singleton output;
+  Accumulator output;
   Rule *rules;
 } Controller;
 
@@ -63,15 +65,15 @@ float Intersect(int x1, int y1, int x2, int y2, int input);
 void UpdateVars(int controller, float vars[]);
 void ScoreController(int controller, int score);
 //init
-void CreateControllers(int num, FuzzyVar input[], Singleton output);
+void CreateControllers(int num, FuzzyVar input[], Accumulator output);
 void InitSets(int controller, int variable, int numSets);
-void InitSingletons(int controller, int numSingletons);
+void resetAccumulator(int controller, int numSingletons);
 void InitRules(int controller);
 
 //evaluation
 float EvaluateRules(int controller);
 float EvaluateSet(int controller, int inputVar, int setID, int variable);
-float EvaluateOutput(int controller, int singleton, float scale);
+float EvaluateOutput(int controller);
 
 //breeding
 void BreedControllers();
