@@ -1,3 +1,4 @@
+#include "..\settings.h"
 #include "..\objects\gen.h"
 #include "..\objects\controller.h"
 
@@ -57,7 +58,7 @@ void display() {
 
   //load
   if(STATE == 1) {
-    InitSim(BEST);
+    InitSimulation(BEST);
     result = -1;
     STATE = 2;
   }

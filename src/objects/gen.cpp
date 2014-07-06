@@ -1,3 +1,4 @@
+#include "controller.h"
 #include "gen.h"
 #include "sim.h"
 
@@ -83,7 +84,7 @@ void InitSystem(int argc,char *argv[]) {
 void InitControllers() {
     CreateControllers(POP, simInput, *simOutput);
 }
-void InitSim(int controller) {
+void InitSimulation(int controller) {
   InitSim(controller);
 }
 

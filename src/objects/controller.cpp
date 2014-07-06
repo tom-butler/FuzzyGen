@@ -1,4 +1,6 @@
+#include "..\settings.h"
 #include "controller.h"
+#include "gen.h"
 #include <iostream>
 #include <stdlib.h>
 
@@ -15,7 +17,7 @@ void InitSets(int controller, int variable, int numSets);
 void InitRules(int controller);
 //evaluate
 float EvaluateSet(int controller, int inputVar, int setID, int variable);
-float EvaluateOutput(int controller);
+void EvaluateOutput(int controller);
 //mutate
 void ParentMutation(int id1, int id2);
 void ChildMutation(int id);
@@ -203,7 +205,7 @@ float EvaluateSet(int controller, int inputVar, int setID, int variable) {
 
 void EvaluateOutput(int controller) {
   if(cont[controller].output.active == 0)
-    return 0.0f;
+    return;
 
   float total = 0.0f;
   for(int i = 0; i < cont[controller].output.active; i++) {

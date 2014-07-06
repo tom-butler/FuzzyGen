@@ -49,5 +49,4 @@ int NextStep(int controller) {
   }
   else
     return 0;
-
 }

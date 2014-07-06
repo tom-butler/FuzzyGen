@@ -2,6 +2,7 @@
 #define SIM_H
 
 #include "controller.h"
+#include "..\settings.h"
 
 //sim init vars
 static Accumulator thrustSet = {-THRUST_MAX, THRUST_MAX, 0, 0 , 0};
@@ -17,8 +18,8 @@ static FuzzyVar * simFitness = &fuelSet;
 static float * thrust;
 static float * height;
 static float * velocity;
-static float * fuel;
+static int * fuel;
 
-void InitSim();
-int NextStep(float newThrust);
+void InitSim(int controller);
+int NextStep(int controller);
 #endif
