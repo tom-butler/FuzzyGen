@@ -9,10 +9,21 @@ int main(int argc, char *argv[])
 }
 
 void GALoop() {
-  for (int i = 0; i < GENERATIONS; i++) {
-    ScoreFitnesses();
+  for (int g = 0; g < GENERATIONS; g++) {
+    for(int c = 0; c < POP; c++) {
+      initSim(i);
+      int result = -1;
+      while(result == -1) {
+        result = RunSim();
+      }
+      //cout << "\n\n";
+      if(result > BEST){
+        BEST = result;
+        BEST_CONT = i;
+      }
+    }
     Breed();
-    cout << "GEN " << i;
+    cout << "GEN " << g;
     cout << " BEST " << BEST;
     cout << "\n";
   }

@@ -1,4 +1,3 @@
-#include "gui.h"
 #include "..\objects\gen.h"
 #include "..\objects\controller.h"
 
@@ -17,9 +16,10 @@ void keyboard(unsigned char key, int x, int y);
 void display(void);
 
 //draw functions
+void draw();
 void drawSim(float y, float thrust);
-void drawPlot(float x, float y, std::string text);
-void drawSingleton(float x, float y);
+void drawPlot(float x, float y, string text);
+void drawAccumulator(float x, float y, Accumulator output);
 void drawCollection(float x, float y, FuzzyVar collection);
 
 int main(int argc, char *argv[])
@@ -34,6 +34,7 @@ int main(int argc, char *argv[])
   InitSystem(argc, argv);
   InitControllers();
 
+  STATE = 1;
   glutMainLoop();
 
   return EXIT_SUCCESS;
@@ -56,35 +57,34 @@ void display() {
 
   //load
   if(STATE == 1) {
-    InitSim();
+    InitSim(BEST);
+    result = -1;
+    STATE = 2;
   }
 
-  //draw
+  //run
   if(STATE == 2) {
+    result = RunSim(BEST);
     glClear(GL_COLOR_BUFFER_BIT);
     draw();
     glutSwapBuffers();
-  }
-
-  //breed
-  if(STATE == 3) {
-
+    if(result != -1)
+      STATE = 3;
   }
 }
 void draw() {
     //DRAW PLOTS
-  glColor3f(1.0f, 0.0f, 0.0f);
-  //draw plot
   drawPlot(0, 0.5f, "Velocity:");
-  drawPlot(0, 0, "Height:");
-  drawPlot(0, -0.5f, "Thrust:");
-  drawPlot(0, -0.999, "Output:");
+  drawCollection(0,0.5f, cont[CONT].input[0]);
 
-  //fill plot
-  for(int i = 0; i < NUM_INPUT; i++){
-    drawCollection(cont[CONT].input[i]);
-  }
-  drawSingleton()
+  drawPlot(0, 0, "Height:");
+  drawCollection(0,0.5f, cont[CONT].input[1]);
+
+  //drawPlot(0, -0.5f, "Thrust:");
+  //drawCollection(0,0.5f, cont[CONT].input[0]);
+
+  drawPlot(0, -0.999, "Output:");
+  drawAccumulator(0, -0.999, cont[CONT].output);
 
   //DRAW SIM
   drawSim(height, 0.0f);
@@ -171,7 +171,7 @@ void drawSim(float y, float thrust) {
 
 }
 void drawPlot(float x, float y, string text){
-
+  glColor3f(1.0f, 0.0f, 0.0f);
   //write title
   glRasterPos2f(x + 0.002f, y + 0.45f);
   glutBitmapString(GLUT_BITMAP_8_BY_13, (const unsigned char *) text.c_str());
@@ -190,11 +190,17 @@ void drawPlot(float x, float y, string text){
 
 }
 
-void drawSingleton(float x, float y) {
-  glBegin(GL_LINES);
-    glVertex2f(-0.5f, -0.5f);
-    glVertex2f(-0.5f, 0.5f);
-  glEnd();
+void drawAccumulator(float x, float y, Accumulator output) {
+  float xScale = 1.0f / output.high;
+  glColor3f(1.0f, 1.0f, 1.0f);
+
+  for (int i = 0; i < output.active; i++) {
+    float xPos = x + output.value[i] * xScale;
+    glBegin(GL_LINES);
+      glVertex2f(xPos, y + output.scale[i]);
+      glVertex2f(xPos, y);
+    glEnd();
+  }
 }
 
 void drawCollection(float x, float y, FuzzyVar collection) {

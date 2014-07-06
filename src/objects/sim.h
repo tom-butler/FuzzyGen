@@ -14,10 +14,10 @@ static Accumulator * simOutput = &thrustSet;
 static FuzzyVar * simFitness = &fuelSet;
 
 //sim runtime vars
-static float thrust *;
-static float height *;
-static float velocity *;
-static float fuel *;
+static float * thrust;
+static float * height;
+static float * velocity;
+static float * fuel;
 
 void InitSim();
 int NextStep(float newThrust);

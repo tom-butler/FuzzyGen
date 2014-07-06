@@ -1,6 +1,6 @@
 #include "gen.h"
 #include "sim.h"
-#include "controller.h"
+
 #include <iostream>
 #include <GetOpt.h>
 #include <stdlib.h>
@@ -83,22 +83,13 @@ void InitSystem(int argc,char *argv[]) {
 void InitControllers() {
     CreateControllers(POP, simInput, *simOutput);
 }
+void InitSim(int controller) {
+  InitSim(controller);
+}
 
-//Scores each genotype
-void ScoreFitnesses() {
-  for(int i = 0; i < POP; i++) {
-    InitSim(i);
-    int result = -1;
-    while(result == -1) {
-      EvaluateRules(i)
-      result = NextStep(i);
-    }
-    //cout << "\n\n";
-    if(result > BEST){
-      BEST = result;
-      BEST_CONT = i;
-    }
-  }
+int RunSim(int controller) {
+    EvaluateRules(controller);
+    return NextStep(controller);
 }
 
 void Breed() {
