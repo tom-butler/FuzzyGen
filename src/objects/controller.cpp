@@ -58,7 +58,6 @@ void resetAccumulator(int controller) {
 
 //initialisation
 void CreateControllers(int num_controllers, FuzzyVar input[], Accumulator output) {
-   cont = new Controller[num_controllers];
    for(int i = 0; i < num_controllers;i++) {
 
     //create input sets

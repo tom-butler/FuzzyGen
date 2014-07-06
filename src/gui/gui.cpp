@@ -10,7 +10,7 @@ using namespace std;
 
 static float height = 1.0f;
 static int CONT = 0;
-static int STATE = 0; //0 init, 1 load, 2 draw, 3 breed
+static int STATE = 0;
 static int result = -1;
 
 void keyboard(unsigned char key, int x, int y);

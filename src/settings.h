@@ -5,33 +5,33 @@
 #include <string>
 //options-------------------------------------------
 //system
-static bool DEBUG = true;                    //-d
+extern bool DEBUG = true;                    //-d
 
 //genetic
-static int POP = 10000;                       //-p
-static int GENERATIONS = 10000;               //-g
-static int ANCESTOR = POP/2;                  //-a
-static int VARIANCE = 3;                      //-r
-static float MUT_CHANCE = 0.3f;               //-m
-static int BEST = 0;
-static int BEST_CONT = 0;
+extern int POP = 10000;                       //-p
+extern int GENERATIONS = 10000;               //-g
+extern int ANCESTOR = POP/2;                  //-a
+extern int VARIANCE = 3;                      //-r
+extern float MUT_CHANCE = 0.3f;               //-m
+extern int BEST = 0;
+extern int BEST_CONT = 0;
 
 //fuzzy
-static int NUM_INPUT = 2;
-static int NUM_OUTPUT = 1;
-static int NUM_VARS = 4;                      //-c
-static int NUM_SETS = 3;                      //-s
-static int NUM_RULES = 9;
-static int HEIGHT = 1;                        //-h
+extern int NUM_INPUT = 2;
+extern int NUM_OUTPUT = 1;
+extern int NUM_VARS = 4;                      //-c
+extern int NUM_SETS = 3;                      //-s
+extern int NUM_RULES = 9;
+extern int HEIGHT = 1;                        //-h
 
 //sim
-static int START_HEIGHT = 100;               //-y
-static int START_FUEL = 1000;                 //-f
-static int START_VEL = 3;                     //-v
-static int THRUST_MAX = 50;                   //-t
-static int TERMINAL_VELOCITY = START_VEL * 10;
-static int FORCE = 3;                         //-o
-static int CRASH_SPEED = 5;                   //-x
+extern int START_HEIGHT = 100;               //-y
+extern int START_FUEL = 1000;                 //-f
+extern int START_VEL = 3;                     //-v
+extern int THRUST_MAX = 50;                   //-t
+extern int TERMINAL_VELOCITY = START_VEL * 10;
+extern int FORCE = 3;                         //-o
+extern int CRASH_SPEED = 5;                   //-x
 
 //rule
 typedef struct {
@@ -80,6 +80,6 @@ typedef struct {
   Rule *rules;
 } Controller;
 
-static Controller *cont;
+extern Controller *cont;
 
 #endif

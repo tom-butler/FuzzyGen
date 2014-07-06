@@ -1,9 +1,13 @@
 #include "sim.h"
+#include "..\settings.h"
 #include <iostream>
 using namespace std;
 
 void InitSim(int controller) {
+  cout << cont[controller].input[0].value;
+
   thrust =  &cont[controller].output.output;
+
   height =  &cont[controller].input[0].value;
   velocity = &cont[controller].input[1].value;
   fuel = &cont[controller].score;
