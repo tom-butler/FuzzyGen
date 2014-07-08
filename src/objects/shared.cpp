@@ -6,7 +6,6 @@
 
 using namespace std;
   //define the global variables
-  bool DEBUG = true;                    //-d
 
   //genetic
   int POP = 10000;                       //-p
@@ -53,10 +52,6 @@ void InitSystem(int argc,char *argv[]) {
   int c;
   while((c = getopt(argc, argv, "pgarmcshyfvt0x:")) != -1) {
     switch(c){
-      //system
-      case 'd':
-        DEBUG = true;
-        break;
       //GENETIC
       case 'p':
         POP = atoi(optarg);

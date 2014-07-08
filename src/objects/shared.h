@@ -1,6 +1,5 @@
-#ifndef SETTINGS_H
-#define SETTINGS_H
-
+#ifndef SHARED_H
+#define SHARED_H
 
 #include <string>
 
@@ -54,7 +53,6 @@ typedef struct {
 
 
 //options-------------------------------------------
-//system
 
 //genetic
 extern int POP;                       //-p
