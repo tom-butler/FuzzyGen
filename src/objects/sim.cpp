@@ -1,7 +1,13 @@
 #include "sim.h"
-#include "..\settings.h"
+#include "shared.h"
 #include <iostream>
 using namespace std;
+
+//sim runtime vars
+float * thrust;
+float * height;
+float * velocity;
+int * fuel;
 
 void InitSim(int controller) {
   cout << cont[controller].input[0].value;

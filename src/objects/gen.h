@@ -1,8 +1,6 @@
 #ifndef GEN_H
 #define GEN_H
 
-#include <string>
-#include "controller.h"
 //shared
 
 //functions

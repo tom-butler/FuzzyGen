@@ -1,4 +1,4 @@
-#include "..\settings.h"
+#include "shared.h"
 #include "controller.h"
 #include "gen.h"
 #include <iostream>

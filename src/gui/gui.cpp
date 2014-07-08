@@ -1,4 +1,4 @@
-#include "..\settings.h"
+#include "..\objects\shared.h"
 #include "..\objects\gen.h"
 #include "..\objects\controller.h"
 
@@ -26,14 +26,15 @@ void drawCollection(float x, float y, FuzzyVar collection);
 int main(int argc, char *argv[])
 {
   //Init GLUT
+  InitSystem(argc, argv);
+  InitControllers();
+
   glutInit(&argc, argv);
   glutInitWindowSize(800, 600);
   glutCreateWindow("FuzzyGen Gui");
   glutKeyboardFunc(&keyboard);
   glutDisplayFunc(&display);
 
-  InitSystem(argc, argv);
-  InitControllers();
 
   STATE = 1;
   glutMainLoop();

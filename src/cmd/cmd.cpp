@@ -1,6 +1,6 @@
 #include <iostream>
 #include "..\objects\gen.h"
-#include "..\settings.h"
+#include "..\objects\shared.h"
 
 using namespace std;
 
