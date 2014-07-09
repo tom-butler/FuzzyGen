@@ -209,7 +209,7 @@ void drawAccumulator(float x, float y,string name, Accumulator output) {
   for (int i = 0; i < output.active; i++) {
     float xPos = x + output.value[i] * xScale;
     glBegin(GL_LINES);
-      glVertex2f(xPos, y + output.scale[i] / (output.high * 2 ));
+      glVertex2f(xPos, y + output.scale[i] / 2);
       glVertex2f(xPos, y);
     glEnd();
   }

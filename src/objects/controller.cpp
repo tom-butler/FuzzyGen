@@ -202,7 +202,7 @@ void EvaluateRules(int controller) {
 float EvaluateSet(int controller, int inputVar, int setID, int variable) {
   Set set = cont[controller].input[inputVar].sets[setID];
   //check if it is inside the set
-  if(variable > (set.centreX - set.leftBase) && variable < (set.rightBase + set.centreX))
+  if(variable >= (set.centreX - set.leftBase) && variable <= ( set.centreX + set.rightBase))
     if(variable < set.centreX) //left
       if(variable < set.centreX - set.leftTop)
         return Intersect(set.leftBase, 0, set.leftTop, set.height, variable);
@@ -210,7 +210,7 @@ float EvaluateSet(int controller, int inputVar, int setID, int variable) {
         return set.height;
     else //right or centre
       if(variable > set.centreX + set.rightTop)
-        return Intersect(set.rightBase, 0, set.rightTop, set.height, variable);
+        return Intersect(set.rightTop, set.height, set.rightBase,0 , variable);
       else
         return set.height;
   else
