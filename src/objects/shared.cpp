@@ -8,7 +8,7 @@ using namespace std;
   //define the global variables
 
   //genetic
-  int POP = 10000;                       //-p
+  int POP = 1000;                       //-p
   int GENERATIONS = 10000;               //-g
   int ANCESTOR = POP/2;                  //-a
   int VARIANCE = 3;                      //-r

@@ -11,13 +11,16 @@ static int random;
 //util
 int GetRandInt(int low, int high);
 float Intersect(int x1, int y1, int x2, int y2, int input);
-void resetAccumulator(int controller, int numSingletons);
+
 //init
+void ResetVariables(int controller, FuzzyVar input[]);
 void InitSets(int controller, int variable, int numSets);
 void InitRules(int controller);
+
 //evaluate
 float EvaluateSet(int controller, int inputVar, int setID, int variable);
 void EvaluateOutput(int controller);
+
 //mutate
 void ParentMutation(int id1, int id2);
 void ChildMutation(int id);
@@ -46,7 +49,7 @@ float Intersect(int x1, int y1, int x2, int y2, int input) {
 }
 
 //clean the controller accumulator variable
-void resetAccumulator(int controller) {
+void ResetAccumulator(int controller) {
   delete[] cont[controller].output.value;
   delete[] cont[controller].output.scale;
 
@@ -62,6 +65,10 @@ void CreateControllers(int num_controllers, FuzzyVar input[], Accumulator output
 
     //create input sets
     cont[i].input = input;
+    //copy(std::begin(cont[i].input),std::end(cont[i].input),std::begin(input));
+
+    memcpy(cont[i].input,input,NUM_INPUT);
+
     for(int j = 0; j < NUM_INPUT; j++)
     {
       cont[i].input[j].sets = new Set[NUM_SETS];
@@ -70,13 +77,25 @@ void CreateControllers(int num_controllers, FuzzyVar input[], Accumulator output
 
     //create output singletons
     cont[i].output = output;
+
     cont[i].output.value = new float[NUM_RULES];
     cont[i].output.scale = new float[NUM_RULES];
 
-    //make some rules
+    //make some Rules
     cont[i].rules = new Rule[NUM_RULES];
+
+    //give it an initial score
+    cont[i].score = START_FUEL;
     InitRules(i);
   }
+}
+
+void ResetVariables(int controller, FuzzyVar input[]){
+  for(int i = 0; i < NUM_INPUT; i++) {
+    cont[controller].input[i].value = input[i].value;
+  }
+
+  cont[controller].score = START_FUEL;
 }
 
 //@TODO: REPLACE MULTIPLE ARRAY CALLS WITH POINTER
@@ -143,7 +162,7 @@ void InitRules(int controller) {
 //@TODO: THIS NEEDS A RE-WRITE (DAFUQ WAS I DOING?)
 //evaluate all rules that have a single output
 void EvaluateRules(int controller) {
-  resetAccumulator(controller);
+  ResetAccumulator(controller);
   int  res1, res2 = 0;
   float rcount = 0;
   float returnValue = 0;
@@ -230,6 +249,8 @@ void BreedControllers() {
   //get all controllers with >= avg score
   for(int i = 0; i < POP; i++) {
     if(cont[i].score >= avg) {
+      //we only reset the ones that we want to keep
+      ResetVariables(i, simInput);
       parents[count] = cont[i];
       count++;
       if(count >= ANCESTOR -1)

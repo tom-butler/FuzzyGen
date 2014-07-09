@@ -8,19 +8,18 @@
 
 using namespace std;
 
-//@TODO: THIS SHIT IS WEIRD
 void InitControllers() {
-    cont = new Controller[POP];
-    CreateControllers(POP, simInput, *simOutput);
-    cout << cont[0].score;
+  cont = new Controller[POP];
+  CreateControllers(POP, simInput, *simOutput);
 }
+
 void InitSimulation(int controller) {
   InitSim(controller);
 }
 
 int RunSim(int controller) {
-    EvaluateRules(controller);
-    return NextStep(controller);
+  EvaluateRules(controller);
+  return NextStep(controller);
 }
 
 void Breed() {

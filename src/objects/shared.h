@@ -3,6 +3,12 @@
 
 #include <string>
 
+//singleton
+typedef struct {
+  float value;
+  float scale;
+} singleton;
+
 //rule
 typedef struct {
   int inputvar;

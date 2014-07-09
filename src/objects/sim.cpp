@@ -9,28 +9,29 @@ float * height;
 float * velocity;
 int * fuel;
 
+void tearDown();
+
+void Kill(float **ptr)
+{
+  if ((*ptr) != NULL)
+  {
+    delete (*ptr);
+  *ptr=NULL;
+  }
+}
+
 void InitSim(int controller) {
-  cout << cont[controller].input[0].value;
-
   thrust =  &cont[controller].output.output;
-
   height =  &cont[controller].input[0].value;
   velocity = &cont[controller].input[1].value;
   fuel = &cont[controller].score;
+cout << "e";
 }
 int NextStep(int controller) {
-
+  cout << "3";
   if(*fuel > 0) {
-
     *fuel -= *thrust;
-
     *velocity = *velocity + FORCE;
-/*
-    if(thrust.value < thrust.low)
-      thrust.value = thrust.low;
-    if(thrust.value > thrust.high)
-      thrust.value = thrust.high;
-*/
     *velocity = *velocity - *thrust;
 
     if(*velocity < 0)
@@ -40,18 +41,21 @@ int NextStep(int controller) {
 
     *height -= *velocity;
 /*
-    cout << height.value;
-    cout << " " << fuelRemaining.value;
-    cout << " " << velocity.value;
-    cout << " " << thrust.value;
+    cout << *height;
+    cout << " " << *fuel;
+    cout << " " << *velocity;
+    cout << " " << *thrust;
     cout << "\n";
 */
-    if(*fuel <= 0)
+    if(*fuel <= 0.0f) {
       return 0; //fail
-    else if(*height <= 0 && *velocity < CRASH_SPEED)
-      return 0; //succeed
-    else if(*height <= 0) {
-      *fuel = -1;
+    }
+    else if(*height <= 0.0f && *velocity < CRASH_SPEED) {
+            return 0; //succeed
+    }
+    else if(*height <= 0.0f) {
+            *fuel = -1;
+
       return 0; //fail
     }
     else
@@ -59,4 +63,14 @@ int NextStep(int controller) {
   }
   else
     return 0;
+}
+void tearDown() {
+  delete(thrust);
+  delete(height);
+  delete(velocity);
+  delete(fuel);
+  thrust = NULL;
+  height = NULL;
+  velocity = NULL;
+  fuel = NULL;
 }
