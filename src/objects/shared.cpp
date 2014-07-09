@@ -8,35 +8,35 @@ using namespace std;
   //define the global variables
 
   //genetic
-  int POP = 1000;                       //-p
-  int GENERATIONS = 10000;               //-g
-  int ANCESTOR = POP/2;                  //-a
-  int VARIANCE = 3;                      //-r
+  short int POP = 1000;                       //-p
+  short int GENERATIONS = 10000;               //-g
+  short int ANCESTOR = POP/2;                  //-a
+  short int VARIANCE = 3;                      //-r
   float MUT_CHANCE = 0.3f;               //-m
-  int BEST = 0;
-  int BEST_CONT = 0;
+  short int BEST = 0;
+  short int BEST_CONT = 0;
 
   //fuzzy
-  int NUM_INPUT = 2;
-  int NUM_OUTPUT = 1;
-  int NUM_VARS = 4;                      //-c
-  int NUM_SETS = 3;                      //-s
-  int NUM_RULES = 9;
-  int HEIGHT = 1;                        //-h
+  short int NUM_INPUT = 2;
+  short int NUM_OUTPUT = 1;
+  short int NUM_VARS = 4;                      //-c
+  short int NUM_SETS = 3;                      //-s
+  short int NUM_RULES = 9;
+  short int HEIGHT = 1;                        //-h
 
   //sim
-  int START_HEIGHT = 100;               //-y
-  int START_FUEL = 1000;                 //-f
-  int START_VEL = 3;                     //-v
-  int THRUST_MAX = 50;                   //-t
-  int TERMINAL_VELOCITY = START_VEL * 10;
-  int FORCE = 3;                         //-o
-  int CRASH_SPEED = 5;                   //-x
+  short int START_HEIGHT = 1000;               //-y
+  short int START_FUEL = 500;                 //-f
+  short int START_VEL = 3;                     //-v
+  short int THRUST_MAX = 5;                   //-t
+  short int TERMINAL_VELOCITY = START_VEL * 10;
+  short int FORCE = 3;                         //-o
+  short int CRASH_SPEED = 5;                   //-x
 
   //sim init vars
-  static Accumulator thrustSet = {-THRUST_MAX, THRUST_MAX, 0, 0 , 0};
+  static Accumulator thrustSet = {0, THRUST_MAX, 0.f, 0, 0, 0};
   static FuzzyVar heightSet = {0, START_HEIGHT, START_HEIGHT, 0};
-  static FuzzyVar velocitySet = {TERMINAL_VELOCITY, TERMINAL_VELOCITY, START_VEL, 0};
+  static FuzzyVar velocitySet = {-TERMINAL_VELOCITY, TERMINAL_VELOCITY, START_VEL, 0};
   static FuzzyVar fuelSet = {0, START_FUEL, START_FUEL, 0};
 
   FuzzyVar simInput[2] = {heightSet, velocitySet};

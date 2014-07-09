@@ -11,46 +11,45 @@ typedef struct {
 
 //rule
 typedef struct {
-  int inputvar;
-  int inputset;
+  short int inputvar;
+  short int inputset;
   std::string modifier;
-  int inputvar2;
-  int inputset2;
-  int output;
+  short int inputvar2;
+  short int inputset2;
+  short int output;
 } Rule;
 
 //set
 typedef struct {
-  int centreX;
-  int height;
-  int leftBase;
-  int rightBase;
-  int leftTop;
-  int rightTop;
-  int variable;
+  short int height;
+  short int centreX;
+  short int leftBase;
+  short int rightBase;
+  short int leftTop;
+  short int rightTop;
 } Set;
 
 //var
 typedef struct {
-  int low;
-  int high;
+  short int low;
+  short int high;
   float value;
   Set *sets;
 } FuzzyVar;
 
 typedef struct {
-  int low;
-  int high;
+  short int low;
+  short int high;
   float output;
-  int active;
+  short int active;
   float *value;
   float *scale;
 } Accumulator;
 
 //Controller
 typedef struct {
-  int score;
-  int mutations;
+  short int score;
+  short int mutations;
   FuzzyVar *input;
   Accumulator output;
   Rule *rules;
@@ -61,30 +60,29 @@ typedef struct {
 //options-------------------------------------------
 
 //genetic
-extern int POP;                       //-p
-extern int GENERATIONS;               //-g
-extern int ANCESTOR;                  //-a
-extern int VARIANCE;                  //-r
+extern short int POP;                       //-p
+extern short int GENERATIONS;               //-g
+extern short int ANCESTOR;                  //-a
+extern short int VARIANCE;                  //-r
 extern float MUT_CHANCE;              //-m
-extern int BEST;
-extern int BEST_CONT;
+extern short int BEST;
+extern short int BEST_CONT;
 
 //fuzzy
-extern int NUM_INPUT;
-extern int NUM_OUTPUT;
-extern int NUM_VARS;                   //-c
-extern int NUM_SETS;                   //-s
-extern int NUM_RULES;
-extern int HEIGHT;                     //-h
+extern short int NUM_INPUT;
+extern short int NUM_VARS;                   //-c
+extern short int NUM_SETS;                   //-s
+extern short int NUM_RULES;
+extern short int HEIGHT;                     //-h
 
 //sim
-extern int START_HEIGHT;               //-y
-extern int START_FUEL;                 //-f
-extern int START_VEL;                  //-v
-extern int THRUST_MAX;                 //-t
-extern int TERMINAL_VELOCITY;
-extern int FORCE;                      //-o
-extern int CRASH_SPEED;                //-x
+extern short int START_HEIGHT;               //-y
+extern short int START_FUEL;                 //-f
+extern short int START_VEL;                  //-v
+extern short int THRUST_MAX;                 //-t
+extern short int TERMINAL_VELOCITY;
+extern short int FORCE;                      //-o
+extern short int CRASH_SPEED;                //-x
 
 extern FuzzyVar simInput[2];
 extern Accumulator * simOutput;

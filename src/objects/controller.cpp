@@ -9,12 +9,12 @@ using namespace std;
 static int random;
 
 //util
-int GetRandInt(int low, int high);
+short int GetRandInt(short int low, short int high);
 float Intersect(int x1, int y1, int x2, int y2, int input);
 
 //init
 void ResetVariables(int controller, FuzzyVar input[]);
-void InitSets(int controller, int variable, int numSets);
+void InitSets(int controller, int variable,short int numSets);
 void InitRules(int controller);
 
 //evaluate
@@ -29,7 +29,7 @@ void MutateSet(int controller, int var, int setID);
 void MutateRule(int controller, int ruleID);
 
 //get a random integer between two low and high
-int GetRandInt(int low, int high){
+short int GetRandInt(short int low, short int high){
   return rand() % (high - low) + low;
 }
 
@@ -64,10 +64,8 @@ void CreateControllers(int num_controllers, FuzzyVar input[], Accumulator output
    for(int i = 0; i < num_controllers;i++) {
 
     //create input sets
-    cont[i].input = input;
-    //copy(std::begin(cont[i].input),std::end(cont[i].input),std::begin(input));
-
-    memcpy(cont[i].input,input,NUM_INPUT);
+    cont[i].input = new FuzzyVar[NUM_INPUT];
+    copy(input,input+NUM_INPUT, cont[i].input);
 
     for(int j = 0; j < NUM_INPUT; j++)
     {
@@ -83,7 +81,6 @@ void CreateControllers(int num_controllers, FuzzyVar input[], Accumulator output
 
     //make some Rules
     cont[i].rules = new Rule[NUM_RULES];
-
     //give it an initial score
     cont[i].score = START_FUEL;
     InitRules(i);
@@ -99,20 +96,19 @@ void ResetVariables(int controller, FuzzyVar input[]){
 }
 
 //@TODO: REPLACE MULTIPLE ARRAY CALLS WITH POINTER
-void InitSets(int controller, int variable, int numSets) {
+void InitSets(int controller, int variable,short int numSets) {
   //create initial variables
-  int start = cont[controller].input[variable].low;
-  int end = cont[controller].input[variable].high;
+  short int start = cont[controller].input[variable].low;
+  short int end = cont[controller].input[variable].high;
 
-  int space = (end - start)  / (numSets - 1);
-  int centre = start;
+  short int space = (end - start)  / (numSets - 1);
+  short int centre = start;
+  for(int j = 0; j < numSets; j++) {
 
-  for(int j = 0; j < numSets; ++j) {
-
-  int lbase = 0.7 * space;
-  int rbase = 0.7 * space;
-  int ltop = 0.3 * space;
-  int rtop = 0.3 * space;
+  short int lbase = 0.7 * space;
+  short int rbase = 0.7 * space;
+  short int ltop = 0.3 * space;
+  short int rtop = 0.3 * space;
 
     //check set variables for compliance
     if(centre - ltop < start) {
@@ -123,16 +119,16 @@ void InitSets(int controller, int variable, int numSets) {
       rtop = end - centre;
       rbase = end - centre;
     }
-    /*
+/*
     cout << (centre - lbase);
     cout << " " << (centre -ltop);
     cout << " " << centre;
     cout << " " << (centre + rtop);
     cout << " " << (centre + rbase);
     cout << "\n";
-    */
+*/
     //build the set
-    Set s = {centre, HEIGHT, lbase, rbase, ltop, rtop, variable};
+    Set s = {HEIGHT, centre, lbase, rbase, ltop, rtop};
 
       cont[controller].input[variable].sets[j] = s;
     //increment the centre for next set
@@ -163,13 +159,13 @@ void InitRules(int controller) {
 //evaluate all rules that have a single output
 void EvaluateRules(int controller) {
   ResetAccumulator(controller);
-  int  res1, res2 = 0;
+  float  res1, res2 = 0;
   float rcount = 0;
   float returnValue = 0;
   float variable;
   for(int i = 0; i < NUM_RULES; i++) {
     res1 = EvaluateSet(controller, cont[controller].rules[i].inputvar, cont[controller].rules[i].inputset, cont[controller].input[cont[controller].rules[i].inputvar].value);
-    res2 = EvaluateSet(controller, cont[controller].rules[i].inputvar2, cont[controller].rules[i].inputset2, cont[controller].input[cont[controller].rules[i].inputvar].value);
+    res2 = EvaluateSet(controller, cont[controller].rules[i].inputvar2, cont[controller].rules[i].inputset2, cont[controller].input[cont[controller].rules[i].inputvar2].value);
 
     //decide on the value to pass to output
     if(cont[controller].rules[i].modifier.compare("AND") == 0) {
@@ -185,7 +181,7 @@ void EvaluateRules(int controller) {
           variable = res2;
     }
     //add result
-    if(variable > 0) {
+    if(variable > 0.0f) {
       cont[controller].output.scale[cont[controller].output.active] = variable;
       cont[controller].output.value[cont[controller].output.active] = cont[controller].rules[i].output;
       cont[controller].output.active++;
@@ -213,7 +209,7 @@ float EvaluateSet(int controller, int inputVar, int setID, int variable) {
       else //variable > leftTop - centreX
         return set.height;
     else //right or centre
-      if(variable > set.rightTop + set.centreX)
+      if(variable > set.centreX + set.rightTop)
         return Intersect(set.rightBase, 0, set.rightTop, set.height, variable);
       else
         return set.height;
@@ -305,7 +301,7 @@ void ParentMutation(int id1, int id2) {
 
   //find a random var
   random = GetRandInt(0, 4);
-  int col = GetRandInt(0, NUM_INPUT -1);
+  short int col = GetRandInt(0, NUM_INPUT -1);
   switch(random) {
     case 0: //swap collections
     {
@@ -319,7 +315,7 @@ void ParentMutation(int id1, int id2) {
       break;
     case 2: //swap set
     {
-      int set = GetRandInt(0, NUM_SETS -1);
+      short int set = GetRandInt(0, NUM_SETS -1);
       Set temp = cont[id2].input[col].sets[set];
       cont[id2].input[col].sets[set] = cont[id1].input[col].sets[set];
       cont[id1].input[col].sets[set] = temp;
@@ -327,15 +323,15 @@ void ParentMutation(int id1, int id2) {
     }
     case 3: //copy set
     {
-      int set = GetRandInt(0, NUM_SETS -1);
+      short int set = GetRandInt(0, NUM_SETS -1);
       cont[id2].input[col].sets[set] = cont[id1].input[col].sets[set];
       break;
     }
     case 4: //change rule output
     {
-      int rule = GetRandInt(0,NUM_RULES -1);
+      short int rule = GetRandInt(0,NUM_RULES -1);
       Rule temp = cont[id2].rules[rule];
-      int rule2 = GetRandInt(0,NUM_RULES -1);
+      short int rule2 = GetRandInt(0,NUM_RULES -1);
       cont[id2].rules[rule].output = cont[id1].rules[rule2].output;
       break;
     }
@@ -353,7 +349,7 @@ void ChildMutation(int id) {
 
 //@TODO:POINTER THAT SHIZ
 void MutateSet(int controller, int var, int setID) {
-  int mut = GetRandInt(0,3);
+  short int mut = GetRandInt(0,3);
   random = GetRandInt(-VARIANCE, VARIANCE);
   cont[controller].mutations++;
   switch(mut){
@@ -389,7 +385,7 @@ void MutateSet(int controller, int var, int setID) {
 }
 
 void MutateRule(int controller, int ruleID) {
-  int mut = GetRandInt(0,0);
+  short int mut = GetRandInt(0,0);
   cont[controller].mutations++;
 
   switch(mut){

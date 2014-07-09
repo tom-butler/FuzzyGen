@@ -45,8 +45,7 @@ void SaveBest() {
       << cont[BEST_CONT].input[i].sets[s].leftBase << ","
       << cont[BEST_CONT].input[i].sets[s].rightBase << ","
       << cont[BEST_CONT].input[i].sets[s].leftTop << ","
-      << cont[BEST_CONT].input[i].sets[s].rightTop << ","
-      << cont[BEST_CONT].input[i].sets[s].variable << ",";
+      << cont[BEST_CONT].input[i].sets[s].rightTop << ",";
       output << "#";
     }
 
