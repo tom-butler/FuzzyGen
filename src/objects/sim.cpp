@@ -20,7 +20,11 @@ int NextStep(int controller) {
     *fuel -= *thrust;
     *velocity = *velocity + FORCE;
     *velocity = *velocity - *thrust;
-
+    cout << "---\n";
+cout << *thrust;
+cout << "\n";
+cout << *velocity;
+cout << "\n";
     if(*velocity < -TERMINAL_VELOCITY)
       *velocity = -TERMINAL_VELOCITY;
     if(*velocity > TERMINAL_VELOCITY)

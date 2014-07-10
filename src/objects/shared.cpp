@@ -22,7 +22,7 @@ using namespace std;
   short int NUM_VARS = 4;                      //-c
   short int NUM_SETS = 3;                      //-s
   short int NUM_RULES = 9;
-  short int HEIGHT = 1;                        //-h
+  float HEIGHT = 1;                        //-h
 
   //sim
   short int START_HEIGHT = 1000;               //-y
@@ -30,7 +30,7 @@ using namespace std;
   short int START_VEL = 3;                     //-v
   short int THRUST_MAX = 5;                   //-t
   short int TERMINAL_VELOCITY = START_VEL * 10;
-  short int FORCE = 3;                         //-o
+  float FORCE = 3.0f;                         //-o
   short int CRASH_SPEED = 5;                   //-x
 
   //sim init vars

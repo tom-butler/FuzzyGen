@@ -69,7 +69,7 @@ void display() {
 
   //run
   if(state == 2) {
-    if(tick % 10000 == 0){
+    if(tick % 5000 == 0){
       result = RunSim(controller);
       draw();
       if(result != -1){
@@ -96,6 +96,8 @@ void draw() {
   PrintFloat(0, -0.5f,"Fuel",cont[controller].score );
   PrintFloat(0, -0.55f,"Active Rules",cont[controller].output.active );
   PrintFloat(0, -0.6f,"Controller",controller);
+  PrintFloat(0, -0.65f,"Thrust", cont[controller].output.output);
+
 
   drawPlot(0, -0.999);
   drawAccumulator(0, -0.999, "Output", cont[controller].output);
@@ -205,11 +207,10 @@ void drawAccumulator(float x, float y,string name, Accumulator output) {
   PrintFloat(x, y,name, output.output);
   float xScale = 1.0f / output.high;
   glColor3f(1.0f, 1.0f, 1.0f);
-
   for (int i = 0; i < output.active; i++) {
     float xPos = x + output.value[i] * xScale;
     glBegin(GL_LINES);
-      glVertex2f(xPos, y + output.scale[i] / 2);
+      glVertex2f(xPos, y + output.scale[i]);
       glVertex2f(xPos, y);
     glEnd();
   }

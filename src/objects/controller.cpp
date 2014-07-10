@@ -10,8 +10,8 @@ static int random;
 
 //util
 short int GetRandInt(short int low, short int high);
-float Intersect(int x1, int y1, int x2, int y2, int input);
-
+//float Intersect(int x1, int y1, int x2, int y2, int input);
+float Lerp(float x1, float y1, float x2, float y2, float value);
 //init
 void ResetVariables(int controller, FuzzyVar input[]);
 void InitSets(int controller, int variable,short int numSets);
@@ -32,13 +32,13 @@ void MutateRule(int controller, int ruleID);
 short int GetRandInt(short int low, short int high){
   return rand() % (high - low) + low;
 }
-
+/*
 //find the intersection of two lines
 float Intersect(int x1, int y1, int x2, int y2, int input) {
-  int m, b;
+  float m, b;
   //find line equation y = mx + b
-  int x = x2 - x1;
-  int y = y2 - y1;
+  float x = x2 - x1;
+  float y = y2 - y1;
   if(x == 0 || y == 0)
     m = 0;
   else
@@ -46,6 +46,13 @@ float Intersect(int x1, int y1, int x2, int y2, int input) {
   b = y1 -m*x1;
   //get the y value of the intersection
   return m * input + b;
+}
+*/
+float Lerp(float x1, float y1, float x2, float y2, float value) {
+  //find the percentage by the x values
+  value = ((value - x1)/x2 - x1);
+  //perform a lerp
+  return y1 + (value * (y2 - y1));
 }
 
 //clean the controller accumulator variable
@@ -56,6 +63,7 @@ void ResetAccumulator(int controller) {
   cont[controller].output.value = new float[NUM_RULES];
   cont[controller].output.scale = new float[NUM_RULES];
 
+  cont[controller].output.output = 0.0f;
   cont[controller].output.active = 0;
 }
 
@@ -159,14 +167,13 @@ void InitRules(int controller) {
 //evaluate all rules that have a single output
 void EvaluateRules(int controller) {
   ResetAccumulator(controller);
-  float  res1, res2 = 0;
-  float rcount = 0;
-  float returnValue = 0;
+  float  res1, res2 = 0.0f;
+  float rcount = 0.0f;
+  float returnValue = 0.0f;
   float variable;
   for(int i = 0; i < NUM_RULES; i++) {
     res1 = EvaluateSet(controller, cont[controller].rules[i].inputvar, cont[controller].rules[i].inputset, cont[controller].input[cont[controller].rules[i].inputvar].value);
     res2 = EvaluateSet(controller, cont[controller].rules[i].inputvar2, cont[controller].rules[i].inputset2, cont[controller].input[cont[controller].rules[i].inputvar2].value);
-
     //decide on the value to pass to output
     if(cont[controller].rules[i].modifier.compare("AND") == 0) {
         if(res1 < res2)
@@ -205,12 +212,12 @@ float EvaluateSet(int controller, int inputVar, int setID, int variable) {
   if(variable >= (set.centreX - set.leftBase) && variable <= ( set.centreX + set.rightBase))
     if(variable < set.centreX) //left
       if(variable < set.centreX - set.leftTop)
-        return Intersect(set.leftBase, 0, set.leftTop, set.height, variable);
+        return Lerp(set.leftBase, 0.0f, set.leftTop, set.height, variable);
       else //variable > leftTop - centreX
         return set.height;
     else //right or centre
       if(variable > set.centreX + set.rightTop)
-        return Intersect(set.rightTop, set.height, set.rightBase,0 , variable);
+        return Lerp(set.rightTop, set.height, set.rightBase, 0.0f,variable);
       else
         return set.height;
   else
@@ -225,6 +232,7 @@ void EvaluateOutput(int controller) {
   for(int i = 0; i < cont[controller].output.active; i++) {
    total += cont[controller].output.scale[i] * cont[controller].output.value[i];
   }
+
   total /= cont[controller].output.active;
   cont[controller].output.output = total;
 }

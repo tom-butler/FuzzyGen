@@ -21,12 +21,12 @@ typedef struct {
 
 //set
 typedef struct {
-  short int height;
-  short int centreX;
-  short int leftBase;
-  short int rightBase;
-  short int leftTop;
-  short int rightTop;
+  float height;
+  float centreX;
+  float leftBase;
+  float rightBase;
+  float leftTop;
+  float rightTop;
 } Set;
 
 //var
@@ -73,7 +73,7 @@ extern short int NUM_INPUT;
 extern short int NUM_VARS;                   //-c
 extern short int NUM_SETS;                   //-s
 extern short int NUM_RULES;
-extern short int HEIGHT;                     //-h
+extern float HEIGHT;                     //-h
 
 //sim
 extern short int START_HEIGHT;               //-y
@@ -81,7 +81,7 @@ extern short int START_FUEL;                 //-f
 extern short int START_VEL;                  //-v
 extern short int THRUST_MAX;                 //-t
 extern short int TERMINAL_VELOCITY;
-extern short int FORCE;                      //-o
+extern float FORCE;                      //-o
 extern short int CRASH_SPEED;                //-x
 
 extern FuzzyVar simInput[2];
