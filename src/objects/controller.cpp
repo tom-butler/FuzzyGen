@@ -50,7 +50,7 @@ float Intersect(int x1, int y1, int x2, int y2, int input) {
 */
 float Lerp(float x1, float y1, float x2, float y2, float value) {
   //find the percentage by the x values
-  value = ((value - x1)/x2 - x1);
+  value = ((value - x1)/(x2 - x1));
   //perform a lerp
   return y1 + (value * (y2 - y1));
 }

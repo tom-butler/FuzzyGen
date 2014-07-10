@@ -10,13 +10,14 @@
 #include <sstream>
 
 using namespace std;
-
+static int speed = 5000;
 static int controller = 0;
 static int state = 0;
 static int result = -1;
 int tick = 0;
 
-void keyboard(unsigned char key, int x, int y);
+void processNormalKeys(unsigned char key, int x, int y);
+void processSpecialKeys(int key, int x, int y);
 void display(void);
 
 //draw functions
@@ -26,6 +27,7 @@ void drawPlot(float x, float y);
 void drawAccumulator(float x, float y, string name, Accumulator output);
 void drawCollection(float x, float y, string name, FuzzyVar collection);
 void PrintFloat(float x, float y, string name, float value);
+
 int main(int argc, char *argv[])
 {
   //Init GLUT
@@ -35,7 +37,8 @@ int main(int argc, char *argv[])
   glutInit(&argc, argv);
   glutInitWindowSize(800, 600);
   glutCreateWindow("FuzzyGen Gui");
-  glutKeyboardFunc(&keyboard);
+  glutKeyboardFunc(&processNormalKeys);
+  glutSpecialFunc(&processSpecialKeys);
   glutDisplayFunc(&display);
 
 
@@ -48,12 +51,27 @@ int main(int argc, char *argv[])
   //InitControllers();
 }
 
-void keyboard(unsigned char key, int x, int y)
+void processNormalKeys(unsigned char key, int x, int y)
 {
   switch (key)
   {
     case '\x1B': //exit key
       exit(EXIT_SUCCESS);
+      break;
+  }
+}
+
+void processSpecialKeys(int key, int x, int y)
+{
+  switch (key)
+  {
+    case GLUT_KEY_UP:
+      if(speed > 1000)
+        speed -= 1000;
+      break;
+    case GLUT_KEY_DOWN:
+      if(speed < 9000)
+        speed += 1000;
       break;
   }
 }
@@ -69,7 +87,7 @@ void display() {
 
   //run
   if(state == 2) {
-    if(tick % 5000 == 0){
+    if(tick % speed == 0){
       result = RunSim(controller);
       draw();
       if(result != -1){
@@ -97,6 +115,7 @@ void draw() {
   PrintFloat(0, -0.55f,"Active Rules",cont[controller].output.active );
   PrintFloat(0, -0.6f,"Controller",controller);
   PrintFloat(0, -0.65f,"Thrust", cont[controller].output.output);
+  PrintFloat(0, -0.7f, "Speed", 10 - (speed / 1000));
 
 
   drawPlot(0, -0.999);
