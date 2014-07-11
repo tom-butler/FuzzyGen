@@ -10,8 +10,9 @@
 #include <sstream>
 
 using namespace std;
+static int generation = 0;
 static int speed = 5000;
-static int controller = 0;
+static int controller = -1;
 static int state = 0;
 static int result = -1;
 int tick = 0;
@@ -68,9 +69,13 @@ void processSpecialKeys(int key, int x, int y)
     case GLUT_KEY_UP:
       if(speed > 1000)
         speed -= 1000;
+      else
+        speed = 1;
       break;
     case GLUT_KEY_DOWN:
-      if(speed < 9000)
+      if(speed == 1)
+        speed = 1000;
+      else if(speed < 9000)
         speed += 1000;
       break;
   }
@@ -78,24 +83,57 @@ void processSpecialKeys(int key, int x, int y)
 
 void display() {
 
-  //load
-  if(state == 1) {
-    InitSimulation(controller);
-    result = -1;
-    state = 2;
+  if(state == 4){
+    PrintFloat(-0.5f, 0.0f, "FINISHED: ",BEST);
+  }
+
+  if(state == 3){
+    if(generation < GENERATIONS - 1) {
+      PrintFloat(-0.5f, 0.0f, "BREEDING", 0.0f);
+      Breed();
+      generation++;
+      controller = -1;
+      state = 1;
+    }
+    else
+      state = 4;
   }
 
   //run
   if(state == 2) {
     if(tick % speed == 0){
+      if(result != -1) {
+        if(controller < POP -2)
+          state = 1;
+        else
+          state == 3;
+      }
       result = RunSim(controller);
       draw();
       if(result != -1){
-        controller++;
-        state = 1;
+        if(cont[controller].score > 0){
+          if(BEST < cont[controller].score)
+            BEST = cont[controller].score;
+          PrintFloat(-0.5f, 0.0f, "SUCCESS", cont[controller].score);
+        }
+        else
+          PrintFloat(-0.5f, 0.0f, "FAILED", cont[controller].score);
       }
     }
   }
+
+  //load
+  if(state == 1) {
+    controller++;
+    InitSimulation(controller);
+    result = -1;
+    state = 2;
+  }
+
+
+
+
+
   tick++;
   glutPostRedisplay();
   glutSwapBuffers();
@@ -111,12 +149,13 @@ void draw() {
 
   //drawPlot(0, -0.5f, "Thrust:");
   //drawCollection(0,0.5f, cont[CONT].input[0]);
-  PrintFloat(0, -0.5f,"Fuel",cont[controller].score );
-  PrintFloat(0, -0.55f,"Active Rules",cont[controller].output.active );
-  PrintFloat(0, -0.6f,"Controller",controller);
-  PrintFloat(0, -0.65f,"Thrust", cont[controller].output.output);
-  PrintFloat(0, -0.7f, "Speed", 10 - (speed / 1000));
-
+  PrintFloat(0, -0.5f,"Generation",generation);
+  PrintFloat(0, -0.55f,"Controller",controller);
+  PrintFloat(0, -0.6f,"Active Rules",cont[controller].output.active );
+  PrintFloat(0, -0.65f,"Fuel",cont[controller].score );
+  PrintFloat(0, -0.7f,"Thrust", cont[controller].output.output);
+  PrintFloat(0, -0.75f, "Sim Speed", 10 - (speed / 1000));
+  PrintFloat(0, -0.8f, "BEST", BEST);
 
   drawPlot(0, -0.999);
   drawAccumulator(0, -0.999, "Output", cont[controller].output);
@@ -226,13 +265,21 @@ void drawAccumulator(float x, float y,string name, Accumulator output) {
   PrintFloat(x, y,name, output.output);
   float xScale = 1.0f / output.high;
   glColor3f(1.0f, 1.0f, 1.0f);
+  //draw singletons
   for (int i = 0; i < output.active; i++) {
     float xPos = x + output.value[i] * xScale;
     glBegin(GL_LINES);
-      glVertex2f(xPos, y + output.scale[i]);
+      glVertex2f(xPos, y + output.scale[i] / 2);
       glVertex2f(xPos, y);
     glEnd();
   }
+  //draw output
+  glColor3f(1.0f, 1.0f, 0.0f);
+  float xPos = x + output.output * xScale;
+  glBegin(GL_LINES);
+    glVertex2f(xPos, y + 0.6f);
+    glVertex2f(xPos, y + 0.5f);
+  glEnd();
 }
 
 void drawCollection(float x, float y,string name, FuzzyVar collection) {

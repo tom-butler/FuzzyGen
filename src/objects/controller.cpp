@@ -50,9 +50,9 @@ float Intersect(int x1, int y1, int x2, int y2, int input) {
 */
 float Lerp(float x1, float y1, float x2, float y2, float value) {
   //find the percentage by the x values
-  value = ((value - x1)/(x2 - x1));
-  //perform a lerp
-  return y1 + (value * (y2 - y1));
+  float v = ((value - x1)/(x2 - x1));
+  //perform lerp
+  return y1 + (v * (y2 - y1));
 }
 
 //clean the controller accumulator variable
@@ -211,13 +211,13 @@ float EvaluateSet(int controller, int inputVar, int setID, int variable) {
   //check if it is inside the set
   if(variable >= (set.centreX - set.leftBase) && variable <= ( set.centreX + set.rightBase))
     if(variable < set.centreX) //left
-      if(variable < set.centreX - set.leftTop)
-        return Lerp(set.leftBase, 0.0f, set.leftTop, set.height, variable);
+      if(variable < (set.centreX - set.leftTop))
+        return Lerp(set.centreX - set.leftBase, 0.0f, set.centreX - set.leftTop, set.height, variable);
       else //variable > leftTop - centreX
         return set.height;
     else //right or centre
-      if(variable > set.centreX + set.rightTop)
-        return Lerp(set.rightTop, set.height, set.rightBase, 0.0f,variable);
+      if(variable > (set.centreX + set.rightTop))
+        return Lerp(set.centreX + set.rightTop, set.height, set.centreX + set.rightBase, 0.0f,variable);
       else
         return set.height;
   else
