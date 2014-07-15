@@ -148,39 +148,34 @@ void WriteLog(){
     //Rules
     ss << "logs/var/var" << now << ".csv";
     output.open(ss.str().c_str());
-    output << "Controller,Rule,Input Variable 1,Input Set 1,Modifier,Input Variable 2,Input Set 2,Output Value\n";
-    for(int controller = 0; controller < POP; controller++) {
-      for(int i = 0; i < NUM_RULES; i++) {
-        //genetic
-        output << "POP," << POP << "\n";
-        output << "GENERATIONS," << GENERATIONS << "\n";
-        output << "ANCESTOR," << ANCESTOR << "\n";
-        output << "VARIANCE," << VARIANCE << "\n";
-        output << "MUT_CHANCE," << MUT_CHANCE << "\n";
-        output << "BEST," << BEST << "\n";
-        output << "BEST_CONT," << BEST_CONT << "\n";
-        output << "INCLUDE_CONTROL," << INCLUDE_CONTROL << "\n";
-        output << "MEAN," << MEAN << "\n";
-        output << "LOW," << LOW << "\n";
-        output << "LOGGING," << LOGGING << "\n";
+    //genetic
+    output << "POP," << POP << "\n";
+    output << "GENERATIONS," << GENERATIONS << "\n";
+    output << "ANCESTOR," << ANCESTOR << "\n";
+    output << "VARIANCE," << VARIANCE << "\n";
+    output << "MUT_CHANCE," << MUT_CHANCE << "\n";
+    output << "BEST," << BEST << "\n";
+    output << "BEST_CONT," << BEST_CONT << "\n";
+    output << "INCLUDE_CONTROL," << INCLUDE_CONTROL << "\n";
+    output << "MEAN," << MEAN << "\n";
+    output << "LOW," << LOW << "\n";
+    output << "LOGGING," << LOGGING << "\n";
 
-        //fuzzy
-        output << "NUM_INPUT," << NUM_INPUT << "\n";
-        output << "NUM_VARS," << NUM_VARS << "\n";
-        output << "NUM_SETS," << NUM_SETS << "\n";
-        output << "NUM_RULES," << NUM_RULES << "\n";
-        output << "HEIGHT," << HEIGHT << "\n";
+    //fuzzy
+    output << "NUM_INPUT," << NUM_INPUT << "\n";
+    output << "NUM_VARS," << NUM_VARS << "\n";
+    output << "NUM_SETS," << NUM_SETS << "\n";
+    output << "NUM_RULES," << NUM_RULES << "\n";
+    output << "HEIGHT," << HEIGHT << "\n";
 
-        //sim
-        output << "START_HEIGHT," << START_HEIGHT << "\n";
-        output << "START_FUEL," << START_FUEL << "\n";
-        output << "STAR_VEL," << START_VEL << "\n";
-        output << "THRUST_MAX," << THRUST_MAX << "\n";
-        output << "TERMINAL_VELOCITY," << TERMINAL_VELOCITY << "\n";
-        output << "FORCE," << FORCE << "\n";
-        output << "CRASH_SPEED," << CRASH_SPEED << "\n";
-      }
-    }
+    //sim
+    output << "START_HEIGHT," << START_HEIGHT << "\n";
+    output << "START_FUEL," << START_FUEL << "\n";
+    output << "STAR_VEL," << START_VEL << "\n";
+    output << "THRUST_MAX," << THRUST_MAX << "\n";
+    output << "TERMINAL_VELOCITY," << TERMINAL_VELOCITY << "\n";
+    output << "FORCE," << FORCE << "\n";
+    output << "CRASH_SPEED," << CRASH_SPEED << "\n";
     output.close();
     ss.str("");
     ss.clear();
