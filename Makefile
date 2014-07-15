@@ -9,6 +9,8 @@ t: test clean
 
 g: gui clean
 
+c: clear
+
 #CMD BUILD
 cmd: cmd.o gen.o controller.o sim.o shared.o
 	g++ -o $(BUILD_DIR)\cmd cmd.o gen.o controller.o sim.o shared.o -m64
@@ -47,3 +49,7 @@ shared.o: $(OBJ_DIR)\shared.cpp $(OBJ_DIR)\shared.h
 .PHONY : clean
 clean:
 	del *.o
+
+.PHONY : clear
+clear:
+	del logs\controller\*.csv logs\gen\*.csv logs\input\*.csv logs\rule\*.csv logs\set\*.csv logs\var\*.csv
