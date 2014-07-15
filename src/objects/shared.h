@@ -71,6 +71,8 @@ extern short int BEST_CONT;
 extern bool INCLUDE_CONTROL;
 extern float MEAN;
 extern int LOW;
+extern bool LOGGING;
+extern std::string *LOG;
 //fuzzy
 extern short int NUM_INPUT;
 extern short int NUM_VARS;                   //-c

@@ -9,7 +9,7 @@ using namespace std;
 
   //genetic
   short int POP = 10000;                       //-p
-  short int GENERATIONS = 10000;               //-g
+  short int GENERATIONS = 1000;               //-g
   short int ANCESTOR = POP/2;                  //-a
   float VARIANCE = 0.10f;                      //-r
   float MUT_CHANCE = 0.4f;               //-m
@@ -18,6 +18,8 @@ using namespace std;
   bool INCLUDE_CONTROL = false;
   float MEAN = 0.0f;
   int LOW = 0;
+  bool LOGGING = true;
+  string *LOG;
   //fuzzy
   short int NUM_INPUT = 2;
   short int NUM_OUTPUT = 1;
@@ -49,6 +51,8 @@ using namespace std;
 
 void InitSystem(int argc,char *argv[]) {
   //init system variables
+  if(LOGGING)
+    LOG = new string[GENERATIONS];
 
   //loop through and set any defined options
   int c;

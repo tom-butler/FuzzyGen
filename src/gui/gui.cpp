@@ -290,7 +290,7 @@ void drawAccumulator(float x, float y,string name, Accumulator output) {
     glEnd();
   }
   //draw output
-  glColor3f(1.0f, 1.0f, 0.0f);
+  glColor3f(1.0f, 0.0f, 0.0f);
   float xPos = x + output.output * xScale;
   glBegin(GL_LINES);
     glVertex2f(xPos, y + 0.51f);
