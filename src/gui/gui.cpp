@@ -27,8 +27,9 @@ void drawSim(float y, float thrust);
 void drawPlot(float x, float y);
 void drawAccumulator(float x, float y, string name, Accumulator output);
 void drawCollection(float x, float y, string name, FuzzyVar collection);
+void drawBestCollection(float x, float y, string name, FuzzyVar collection);
 void PrintFloat(float x, float y, string name, float value);
-
+void DrawRules(float x, float y, int controller);
 int main(int argc, char *argv[])
 {
   //Init GLUT
@@ -83,41 +84,54 @@ void processSpecialKeys(int key, int x, int y)
 
 void display() {
 
-  if(state == 4){
-    PrintFloat(-0.5f, 0.0f, "FINISHED: ",BEST);
+  //end
+  if(state == 5) {
+    PrintFloat(-0.5f, 0.2f, "FINISHED: ",BEST);
   }
 
-  if(state == 3){
+  //end
+  if(state == 4) {
+    if(cont[controller].score > 0)
+      PrintFloat(-0.5f, 0.0f, "SUCCESS", cont[controller].score);
+    else
+      PrintFloat(-0.5f, 0.0f, "FAILED", cont[controller].score);
+
+    if(tick % speed == 0) {
+      if(controller < POP -1)
+        state = 1;
+      else
+        state = 3;
+    }
+  }
+
+  //breed
+  if(state == 3) {
     if(generation < GENERATIONS - 1) {
-      PrintFloat(-0.5f, 0.0f, "BREEDING", 0.0f);
+      PrintFloat(-0.5f, 0.1f, "BREEDING", 0.0f);
       Breed();
       generation++;
       controller = -1;
       state = 1;
     }
     else
-      state = 4;
+      state = 5;
   }
 
   //run
   if(state == 2) {
-    if(tick % speed == 0){
-      if(result != -1) {
-        if(controller < POP -2)
-          state = 1;
-        else
-          state == 3;
-      }
+    if(tick % speed == 0) {
       result = RunSim(controller);
       draw();
-      if(result != -1){
-        if(cont[controller].score > 0){
-          if(BEST < cont[controller].score)
+      if(result != -1) {
+        if(cont[controller].score > 0) {
+          if(BEST < cont[controller].score) {
             BEST = cont[controller].score;
-          PrintFloat(-0.5f, 0.0f, "SUCCESS", cont[controller].score);
+            BEST_CONT = controller;
+          }
+          state = 4;
         }
         else
-          PrintFloat(-0.5f, 0.0f, "FAILED", cont[controller].score);
+          state = 4;
       }
     }
   }
@@ -130,10 +144,6 @@ void display() {
     state = 2;
   }
 
-
-
-
-
   tick++;
   glutPostRedisplay();
   glutSwapBuffers();
@@ -142,23 +152,28 @@ void draw() {
   glClear(GL_COLOR_BUFFER_BIT);
     //DRAW PLOTS
   drawPlot(0, 0);
+  drawBestCollection(0,0,"Height", cont[BEST_CONT].input[0]);
   drawCollection(0,0,"Height", cont[controller].input[0]);
 
   drawPlot(0, 0.5f);
+  drawBestCollection(0,0.5f,"Velocity", cont[BEST_CONT].input[1]);
   drawCollection(0,0.5f,"Velocity", cont[controller].input[1]);
 
   //drawPlot(0, -0.5f, "Thrust:");
   //drawCollection(0,0.5f, cont[CONT].input[0]);
   PrintFloat(0, -0.5f,"Generation",generation);
   PrintFloat(0, -0.55f,"Controller",controller);
-  PrintFloat(0, -0.6f,"Active Rules",cont[controller].output.active );
-  PrintFloat(0, -0.65f,"Fuel",cont[controller].score );
-  PrintFloat(0, -0.7f,"Thrust", cont[controller].output.output);
-  PrintFloat(0, -0.75f, "Sim Speed", 10 - (speed / 1000));
-  PrintFloat(0, -0.8f, "BEST", BEST);
+  PrintFloat(0, -0.6f,"Mutations",cont[controller].mutations);
+  PrintFloat(0, -0.65f,"Active Rules",cont[controller].output.active );
+  PrintFloat(0, -0.7f,"Fuel",cont[controller].score );
+  PrintFloat(0, -0.75f,"Thrust", cont[controller].output.output);
+  PrintFloat(0, -0.8f, "Sim Speed", 10 - (speed / 1000));
+  PrintFloat(0, -0.85f, "BEST", BEST);
 
   drawPlot(0, -0.999);
   drawAccumulator(0, -0.999, "Output", cont[controller].output);
+
+  DrawRules(0.3f, -0.45f, controller);
 
   //DRAW SIM
   float height = cont[controller].input[0].value - cont[controller].input[0].low;
@@ -258,7 +273,6 @@ void drawPlot(float x, float y){
     glVertex2f(x, y + 0.5f);
     glVertex2f(x, y);
   glEnd();
-
 }
 
 void drawAccumulator(float x, float y,string name, Accumulator output) {
@@ -277,14 +291,14 @@ void drawAccumulator(float x, float y,string name, Accumulator output) {
   glColor3f(1.0f, 1.0f, 0.0f);
   float xPos = x + output.output * xScale;
   glBegin(GL_LINES);
-    glVertex2f(xPos, y + 0.6f);
+    glVertex2f(xPos, y + 0.51f);
     glVertex2f(xPos, y + 0.5f);
   glEnd();
 }
 
 void drawCollection(float x, float y,string name, FuzzyVar collection) {
   //draw current value
-
+  glColor3f(1.0f, 0.0f, 0.0f);
   PrintFloat(x, y,name, collection.value);
   //find the appropriate scale
   float scale = collection.high - collection.low;
@@ -308,7 +322,7 @@ void drawCollection(float x, float y,string name, FuzzyVar collection) {
     float value = collection.value - collection.low;
     value /= scale;
     //draw the lines
-    glColor3f(1.0f, 0.0f, 0.0f);
+      glColor3f(1.0f, 0.0f, 0.0f);
     glBegin(GL_LINES);
       glVertex2f(x + (centre - lBase), y);
       glVertex2f(x + (centre - lTop), y + 0.4f);
@@ -317,7 +331,7 @@ void drawCollection(float x, float y,string name, FuzzyVar collection) {
       glVertex2f(x + (centre + rTop), y + 0.4f);
       glVertex2f(x + (centre + rBase), y);
     glEnd();
-
+  glColor3f(1.0f, 1.0f, 0.0f);
     glColor3f(1.0f, 1.0f, 0.0f);
     glBegin(GL_LINES);
       glVertex2f(x + value, y);
@@ -327,12 +341,70 @@ void drawCollection(float x, float y,string name, FuzzyVar collection) {
   }
 
 }
+void drawBestCollection(float x, float y,string name, FuzzyVar collection) {
+  //find the appropriate scale
+  float scale = collection.high - collection.low;
+  // for height
 
+  for(int i = 0; i < NUM_SETS;i++) {
+    //scale the points
+    float centre = collection.sets[i].centreX - collection.low;
+    centre /= scale;
+
+    float lBase = collection.sets[i].leftBase / scale;
+    //lBase /= scale;
+    float lTop = collection.sets[i].leftTop / scale;
+    //lTop /= scale;
+    float rTop = collection.sets[i].rightTop / scale;
+    //rTop /= scale;
+    float rBase = collection.sets[i].rightBase / scale;
+    //rBase /= scale;
+    float height = collection.sets[i].height / HEIGHT;
+
+    float value = collection.value - collection.low;
+    value /= scale;
+    //draw the lines
+  glColor3f(0.2f, 0.2f, 0.2f);
+    glBegin(GL_LINES);
+      glVertex2f(x + (centre - lBase), y);
+      glVertex2f(x + (centre - lTop), y + 0.4f);
+      glVertex2f(x + (centre - lTop), y + 0.4f);
+      glVertex2f(x + (centre + rTop), y + 0.4f);
+      glVertex2f(x + (centre + rTop), y + 0.4f);
+      glVertex2f(x + (centre + rBase), y);
+    glEnd();
+  }
+
+}
 void PrintFloat(float x, float y, string name, float value) {
   ostringstream ss;
   ss << name << " " << value;
   string text(ss.str());
   glRasterPos2f(x + 0.002f, y + 0.45f);
   glutBitmapString(GLUT_BITMAP_8_BY_13, (const unsigned char *) text.c_str());
+}
+
+void DrawRules(float x, float y, int controller) {
+  //draw current
+  for(int i = 0; i < NUM_RULES; i++) {
+    if(cont[controller].rules[i].isActive)
+      glColor3f(1.0f, 1.0f, 0.0f);
+    else
+      glColor3f(1.0f, 0.0f, 0.0f);
+    ostringstream ss;
+    ss << "IF " << cont[controller].rules[i].inputset << " " << cont[controller].rules[i].modifier << " " << cont[controller].rules[i].inputset2 << " THEN " << cont[controller].rules[i].output;
+    string text(ss.str());
+    glRasterPos2f(x + 0.05f, y + (0.05f * i));
+    glutBitmapString(GLUT_BITMAP_8_BY_13, (const unsigned char *) text.c_str());
+  }
+  //draw best
+  for(int i = 0; i < NUM_RULES; i++){
+  ostringstream ss;
+    ss << cont[BEST_CONT].rules[i].output;
+    string text(ss.str());
+    glColor3f(0.2f, 0.2f, 0.2f);
+    glRasterPos2f(x + 0.6f, y + (0.05f * i));
+    glutBitmapString(GLUT_BITMAP_8_BY_13, (const unsigned char *) text.c_str());
+  }
 
 }

@@ -16,7 +16,8 @@ typedef struct {
   std::string modifier;
   short int inputvar2;
   short int inputset2;
-  short int output;
+  float output;
+  bool isActive;
 } Rule;
 
 //set
@@ -63,11 +64,11 @@ typedef struct {
 extern short int POP;                       //-p
 extern short int GENERATIONS;               //-g
 extern short int ANCESTOR;                  //-a
-extern short int VARIANCE;                  //-r
+extern float VARIANCE;                  //-r
 extern float MUT_CHANCE;              //-m
 extern short int BEST;
 extern short int BEST_CONT;
-
+extern bool INCLUDE_CONTROL;
 //fuzzy
 extern short int NUM_INPUT;
 extern short int NUM_VARS;                   //-c

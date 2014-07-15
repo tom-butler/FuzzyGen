@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <ctime>
 
 using namespace std;
 
@@ -23,7 +24,7 @@ int RunSim(int controller) {
 }
 
 void Breed() {
-  BreedControllers();
+  Select();
 }
 
 void SaveBest() {
@@ -80,4 +81,66 @@ void SaveBest() {
   output << "#";
 
   output.close();
+}
+
+void WriteToCSV()
+{
+  //need to mutex lock this
+  for(int controller = 0; controller < POP; controller++) {
+    //use the current time and controller id make a combined primary key
+    time_t now = time(0);
+    ofstream output;
+    //Controller
+    output.open("logs/controller.csv");
+    output << now << ",";
+    output << controller << ",";
+    output << cont[controller].score << ",";
+    output << cont[controller].score << ";";
+    output.close();
+
+    //input
+    output.open("logs/input.csv");
+    for(int i = 0; i < NUM_INPUT; i++){
+      output << now << ",";
+      output << controller << ",";
+      output << i << ",";
+      output << cont[controller].input[i].low << ",";
+      output << cont[controller].input[i].high << ";";
+    }
+    output.close();
+
+    //Sets
+    output.open("logs/sets.csv");
+    for(int i = 0; i < NUM_INPUT; i++) {
+      for(int s = 0; s < NUM_SETS; s++) {
+        output << now << ",";
+        output << controller << ",";
+        output << i << ",";
+        output << s << ",";
+        output << cont[controller].input[i].sets[s].height << ",";
+        output << cont[controller].input[i].sets[s].centreX << ",";
+        output << cont[controller].input[i].sets[s].leftBase << ",";
+        output << cont[controller].input[i].sets[s].rightBase << ",";
+        output << cont[controller].input[i].sets[s].leftTop << ",";
+        output << cont[controller].input[i].sets[s].rightTop << ";";
+      }
+    }
+    output.close();
+
+    //Rules
+    output.open("logs/rules.csv");
+      for(int i = 0; i < NUM_RULES; i++) {
+        output << now << ",";
+        output << controller << ",";
+        output << i << ",";
+        output << cont[controller].rules[i].inputvar << ",";
+        output << cont[controller].rules[i].inputset << ",";
+        output << cont[controller].rules[i].modifier << ",";
+        output << cont[controller].rules[i].inputvar2 << ",";
+        output << cont[controller].rules[i].inputset2 << ",";
+        output << cont[controller].rules[i].output << ";";
+      }
+    output.close();
+
+  }
 }

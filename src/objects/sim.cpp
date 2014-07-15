@@ -25,23 +25,26 @@ int NextStep(int controller) {
     if(*velocity > TERMINAL_VELOCITY)
       *velocity = TERMINAL_VELOCITY;
 
+
     *height -= *velocity;
-/*
-    cout << *height;
-    cout << " " << *fuel;
-    cout << " " << *velocity;
-    cout << " " << *thrust;
-    cout << "\n";
-*/
-    if(*fuel <= 0.0f) {
+
+    if(*height < 0.0f)
+      *height = 0.0f;
+    if(*height > START_HEIGHT)
+      *height = START_HEIGHT;
+    if(*fuel < 0)
+      *fuel = 0.0f;
+
+    if(*fuel == 0.0f) {
+      *fuel = (START_HEIGHT - *height) / 10;
       return 0; //fail
     }
     else if(*height <= 0.0f && *velocity < CRASH_SPEED) {
       return 0; //succeed
     }
     else if(*height <= 0.0f) {
-      *fuel = 0;
-      return 0; //fail
+      *fuel = (START_HEIGHT - *height)/ 10 + (TERMINAL_VELOCITY - *velocity);
+      return 0; //semi-fail
     }
     else {
       return -1; //continue

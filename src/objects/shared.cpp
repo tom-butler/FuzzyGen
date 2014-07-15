@@ -8,14 +8,14 @@ using namespace std;
   //define the global variables
 
   //genetic
-  short int POP = 100;                       //-p
-  short int GENERATIONS = 100;               //-g
+  short int POP = 500;                       //-p
+  short int GENERATIONS = 10000;               //-g
   short int ANCESTOR = POP/2;                  //-a
-  short int VARIANCE = 3;                      //-r
-  float MUT_CHANCE = 0.3f;               //-m
+  float VARIANCE = 0.10f;                      //-r
+  float MUT_CHANCE = 0.7f;               //-m
   short int BEST = 0;
   short int BEST_CONT = 0;
-
+  bool INCLUDE_CONTROL = false;
   //fuzzy
   short int NUM_INPUT = 2;
   short int NUM_OUTPUT = 1;
@@ -28,10 +28,10 @@ using namespace std;
   short int START_HEIGHT = 1000;               //-y
   short int START_FUEL = 500;                 //-f
   short int START_VEL = 3;                     //-v
-  short int THRUST_MAX = 5;                   //-t
+  short int THRUST_MAX = 10;                   //-t
   short int TERMINAL_VELOCITY = START_VEL * 10;
-  float FORCE = 3.0f;                         //-o
-  short int CRASH_SPEED = 5;                   //-x
+  float FORCE = 2.0f;                         //-o
+  short int CRASH_SPEED = 10;                   //-x
 
   //sim init vars
   static Accumulator thrustSet = {0, THRUST_MAX, 0.f, 0, 0, 0};

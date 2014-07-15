@@ -25,8 +25,8 @@ void GALoop() {
       while(result == -1) {
         result = RunSim(c);
       }
-      if(result > BEST){
-        BEST = result;
+      if(cont[c].score > BEST){
+        BEST = cont[c].score;
         BEST_CONT = c;
       }
     }
