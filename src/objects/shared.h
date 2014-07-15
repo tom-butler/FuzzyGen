@@ -69,6 +69,8 @@ extern float MUT_CHANCE;              //-m
 extern short int BEST;
 extern short int BEST_CONT;
 extern bool INCLUDE_CONTROL;
+extern float MEAN;
+extern int LOW;
 //fuzzy
 extern short int NUM_INPUT;
 extern short int NUM_VARS;                   //-c

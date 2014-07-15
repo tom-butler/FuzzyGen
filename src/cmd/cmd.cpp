@@ -36,6 +36,8 @@ void GALoop() {
     cout << "OK\n";
     cout << "GEN " << g;
     cout << " BEST " << BEST;
+    cout << " MEAN " << MEAN;
+    cout << " LOW " << LOW;
     cout << "\n";
   }
 }

@@ -362,9 +362,12 @@ void SelectMean(){
   int parents[ANCESTOR];
   float mean = 0;
   int c = 0;
+  int low = 1000;
   //get mean
   for( int i = 0; i < POP; i++){
     mean += cont[i].score;
+    if(low > cont[i].score)
+    low = cont[i].score;
   }
 
   // use mean
@@ -373,6 +376,8 @@ void SelectMean(){
   else
     mean = 0;
 
+MEAN = mean;
+LOW = low;
 //select for breeding
   for(int i = 0; i < POP; i++) {
     if(cont[i].score >= mean){
@@ -392,7 +397,6 @@ void SelectMean(){
       c++;
     }
   }
-
   Breed(parents);
 }
 

@@ -169,6 +169,8 @@ void draw() {
   PrintFloat(0, -0.75f,"Thrust", cont[controller].output.output);
   PrintFloat(0, -0.8f, "Sim Speed", 10 - (speed / 1000));
   PrintFloat(0, -0.85f, "BEST", BEST);
+  PrintFloat(0, -0.9f, "MEAN", MEAN);
+    PrintFloat(0, -0.95f, "LOW", LOW);
 
   drawPlot(0, -0.999);
   drawAccumulator(0, -0.999, "Output", cont[controller].output);
