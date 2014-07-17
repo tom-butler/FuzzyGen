@@ -3,16 +3,18 @@
 #include <stdlib.h>
 
 #include "shared.h"
+//sims
+#include "..\sims\moon.h"
 
 using namespace std;
   //define the global variables
 
   //genetic
-  short int POP = 1000;                       //-p
-  short int GENERATIONS = 100;               //-g
-  short int ANCESTOR = POP/2;                  //-a
-  float VARIANCE = 0.10f;                      //-r
-  float MUT_CHANCE = 0.4f;               //-m
+  short int POP = 1000;
+  short int GENERATIONS = 100;
+  short int ANCESTOR = POP/2;
+  float VARIANCE = 0.10f;
+  float MUT_CHANCE = 0.4f;
   short int BEST = 0;
   short int BEST_CONT = 0;
   bool INCLUDE_CONTROL = false;
@@ -20,101 +22,41 @@ using namespace std;
   int LOW = 0;
   bool LOGGING = true;
   string *LOG;
+
   //fuzzy
   short int NUM_INPUT = 2;
   short int NUM_OUTPUT = 1;
-  short int NUM_VARS = 4;                      //-c
-  short int NUM_SETS = 3;                      //-s
+  short int NUM_VARS = 4;
+  short int NUM_SETS = 3;
   short int NUM_RULES = 9;
-  float HEIGHT = 1;                        //-h
+  float HEIGHT = 1;
 
-  //sim
-  short int START_HEIGHT = 1000;               //-y
-  short int START_FUEL = 500;                 //-f
-  short int START_VEL = 3;                     //-v
-  short int THRUST_MAX = 10;                   //-t
+
+  short int SIM = 0;
+
+  //moonlander
+  short int MOONLANDER = 0;
+  short int START_HEIGHT = 1000;
+  short int START_FUEL = 500;
+  short int START_VEL = 3;
+  short int THRUST_MAX = 10;
   short int TERMINAL_VELOCITY = START_VEL * 10;
-  float FORCE = 2.0f;                         //-o
-  short int CRASH_SPEED = 10;                   //-x
+  float FORCE = 2.0f;
+  short int CRASH_SPEED = 10;
 
-  //sim init vars
-  static Accumulator thrustSet = {0, THRUST_MAX, 0.f, 0, 0, 0};
-  static FuzzyVar heightSet = {0, START_HEIGHT, START_HEIGHT, 0};
-  static FuzzyVar velocitySet = {-TERMINAL_VELOCITY, TERMINAL_VELOCITY, START_VEL, 0};
-  static FuzzyVar fuelSet = {0, START_FUEL, START_FUEL, 0};
-
-  FuzzyVar simInput[2] = {heightSet, velocitySet};
-  Accumulator * simOutput = &thrustSet;
-  FuzzyVar * simFitness = &fuelSet;
+  FuzzyVar  *simInput;
+  Accumulator * simOutput;
+  FuzzyVar * simFitness;
 
   Controller *cont;
 
-void InitSystem(int argc,char *argv[]) {
+void InitSystem() {
   //init system variables
+  cont = new Controller[POP];
+  simInput = new FuzzyVar[NUM_INPUT];
   if(LOGGING)
     LOG = new string[GENERATIONS];
+  if(SIM == MOONLANDER)
+    MoonCreateVars();
 
-  //loop through and set any defined options
-  int c;
-  while((c = getopt(argc, argv, "pgarmcshyfvt0x:")) != -1) {
-    switch(c){
-      //GENETIC
-      case 'p':
-        POP = atoi(optarg);
-        ANCESTOR = POP/2;
-        break;
-      case 'g':
-        GENERATIONS = atoi(optarg);
-        break;
-      case 'a':
-        ANCESTOR = atoi(optarg);
-        break;
-      case 'r':
-        VARIANCE = atoi(optarg);
-        break;
-      case 'm':
-        MUT_CHANCE = atoi(optarg);
-        break;
-
-      //fuzzy
-      case 'c':
-        NUM_VARS = atoi(optarg);
-        break;
-      case 's':
-        NUM_SETS = atoi(optarg);
-        break;
-      case 'h':
-        HEIGHT = atoi(optarg);
-        break;
-
-      //sim
-      case 'y':
-        START_HEIGHT = atoi(optarg);
-        break;
-      case 'f':
-        START_FUEL = atoi(optarg);
-        break;
-      case 't':
-        THRUST_MAX = atoi(optarg);
-        break;
-      case 'v':
-        START_VEL = atoi(optarg);
-        break;
-      case 'o':
-        FORCE = atoi(optarg);
-        break;
-      case 'x':
-        CRASH_SPEED = atoi(optarg);
-        break;
-      case '?':
-        cout << "Bad option -" << c;
-        break;
-      default:
-        cout << "Option -" << c << " does not exist";
-        break;
-    }
-    //re-caclulate after change
-    TERMINAL_VELOCITY = START_VEL * 10;
-    NUM_RULES = NUM_VARS * NUM_SETS;
-  }
 }

@@ -3,12 +3,6 @@
 
 #include <string>
 
-//singleton
-typedef struct {
-  float value;
-  float scale;
-} singleton;
-
 //rule
 typedef struct {
   short int inputvar;
@@ -61,11 +55,11 @@ typedef struct {
 //options-------------------------------------------
 
 //genetic
-extern short int POP;                       //-p
-extern short int GENERATIONS;               //-g
-extern short int ANCESTOR;                  //-a
-extern float VARIANCE;                  //-r
-extern float MUT_CHANCE;              //-m
+extern short int POP;
+extern short int GENERATIONS;
+extern short int ANCESTOR;
+extern float VARIANCE;
+extern float MUT_CHANCE;
 extern short int BEST;
 extern short int BEST_CONT;
 extern bool INCLUDE_CONTROL;
@@ -75,26 +69,30 @@ extern bool LOGGING;
 extern std::string *LOG;
 //fuzzy
 extern short int NUM_INPUT;
-extern short int NUM_VARS;                   //-c
-extern short int NUM_SETS;                   //-s
+extern short int NUM_VARS;
+extern short int NUM_SETS;
 extern short int NUM_RULES;
-extern float HEIGHT;                     //-h
+extern float HEIGHT;
 
-//sim
-extern short int START_HEIGHT;               //-y
-extern short int START_FUEL;                 //-f
-extern short int START_VEL;                  //-v
-extern short int THRUST_MAX;                 //-t
+//sims
+extern short int SIM;
+//moonlander
+extern short int MOONLANDER;
+extern short int START_HEIGHT;
+extern short int START_FUEL;
+extern short int START_VEL;
+extern short int THRUST_MAX;
 extern short int TERMINAL_VELOCITY;
-extern float FORCE;                      //-o
-extern short int CRASH_SPEED;                //-x
+extern float FORCE;
+extern short int CRASH_SPEED;
 
-extern FuzzyVar simInput[2];
+
+extern FuzzyVar *simInput;
 extern Accumulator * simOutput;
 extern FuzzyVar * simFitness;
 
 //controllers
 extern Controller *cont;
 
-void InitSystem(int argc, char *argv[]);
+void InitSystem();
 #endif

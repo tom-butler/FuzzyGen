@@ -1,5 +1,5 @@
-#include "sim.h"
-#include "shared.h"
+#include "moon.h"
+#include "..\objects\shared.h"
 #include <iostream>
 using namespace std;
 
@@ -8,14 +8,26 @@ float * thrust;
 float * height;
 float * velocity;
 short int * fuel;
+static Accumulator thrustSet = {0, THRUST_MAX, 0.f, 0, 0, 0};
+static FuzzyVar heightSet  = {0, START_HEIGHT, START_HEIGHT, 0};
+static FuzzyVar velocitySet = {-TERMINAL_VELOCITY, TERMINAL_VELOCITY, START_VEL, 0};
+static FuzzyVar fuelSet  = {0, START_FUEL, START_FUEL, 0};
 
-void InitSim(int controller) {
-  thrust =  &cont[controller].output.output;
-  height =  &cont[controller].input[0].value;
+void MoonCreateVars(){
+    //sim init vars
+  simInput[0] = heightSet;
+  simInput[1] = velocitySet;
+  simOutput = &thrustSet;
+  simFitness = &fuelSet;
+}
+
+void MoonInitSim(int controller) {
+  thrust = &cont[controller].output.output;
+  height = &cont[controller].input[0].value;
   velocity = &cont[controller].input[1].value;
   fuel = &cont[controller].score;
 }
-int NextStep(int controller) {
+int MoonNextStep(int controller) {
   if(*fuel > 0) {
     *fuel -= *thrust;
     *velocity = *velocity + FORCE;

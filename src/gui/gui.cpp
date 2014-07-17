@@ -33,7 +33,7 @@ void DrawRules(float x, float y, int controller);
 int main(int argc, char *argv[])
 {
   //Init GLUT
-  InitSystem(argc, argv);
+  InitSystem();
   InitControllers();
 
   glutInit(&argc, argv);

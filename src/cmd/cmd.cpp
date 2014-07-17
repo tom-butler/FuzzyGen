@@ -13,7 +13,7 @@ void WriteLog();
 int main(int argc, char *argv[])
 {
   cout << "Initalising System            ";
-  InitSystem(argc, argv);
+  InitSystem();
   cout << "OK\n";
   cout << "Initalising Controllers       ";
   InitControllers();

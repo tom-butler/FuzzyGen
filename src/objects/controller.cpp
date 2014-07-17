@@ -11,20 +11,21 @@ static int random;
 
 //util
 short int GetRandInt(short int low, short int high);
-//float Intersect(int x1, int y1, int x2, int y2, int input);
 float Lerp(float x1, float y1, float x2, float y2, float value);
-//init
+void ResetAccumulator(int controller);
 void ResetVariables(int controller, FuzzyVar input[]);
+
+//init
+void InitControlController(int controller);
 void InitSets(int controller, int variable,short int numSets);
 void InitRules(int controller);
-void InitControlController(int controller);
+
 //evaluate
 float EvaluateSet(int controller, int inputVar, int setID, int variable);
 void EvaluateOutput(int controller);
 
-void Select();
 void SelectHalf();
-void SelectMean();
+void SelectMean(float mean);
 
 void Breed(int parents[]);
 void BreedSets(int id1, int id2);
@@ -331,8 +332,26 @@ void EvaluateOutput(int controller) {
 }
 
 void Select() {
+  //get some stats on this gen
+  float mean = 0;
+  int low = 1000;
+  //get mean
+  for( int i = 0; i < POP; i++){
+    mean += cont[i].score;
+    if(low > cont[i].score)
+    low = cont[i].score;
+  }
+
+  // use mean
+  if(mean > 0)
+    mean /= POP;
+  else
+    mean = 0;
+
+MEAN = mean;
+LOW = low;
   //SelectHalf();
-  SelectMean();
+  SelectMean(mean);
 }
 void SelectHalf(){
 //select highest half
@@ -358,26 +377,10 @@ void SelectHalf(){
   Breed(parents);
 }
 
-void SelectMean(){
+void SelectMean(float mean){
   int parents[ANCESTOR];
-  float mean = 0;
   int c = 0;
-  int low = 1000;
-  //get mean
-  for( int i = 0; i < POP; i++){
-    mean += cont[i].score;
-    if(low > cont[i].score)
-    low = cont[i].score;
-  }
 
-  // use mean
-  if(mean > 0)
-    mean /= POP;
-  else
-    mean = 0;
-
-MEAN = mean;
-LOW = low;
 //select for breeding
   for(int i = 0; i < POP; i++) {
     if(cont[i].score >= mean){

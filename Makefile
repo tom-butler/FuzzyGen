@@ -2,6 +2,7 @@ BUILD_DIR = bin
 CMD_DIR = src\cmd
 GUI_DIR = src\gui
 OBJ_DIR = src\objects
+SIM_DIR = src\sims
 
 all: cmd clean
 
@@ -12,22 +13,22 @@ g: gui clean
 c: clear
 
 #CMD BUILD
-cmd: cmd.o gen.o controller.o sim.o shared.o
-	g++ -o $(BUILD_DIR)\cmd cmd.o gen.o controller.o sim.o shared.o -m64
+cmd: cmd.o gen.o controller.o moon.o shared.o
+	g++ -o $(BUILD_DIR)\cmd cmd.o gen.o controller.o moon.o shared.o -m64
 
 cmd.o: $(CMD_DIR)\cmd.cpp
 	g++ -c $(CMD_DIR)\cmd.cpp -m64
 
 #TEST BUILD
-test: test.o controller.o sim.o gen.o shared.o
-	g++ -o $(BUILD_DIR)\test test.o controller.o sim.o shared.o gen.o
+test: test.o controller.o moon.o gen.o shared.o
+	g++ -o $(BUILD_DIR)\test test.o controller.o moon.o shared.o gen.o
 
 test.o: $(CMD_DIR)\test.cpp
 	g++ -c $(CMD_DIR)\test.cpp -m64
 
 #GRAPHICAL USER INTERFACE
-gui: gui.o gen.o controller.o sim.o shared.o
-	g++ -o $(BUILD_DIR)\gui gui.o gen.o controller.o sim.o shared.o -m64 -L"C:\Program Files\mingw-w64\x86_64-4.9.0-posix-sjlj-rt_v3-rev2\mingw64\lib\x64" -lfreeglut -lopengl32 -Wl,--subsystem,windows
+gui: gui.o gen.o controller.o moon.o shared.o
+	g++ -o $(BUILD_DIR)\gui gui.o gen.o controller.o moon.o shared.o -m64 -L"C:\Program Files\mingw-w64\x86_64-4.9.0-posix-sjlj-rt_v3-rev2\mingw64\lib\x64" -lfreeglut -lopengl32 -Wl,--subsystem,windows
 
 gui.o: $(GUI_DIR)\gui.cpp
 	g++ -c $(GUI_DIR)\gui.cpp -m64 -D FREEGLUT_STATIC -I"C:\Program Files\mingw-w64\x86_64-4.9.0-posix-sjlj-rt_v3-rev2\mingw64\include"
@@ -39,11 +40,12 @@ gen.o: $(OBJ_DIR)\gen.cpp $(OBJ_DIR)\gen.h
 controller.o: $(OBJ_DIR)\controller.cpp $(OBJ_DIR)\controller.h
 	g++ -c $(OBJ_DIR)\controller.cpp -m64
 
-sim.o: $(OBJ_DIR)\sim.cpp $(OBJ_DIR)\sim.h
-	g++ -c $(OBJ_DIR)\sim.cpp -m64
-
 shared.o: $(OBJ_DIR)\shared.cpp $(OBJ_DIR)\shared.h
 	g++ -c $(OBJ_DIR)\shared.cpp -m64
+
+#SIMULATIONS
+moon.o: $(SIM_DIR)\moon.cpp $(SIM_DIR)\moon.h
+	g++ -c $(SIM_DIR)\moon.cpp -m64
 
 #UTIL FUNCTIONS
 .PHONY : clean
