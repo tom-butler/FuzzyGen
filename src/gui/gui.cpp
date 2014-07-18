@@ -1,6 +1,7 @@
 #include "..\objects\shared.h"
 #include "..\objects\gen.h"
 #include "..\objects\controller.h"
+#include "gui.h"
 
 #include <GL\freeglut.h>
 #include <stdio.h>
@@ -10,26 +11,18 @@
 #include <sstream>
 
 using namespace std;
-static int generation = 0;
-static int speed = 5000;
-static int controller = -1;
-static int state = 0;
-static int result = -1;
+
+int generation = 0;
+int speed = 5000;
+int controller = -1;
+int state = 0;
+int result = -1;
 int tick = 0;
 
-void processNormalKeys(unsigned char key, int x, int y);
-void processSpecialKeys(int key, int x, int y);
-void display(void);
+void ProcessNormalKeys(unsigned char key, int x, int y);
+void ProcessSpecialKeys(int key, int x, int y);
+void Display(void);
 
-//draw functions
-void draw();
-void drawSim(float y, float thrust);
-void drawPlot(float x, float y);
-void drawAccumulator(float x, float y, string name, Accumulator output);
-void drawCollection(float x, float y, string name, FuzzyVar collection);
-void drawBestCollection(float x, float y, string name, FuzzyVar collection);
-void PrintFloat(float x, float y, string name, float value);
-void DrawRules(float x, float y, int controller);
 int main(int argc, char *argv[])
 {
   //Init GLUT
@@ -39,10 +32,9 @@ int main(int argc, char *argv[])
   glutInit(&argc, argv);
   glutInitWindowSize(800, 600);
   glutCreateWindow("FuzzyGen Gui");
-  glutKeyboardFunc(&processNormalKeys);
-  glutSpecialFunc(&processSpecialKeys);
-  glutDisplayFunc(&display);
-
+  glutKeyboardFunc(&ProcessNormalKeys);
+  glutSpecialFunc(&ProcessSpecialKeys);
+  glutDisplayFunc(&Display);
 
   state = 1;
   glutMainLoop();
@@ -53,7 +45,7 @@ int main(int argc, char *argv[])
   //InitControllers();
 }
 
-void processNormalKeys(unsigned char key, int x, int y)
+void ProcessNormalKeys(unsigned char key, int x, int y)
 {
   switch (key)
   {
@@ -63,7 +55,7 @@ void processNormalKeys(unsigned char key, int x, int y)
   }
 }
 
-void processSpecialKeys(int key, int x, int y)
+void ProcessSpecialKeys(int key, int x, int y)
 {
   switch (key)
   {
@@ -82,7 +74,7 @@ void processSpecialKeys(int key, int x, int y)
   }
 }
 
-void display() {
+void Display() {
 
   //end
   if(state == 5) {
@@ -121,7 +113,8 @@ void display() {
   if(state == 2) {
     if(tick % speed == 0) {
       result = RunSim(controller);
-      draw();
+      glClear(GL_COLOR_BUFFER_BIT);
+      DrawSim();
       if(result != -1) {
         if(cont[controller].score > 0) {
           if(BEST < cont[controller].score) {
@@ -148,121 +141,9 @@ void display() {
   glutPostRedisplay();
   glutSwapBuffers();
 }
-void draw() {
-  glClear(GL_COLOR_BUFFER_BIT);
-    //DRAW PLOTS
-  drawPlot(0, 0);
-  drawBestCollection(0,0,"Height", cont[BEST_CONT].input[0]);
-  drawCollection(0,0,"Height", cont[controller].input[0]);
 
-  drawPlot(0, 0.5f);
-  drawBestCollection(0,0.5f,"Velocity", cont[BEST_CONT].input[1]);
-  drawCollection(0,0.5f,"Velocity", cont[controller].input[1]);
-
-  //drawPlot(0, -0.5f, "Thrust:");
-  //drawCollection(0,0.5f, cont[CONT].input[0]);
-  PrintFloat(0, -0.5f,"Generation",generation);
-  PrintFloat(0, -0.55f,"Controller",controller);
-  PrintFloat(0, -0.6f,"Mutations",cont[controller].mutations);
-  PrintFloat(0, -0.65f,"Active Rules",cont[controller].output.active );
-  PrintFloat(0, -0.7f,"Fuel",cont[controller].score );
-  PrintFloat(0, -0.75f,"Thrust", cont[controller].output.output);
-  PrintFloat(0, -0.8f, "Sim Speed", 10 - (speed / 1000));
-  PrintFloat(0, -0.85f, "BEST", BEST);
-  PrintFloat(0, -0.9f, "MEAN", MEAN);
-    PrintFloat(0, -0.95f, "LOW", LOW);
-
-  drawPlot(0, -0.999);
-  drawAccumulator(0, -0.999, "Output", cont[controller].output);
-
-  DrawRules(0.3f, -0.45f, controller);
-
-  //DRAW SIM
-  float height = cont[controller].input[0].value - cont[controller].input[0].low;
-  height /= cont[controller].input[0].high;
-
-  drawSim(height, cont[controller].output.output);
-}
-
-//y is 0-1 marking the percentage between low and high
-void drawSim(float y, float thrust) {
-
-  //draw ground
-  glColor3f(140.0f/255, 140.0f/255, 140.0f/255);
-
-  glBegin(GL_POLYGON);
-    glVertex2f(-1, -0.9f);
-    glVertex2f(-1, -1);
-    glVertex2f(-0.006f, -1);
-    glVertex2f(-0.006f, -0.9f);
-  glEnd();
-
-  //draw the moonlander
-
-  //we need to calculate the position from the 0-100 value
-  y *= 2.0f;
-  y -= 1.0f;
-
-  //create the moonlander object
-
-  //feet
-    glColor3f(90.0f/255, 90.0f/255, 90.0f/255);
-  glBegin(GL_LINES);
-  //right
-    glVertex2f(-0.5f,  y+0.2f);
-    glVertex2f(-0.4f, y);
-
-    glVertex2f(-0.5f,  y+0.07f);
-    glVertex2f(-0.4f, y);
-
-  //left
-    glVertex2f(-0.5f,  y+0.2f);
-    glVertex2f(-0.6f, y);
-
-    glVertex2f(-0.5f,  y+0.07f);
-    glVertex2f(-0.6f, y);
-  glEnd();
-
-  //hull
-
-  glColor3f(98.0f/255, 98.0f/255, 98.0f/255);
-  glBegin(GL_POLYGON);
-    glVertex2f(-0.48f,  y+0.2f);
-    glVertex2f(-0.52f,  y+0.2f);
-    glVertex2f(-0.55f, y+0.15f);
-    glVertex2f(-0.53f, y+0.05f);
-    glVertex2f(-0.48f, y+0.05f);
-    glVertex2f(-0.45f, y+0.15f);
-  glEnd();
-  glColor3f(90.0f/255, 90.0f/255, 90.0f/255);
-  glBegin(GL_POLYGON);
-    glVertex2f(-0.485f, y+0.19f);
-    glVertex2f(-0.515f, y+0.19f);
-    glVertex2f(-0.54f, y+0.055f);
-    glVertex2f(-0.46f, y+0.055f);
-  glEnd();
-  glColor3f(184.0f/255, 134.0f/255, 11.0f/255);
-  glBegin(GL_POLYGON);
-    glVertex2f(-0.54f, y+0.12f);
-    glVertex2f(-0.46f, y+0.12f);
-    glVertex2f(-0.46f, y+0.05f);
-    glVertex2f(-0.54f, y+0.05f);
-  glEnd();
-
-
-  //draw the thrust
-  thrust /= THRUST_MAX;
-  thrust -= 0.05f;
-  glColor3f(1.0f, 0.0f, 0.0f);
-  glBegin(GL_TRIANGLES);
-    glVertex2f(-0.52f, y+0.05f);
-    glVertex2f(-0.5f, y- thrust);
-    glVertex2f(-0.48f, y+0.05f);
-  glEnd();
-
-
-}
-void drawPlot(float x, float y){
+//util functions
+void DrawPlot(float x, float y){
   glColor3f(1.0f, 0.0f, 0.0f);
   //draw x plane
   glBegin(GL_LINES);
@@ -277,7 +158,7 @@ void drawPlot(float x, float y){
   glEnd();
 }
 
-void drawAccumulator(float x, float y,string name, Accumulator output) {
+void DrawAccumulator(float x, float y,string name, Accumulator output) {
   PrintFloat(x, y,name, output.output);
   float xScale = 1.0f / output.high;
   glColor3f(1.0f, 1.0f, 1.0f);
@@ -298,7 +179,7 @@ void drawAccumulator(float x, float y,string name, Accumulator output) {
   glEnd();
 }
 
-void drawCollection(float x, float y,string name, FuzzyVar collection) {
+void DrawCollection(float x, float y,string name, FuzzyVar collection) {
   //draw current value
   glColor3f(1.0f, 0.0f, 0.0f);
   PrintFloat(x, y,name, collection.value);
@@ -343,7 +224,7 @@ void drawCollection(float x, float y,string name, FuzzyVar collection) {
   }
 
 }
-void drawBestCollection(float x, float y,string name, FuzzyVar collection) {
+void DrawBestCollection(float x, float y,string name, FuzzyVar collection) {
   //find the appropriate scale
   float scale = collection.high - collection.low;
   // for height

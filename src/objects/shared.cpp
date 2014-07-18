@@ -10,8 +10,8 @@ using namespace std;
   //define the global variables
 
   //genetic
-  short int POP = 1000;
-  short int GENERATIONS = 100;
+  short int POP = 500;
+  short int GENERATIONS = 1000;
   short int ANCESTOR = POP/2;
   float VARIANCE = 0.10f;
   float MUT_CHANCE = 0.4f;

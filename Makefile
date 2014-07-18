@@ -45,7 +45,7 @@ shared.o: $(OBJ_DIR)\shared.cpp $(OBJ_DIR)\shared.h
 
 #SIMULATIONS
 moon.o: $(SIM_DIR)\moon.cpp $(SIM_DIR)\moon.h
-	g++ -c $(SIM_DIR)\moon.cpp -m64
+	g++ -c $(SIM_DIR)\moon.cpp -m64 -D FREEGLUT_STATIC -I"C:\Program Files\mingw-w64\x86_64-4.9.0-posix-sjlj-rt_v3-rev2\mingw64\include"
 
 #UTIL FUNCTIONS
 .PHONY : clean

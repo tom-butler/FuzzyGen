@@ -2,7 +2,9 @@
 #include "shared.h"
 #include "gen.h"
 #include "..\sims\moon.h"
-
+#include <stdio.h>
+#include <iomanip>
+#include <sstream>
 #include <iostream>
 #include <fstream>
 #include <ctime>
@@ -33,6 +35,11 @@ void UpdateLog(int g){
   ss << g << "," << BEST << "," << MEAN << "," << LOW << "\n";
   string text(ss.str());
   LOG[g] = text;
+}
+
+void DrawSim(){
+  if(SIM == MOONLANDER)
+    DrawMoonSim();
 }
 
 void WriteLog(){
