@@ -62,7 +62,6 @@ extern float MUT_CHANCE;
 extern bool INCLUDE_CONTROL;
 extern bool LOGGING;
 
-
 //fuzzy
 extern short int NUM_INPUT;
 extern short int NUM_SETS;
