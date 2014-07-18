@@ -144,7 +144,6 @@ void WriteLog(){
 
     //fuzzy
     output << "NUM_INPUT," << NUM_INPUT << "\n";
-    output << "NUM_VARS," << NUM_VARS << "\n";
     output << "NUM_SETS," << NUM_SETS << "\n";
     output << "NUM_RULES," << NUM_RULES << "\n";
     output << "HEIGHT," << HEIGHT << "\n";

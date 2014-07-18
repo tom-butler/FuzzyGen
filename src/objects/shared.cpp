@@ -1,41 +1,31 @@
 #include <iostream>
 #include <GetOpt.h>
 #include <stdlib.h>
+#include <cmath>
 
 #include "shared.h"
 //sims
 #include "..\sims\moon.h"
 
 using namespace std;
-  //define the global variables
+  //define the standard options ----------------
 
   //genetic
   short int POP = 500;
   short int GENERATIONS = 1000;
-  short int ANCESTOR = POP/2;
   float VARIANCE = 0.10f;
   float MUT_CHANCE = 0.4f;
-  short int BEST = 0;
-  short int BEST_CONT = 0;
   bool INCLUDE_CONTROL = false;
-  float MEAN = 0.0f;
-  int LOW = 0;
   bool LOGGING = true;
-  string *LOG;
 
   //fuzzy
   short int NUM_INPUT = 2;
-  short int NUM_OUTPUT = 1;
-  short int NUM_VARS = 4;
   short int NUM_SETS = 3;
-  short int NUM_RULES = 9;
   float HEIGHT = 1;
-
 
   short int SIM = 0;
 
   //moonlander
-  short int MOONLANDER = 0;
   short int START_HEIGHT = 1000;
   short int START_FUEL = 500;
   short int START_VEL = 3;
@@ -44,10 +34,18 @@ using namespace std;
   float FORCE = 2.0f;
   short int CRASH_SPEED = 10;
 
+  //runtime variables ---------------------------
+  short int ANCESTOR = POP/2;
+  short int NUM_RULES = pow(NUM_SETS, NUM_INPUT) ;
+  short int BEST = 0;
+  short int BEST_CONT = 0;
+  float MEAN = 0.0f;
+  int LOW = 0;
+
+  string *LOG;
   FuzzyVar  *simInput;
   Accumulator * simOutput;
   FuzzyVar * simFitness;
-
   Controller *cont;
 
 void InitSystem() {
@@ -58,5 +56,7 @@ void InitSystem() {
     LOG = new string[GENERATIONS];
   if(SIM == MOONLANDER)
     MoonCreateVars();
+}
+void InitTest(int test) {
 
 }

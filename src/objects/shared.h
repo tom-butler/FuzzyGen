@@ -57,27 +57,21 @@ typedef struct {
 //genetic
 extern short int POP;
 extern short int GENERATIONS;
-extern short int ANCESTOR;
 extern float VARIANCE;
 extern float MUT_CHANCE;
-extern short int BEST;
-extern short int BEST_CONT;
 extern bool INCLUDE_CONTROL;
-extern float MEAN;
-extern int LOW;
 extern bool LOGGING;
-extern std::string *LOG;
+
+
 //fuzzy
 extern short int NUM_INPUT;
-extern short int NUM_VARS;
 extern short int NUM_SETS;
-extern short int NUM_RULES;
 extern float HEIGHT;
 
 //sims
 extern short int SIM;
+
 //moonlander
-extern short int MOONLANDER;
 extern short int START_HEIGHT;
 extern short int START_FUEL;
 extern short int START_VEL;
@@ -86,12 +80,19 @@ extern short int TERMINAL_VELOCITY;
 extern float FORCE;
 extern short int CRASH_SPEED;
 
+//runtime variables -------------
+const short int MOONLANDER = 0;
+extern short int NUM_RULES;
+extern short int ANCESTOR;
+extern short int BEST;
+extern short int BEST_CONT;
+extern float MEAN;
+extern int LOW;
 
+extern std::string *LOG;
 extern FuzzyVar *simInput;
 extern Accumulator * simOutput;
 extern FuzzyVar * simFitness;
-
-//controllers
 extern Controller *cont;
 
 void InitSystem();
