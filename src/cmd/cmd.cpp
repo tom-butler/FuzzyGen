@@ -2,19 +2,52 @@
 #include "..\objects\gen.h"
 
 #include <iostream>
-
+#include <stdlib.h>
 using namespace std;
 
 void GALoop();
 int main(int argc, char *argv[])
 {
-  cout << "Initalising System            ";
-  InitSystem();
-  cout << "OK\n";
-  cout << "Initalising Controllers       ";
-  InitControllers();
-  cout << "OK\n";
-  GALoop();
+
+  if(argc == 1){  //simple run
+    cout << "Initalising System            ";
+    InitSystem();
+    cout << "OK\n";
+    cout << "Initalising Controllers       ";
+    InitControllers();
+    cout << "OK\n";
+    GALoop();
+  }
+  else if(argc >= 2){ //run with predefined test data
+    cout << "Initalising Test              ";
+    int r = InitTest(atoi(argv[1]));
+    if(r == 0)
+      cout << "OK\n";
+    else
+      cout << "Failed, using default parameters\n";
+  }
+  if(argc >= 3){ //looped test run
+    for(int run = 0; run < atoi(argv[2]); run++){
+      cout << "Initalising System            ";
+      InitSystem();
+      cout << "OK\n";
+      cout << "Initalising Test              ";
+      int r = InitTest(atoi(argv[1]));
+      if(r == 0)
+        cout << "OK\n";
+      else
+        cout << "Failed, using default parameters\n";
+
+      cout << "Initalising Controllers       ";
+      InitControllers();
+      cout << "OK\n";
+      GALoop();
+    }
+  }
+  else{
+
+  }
+
 }
 
 void GALoop() {

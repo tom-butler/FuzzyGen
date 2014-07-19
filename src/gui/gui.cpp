@@ -26,6 +26,7 @@ void Display(void);
 int main(int argc, char *argv[])
 {
   //Init GLUT
+  GUI = true;
   InitSystem();
   InitControllers();
 

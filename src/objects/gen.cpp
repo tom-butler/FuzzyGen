@@ -37,11 +37,6 @@ void UpdateLog(int g){
   LOG[g] = text;
 }
 
-void DrawSim(){
-  if(SIM == MOONLANDER)
-    DrawMoonSim();
-}
-
 void WriteLog(){
 
     time_t now = time(0);

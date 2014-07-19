@@ -441,6 +441,28 @@ void Mutate(int id) {
     MutateRule(id, GetRandInt(0, NUM_RULES ));
 }
 
+void MutateCol(int controller, int var) {
+  int region = cont[controller].input[var].high - cont[controller].input[var].low;
+  random = GetRandFloat(-region * 0.05f, region * 0.05f);
+
+  short int mut = GetRandInt(0, 4);
+  switch(mut){
+    case 0:
+      if(MUT_COL_GROW)
+
+    break;
+    case 1:
+      if(MUT_COL_SLIDE)
+
+    break;
+    case 2:
+      if(MUT_COL_ADD)
+
+    break;
+    case 3:
+  }
+}
+
 void MutateSet(int controller, int var, int setID) {
 
   Set set = cont[controller].input[var].sets[setID];

@@ -80,6 +80,7 @@ extern float FORCE;
 extern short int CRASH_SPEED;
 
 //runtime variables -------------
+extern bool GUI;
 const short int MOONLANDER = 0;
 extern short int NUM_RULES;
 extern short int ANCESTOR;
@@ -95,4 +96,5 @@ extern FuzzyVar * simFitness;
 extern Controller *cont;
 
 void InitSystem();
+int InitTest(int test);
 #endif
