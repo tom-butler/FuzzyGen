@@ -323,11 +323,13 @@ void EvaluateOutput(int controller) {
     return;
 
   float total = 0.0f;
+  float totalWeight = 0.0f;
   for(int i = 0; i < cont[controller].output.active; i++) {
    total += cont[controller].output.scale[i] * cont[controller].output.value[i];
+   totalWeight += cont[controller].output.scale[i];
   }
 
-  total /= cont[controller].output.active;
+  total /= totalWeight;
   cont[controller].output.output = total;
 }
 
@@ -446,6 +448,7 @@ void MutateCol(int controller, int var) {
   random = GetRandFloat(-region * 0.05f, region * 0.05f);
 
   short int mut = GetRandInt(0, 4);
+  /*
   switch(mut){
     case 0:
       if(MUT_COL_GROW)
@@ -461,6 +464,7 @@ void MutateCol(int controller, int var) {
     break;
     case 3:
   }
+  */
 }
 
 void MutateSet(int controller, int var, int setID) {

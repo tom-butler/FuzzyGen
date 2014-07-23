@@ -62,6 +62,19 @@ extern float MUT_CHANCE;
 extern bool INCLUDE_CONTROL;
 extern bool LOGGING;
 
+extern bool MUT_COL_INITIAL;
+extern bool MUT_COL_GROW;
+extern bool MUT_COL_SLIDE;
+extern bool MUT_COL_ADD;
+
+extern bool MUT_SET_INITIAL;
+extern bool MUT_SET_GROW;
+extern bool MUT_SET_SLIDE;
+extern bool MUT_SET_ADD;
+
+extern bool MUT_RULE_RAND;
+extern bool MUT_RULE_ADDALL;
+
 //fuzzy
 extern short int NUM_INPUT;
 extern short int NUM_SETS;
