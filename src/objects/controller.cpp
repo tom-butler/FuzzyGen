@@ -10,10 +10,9 @@ using namespace std;
 static int random;
 
 //util
-short int GetRandInt(short int low, short int high);
 float Lerp(float x1, float y1, float x2, float y2, float value);
 void ResetAccumulator(int controller);
-void ResetVariables(int controller, FuzzyVar input[]);
+
 
 //init
 void InitControlController(int controller);
@@ -36,15 +35,6 @@ void Mutate(int id);
 void MutateSet(int controller, int var, int setID);
 void MutateRule(int controller, int ruleID);
 
-//get a random integer between two low and high
-short int GetRandInt(short int low, short int high){
-  return rand() % (high - low) + low;
-}
-
-float GetRandFloat(float low, float high) {
-  return low + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(high-low)));
-}
-
 float Lerp(float x1, float y1, float x2, float y2, float value) {
   //find the percentage by the x values
   float v = ((value - x1)/(x2 - x1));
@@ -62,16 +52,6 @@ void ResetAccumulator(int controller) {
 
   cont[controller].output.output = 0.0f;
   cont[controller].output.active = 0;
-}
-
-void ResetVariables(int controller, FuzzyVar input[]){
-  //for(int i = 0; i < NUM_INPUT; i++) {
- //   cont[controller].input[i].value = input[i].value;
- // }
-  cont[controller].input[0].value = START_HEIGHT;
-  cont[controller].input[1].value = START_VEL;
-
-  cont[controller].score = START_FUEL;
 }
 
 //initialisation
@@ -99,8 +79,6 @@ void CreateControllers(int num_controllers, FuzzyVar input[], Accumulator output
 
     //make some Rules
     cont[i].rules = new Rule[NUM_RULES];
-    //give it an initial score
-    cont[i].score = START_FUEL;
     InitRules(i);
   }
   if(INCLUDE_CONTROL)
@@ -245,7 +223,7 @@ void InitRules(int controller) {
       for(int k = i + 1; k < NUM_INPUT; ++k) {
         for(int l = 0; l < NUM_SETS; l++) {
           int output = GetRandInt(cont[controller].output.low,cont[controller].output.high);
-          Rule r = {i, j,"AND", k, l, GetRandFloat(0.0f,THRUST_MAX), false};
+          Rule r = {i, j,"AND", k, l, GetRandFloat(cont[controller].output.low,cont[controller].output.high), false};
           cont[controller].rules[currentRule] = r;
           ++currentRule;
         }
@@ -420,7 +398,6 @@ void Breed(int parents[]){
       if(mut <= MUT_CHANCE)
         Mutate(i);
     }
-    ResetVariables(i,simInput);
   }
 }
 void BreedSets(int id1, int id2){
@@ -543,7 +520,7 @@ void MutateRule(int controller, int ruleID) {
   switch(mut){
     case 0: //swap the output
       do {
-        random = GetRandInt(0, THRUST_MAX);
+        random = GetRandFloat(cont[controller].output.low,cont[controller].output.high);
         if(random != cont[controller].rules[ruleID].output) {
         cont[controller].rules[ruleID].output = random;
       }

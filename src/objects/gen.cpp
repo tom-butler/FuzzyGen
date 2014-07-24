@@ -143,14 +143,6 @@ void WriteLog(){
     output << "NUM_RULES," << NUM_RULES << "\n";
     output << "HEIGHT," << HEIGHT << "\n";
 
-    //sim
-    output << "START_HEIGHT," << START_HEIGHT << "\n";
-    output << "START_FUEL," << START_FUEL << "\n";
-    output << "STAR_VEL," << START_VEL << "\n";
-    output << "THRUST_MAX," << THRUST_MAX << "\n";
-    output << "TERMINAL_VELOCITY," << TERMINAL_VELOCITY << "\n";
-    output << "FORCE," << FORCE << "\n";
-    output << "CRASH_SPEED," << CRASH_SPEED << "\n";
     output.close();
     ss.str("");
     ss.clear();

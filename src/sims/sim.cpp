@@ -1,5 +1,6 @@
 #include "..\objects\shared.h"
 #include "..\gui\gui.h"
+#include "moon.h"
 #include <GL\freeglut.h>
 void DrawMoonSim();
 void DrawSim() {
@@ -22,7 +23,7 @@ void DrawMoonSim() {
   PrintFloat(0, -0.55f,"Controller",controller);
   PrintFloat(0, -0.6f,"Mutations",cont[controller].mutations);
   PrintFloat(0, -0.65f,"Active Rules",cont[controller].output.active );
-  PrintFloat(0, -0.7f,"Fuel",cont[controller].score );
+  PrintFloat(0, -0.7f,"Fuel",fuel );
   PrintFloat(0, -0.75f,"Thrust", cont[controller].output.output);
   PrintFloat(0, -0.8f, "Sim Speed", 10 - (speed / 1000));
   PrintFloat(0, -0.85f, "BEST", BEST);
@@ -104,7 +105,7 @@ void DrawMoonSim() {
 
 
   //draw the thrust
-  thrust /= THRUST_MAX;
+  thrust /= 100;
   thrust -= 0.05f;
   glColor3f(1.0f, 0.0f, 0.0f);
   glBegin(GL_TRIANGLES);

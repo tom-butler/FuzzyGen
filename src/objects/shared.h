@@ -82,19 +82,13 @@ extern float HEIGHT;
 
 //sims
 extern short int SIM;
-
-//moonlander
-extern short int START_HEIGHT;
-extern short int START_FUEL;
-extern short int START_VEL;
-extern short int THRUST_MAX;
-extern short int TERMINAL_VELOCITY;
-extern float FORCE;
-extern short int CRASH_SPEED;
+const short int MOONLANDER = 0;
+const short int PENDULUMCART = 1;
+const short int HARRIER = 2;
 
 //runtime variables -------------
 extern bool GUI;
-const short int MOONLANDER = 0;
+
 extern short int NUM_RULES;
 extern short int ANCESTOR;
 extern short int BEST;
@@ -110,4 +104,8 @@ extern Controller *cont;
 
 void InitSystem();
 int InitTest(int test);
+//util
+short int GetRandInt(short int low, short int high);
+float GetRandFloat(float low, float high);
+
 #endif

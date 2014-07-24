@@ -40,15 +40,6 @@ using namespace std;
 
   short int SIM = 0;
 
-  //moonlander
-  short int START_HEIGHT = 1000;
-  short int START_FUEL = 500;
-  short int START_VEL = 3;
-  short int THRUST_MAX = 10;
-  short int TERMINAL_VELOCITY = START_VEL * 10;
-  float FORCE = 5.0f;
-  short int CRASH_SPEED = 3;
-
   //runtime variables ---------------------------
   bool GUI = false;
   short int ANCESTOR = POP/2;
@@ -108,22 +99,16 @@ int InitTest(int test) {
       HEIGHT = atoi(value.c_str());
     else if(key == "SIM")
       SIM = atoi(value.c_str());
-    //moonlander
-    else if(key == "START_HEIGHT")
-      START_HEIGHT = atoi(value.c_str());
-    else if(key == "START_FUEL")
-      START_FUEL = atoi(value.c_str());
-    else if(key == "START_VEL")
-      START_VEL = atoi(value.c_str());
-    else if(key == "THRUST_MAX")
-      THRUST_MAX = atoi(value.c_str());
-    else if(key == "TERMINAL_VELOCITY")
-      TERMINAL_VELOCITY = atoi(value.c_str());
-    else if(key == "FORCE")
-      FORCE = atoi(value.c_str());
-    else if(key == "CRASH_SPEED")
-      CRASH_SPEED = atoi(value.c_str());
   }
   file.close();
   return 0;
+}
+
+//get a random integer between two low and high
+short int GetRandInt(short int low, short int high){
+  return rand() % (high - low) + low;
+}
+
+float GetRandFloat(float low, float high) {
+  return low + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(high-low)));
 }
