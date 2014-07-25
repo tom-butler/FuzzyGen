@@ -53,8 +53,14 @@ void MoonInitSim(int controller) {
   score = &cont[controller].score;
 
   landerMass = LANDER_WEIGHT + START_FUEL;
-  *height = START_HEIGHT + GetRandInt(0, 250);
-  *velocity = GetRandFloat(-MAX_START_VEL, MAX_START_VEL);
+  if(RANDOM_START){
+    *height = START_HEIGHT + GetRandInt(0, 250);
+    *velocity = GetRandFloat(-MAX_START_VEL, MAX_START_VEL);
+  }
+  else{
+    *height = START_HEIGHT + 250;
+    *velocity = 0;
+  }
   fuel = START_FUEL;
 }
 

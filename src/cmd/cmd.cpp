@@ -52,12 +52,16 @@ int main(int argc, char *argv[])
 
 void GALoop() {
   for (int g = 0; g < GENERATIONS; g++) {
+    BEST = 0;
     cout << "Running Sim                    ";
     for(int c = 0; c < POP; ++c) {
       InitSimulation(c);
       int result = -1;
       while(result == -1) {
         result = RunSim(c);
+      }
+      if(cont[c].score > MAX_BEST){
+        MAX_BEST = cont[c].score;
       }
       if(cont[c].score > BEST){
         BEST = cont[c].score;
@@ -70,7 +74,7 @@ void GALoop() {
       Breed();
       cout << "OK\n";
     }
-    cout << "GEN " << g << " BEST " << BEST << " MEAN " << MEAN << " LOW " << LOW << "\n";
+    cout << "GEN " << g << " MAX BEST " << MAX_BEST << " BEST " << BEST << " MEAN " << MEAN << " LOW " << LOW << "\n";
     //log data
     if(LOGGING){
       UpdateLog(g);

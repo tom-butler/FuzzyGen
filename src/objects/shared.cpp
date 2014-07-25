@@ -12,12 +12,14 @@ using namespace std;
   //define the standard options ----------------
 
   //genetic
-  short int POP = 50;
+  short int POP = 1000;
   short int GENERATIONS = 100;
   float VARIANCE = 0.10f;
   float MUT_CHANCE = 0.4f;
   bool INCLUDE_CONTROL = false;
   bool LOGGING = true;
+  bool RANDOM_START = true;
+  bool ELITISM = false;
 
   bool MUT_COL_INITIAL = true;
   bool MUT_COL_GROW = true;
@@ -25,6 +27,7 @@ using namespace std;
   bool MUT_COL_ADD = true;
 
   bool MUT_SET_INITIAL = true;
+  bool MUT_SET_NUM = true;
   bool MUT_SET_GROW_TOP = true;
   bool MUT_SET_GROW_BOT = true;
   bool MUT_SET_SLIDE = true;
@@ -35,18 +38,19 @@ using namespace std;
   bool MUT_RULE_RAND = true;
   bool MUT_RULE_ADDALL = true;
 
-
   //fuzzy
   short int NUM_INPUT = 2;
-  short int NUM_SETS = 3;
-  float HEIGHT = 1;
+  short int MIN_NUM_SETS = 2;
+  short int MAX_NUM_SETS = 3;
+  float HEIGHT_LOW = 0.5;
+  float HEIGHT_HIGH = 1;
 
   short int SIM = 0;
 
   //runtime variables ---------------------------
   bool GUI = false;
   short int ANCESTOR = POP/2;
-  short int NUM_RULES = pow(NUM_SETS, NUM_INPUT) ;
+  short int MAX_BEST = 0;
   short int BEST = 0;
   short int BEST_CONT = 0;
   float MEAN = 0.0f;
@@ -95,10 +99,6 @@ int InitTest(int test) {
       LOGGING = atoi(value.c_str());
     else if(key == "NUM_INPUT")
       NUM_INPUT = atoi(value.c_str());
-    else if(key == "NUM_SETS")
-      NUM_SETS = atoi(value.c_str());
-    else if(key == "HEIGHT")
-      HEIGHT = atoi(value.c_str());
     else if(key == "SIM")
       SIM = atoi(value.c_str());
   }
@@ -108,7 +108,7 @@ int InitTest(int test) {
 
 //get a random integer between two low and high
 short int GetRandInt(short int low, short int high){
-  return rand() % (high - low) + low;
+  return (rand() % ((high + 1) - low)) + low;
 }
 
 float GetRandFloat(float low, float high) {

@@ -30,6 +30,7 @@ typedef struct {
   short int high;
   float value;
   Set *sets;
+  int setNum;
 } FuzzyVar;
 
 typedef struct {
@@ -48,6 +49,7 @@ typedef struct {
   FuzzyVar *input;
   Accumulator output;
   Rule *rules;
+  int ruleNum;
 } Controller;
 
 
@@ -61,6 +63,8 @@ extern float VARIANCE;
 extern float MUT_CHANCE;
 extern bool INCLUDE_CONTROL;
 extern bool LOGGING;
+extern bool RANDOM_START;
+extern bool ELITISM;
 
 extern bool MUT_COL_INITIAL;
 extern bool MUT_COL_GROW;
@@ -68,6 +72,7 @@ extern bool MUT_COL_SLIDE;
 extern bool MUT_COL_ADD;
 
 extern bool MUT_SET_INITIAL;
+extern bool MUT_SET_NUM;
 extern bool MUT_SET_GROW_TOP;
 extern bool MUT_SET_GROW_BOT;
 extern bool MUT_SET_SLIDE;
@@ -80,8 +85,10 @@ extern bool MUT_RULE_ADDALL;
 
 //fuzzy
 extern short int NUM_INPUT;
-extern short int NUM_SETS;
-extern float HEIGHT;
+extern short int MIN_NUM_SETS;
+extern short int MAX_NUM_SETS;
+extern float HEIGHT_LOW;
+extern float HEIGHT_HIGH;
 
 //sims
 extern short int SIM;
@@ -91,9 +98,8 @@ const short int HARRIER = 2;
 
 //runtime variables -------------
 extern bool GUI;
-
-extern short int NUM_RULES;
 extern short int ANCESTOR;
+extern short int MAX_BEST;
 extern short int BEST;
 extern short int BEST_CONT;
 extern float MEAN;

@@ -13,11 +13,11 @@ void DrawMoonSim() {
 
   //DRAW PLOTS
   DrawPlot(0, 0);
-  DrawBestCollection(0,0,"Height", cont[BEST_CONT].input[0]);
-  DrawCollection(0,0,"Height", cont[controller].input[0]);
+  DrawBestCollection(0,0.5f,"Height", cont[BEST_CONT].input[0]);
+  DrawCollection(0,0.5f,"Height", cont[controller].input[0]);
   DrawPlot(0, 0.5f);
-  DrawBestCollection(0,0.5f,"Velocity", cont[BEST_CONT].input[1]);
-  DrawCollection(0,0.5f,"Velocity", cont[controller].input[1]);
+  DrawBestCollection(0,0,"Velocity", cont[BEST_CONT].input[1]);
+  DrawCollection(0,0,"Velocity", cont[controller].input[1]);
 
   //Draw diagnostics
   PrintFloat(0, -0.5f,"Generation",generation);

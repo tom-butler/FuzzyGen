@@ -32,7 +32,7 @@ void Breed() {
 
 void UpdateLog(int g){
   ostringstream ss;
-  ss << g << "," << BEST << "," << MEAN << "," << LOW << "\n";
+  ss << g << "," << MAX_BEST << "," << BEST << "," << MEAN << "," << LOW << "\n";
   string text(ss.str());
   LOG[g] = text;
 }
@@ -45,7 +45,7 @@ void WriteLog(){
 
     ss << "logs/gen/gen" << now << ".csv";
     output.open(ss.str().c_str());
-    output << "Generation,Best,Mean,Low\n";
+    output << "Generation,Best Max,Gen Best,Mean,Low\n";
     for(int i = 0; i < GENERATIONS; i++){
       output << LOG[i];
     }
@@ -55,11 +55,12 @@ void WriteLog(){
 
     ss << "logs/controller/cont" << now << ".csv";
     output.open(ss.str().c_str());
-    output << "Controller,Score,Mutations\n";
+    output << "Controller,Score,Mutations,Rule Number\n";
     for(int controller = 0; controller < POP; controller++) {
       output << controller << ",";
       output << cont[controller].score << ",";
-      output << cont[controller].mutations << "\n";
+      output << cont[controller].mutations << ",";
+      output << cont[controller].ruleNum <<"\n";
     }
     output.close();
     ss.str("");
@@ -84,7 +85,7 @@ void WriteLog(){
     output << "Controller,Input,Set,Height,CentreX,Left Base,Right Base,Left Top,Right Top\n";
     for(int controller = 0; controller < POP; controller++) {
       for(int i = 0; i < NUM_INPUT; i++) {
-        for(int s = 0; s < NUM_SETS; s++) {
+        for(int s = 0; s < cont[controller].input[i].setNum; s++) {
           output << controller << ",";
           output << i << ",";
           output << s << ",";
@@ -106,7 +107,7 @@ void WriteLog(){
     output.open(ss.str().c_str());
     output << "Controller,Rule,Input Variable 1,Input Set 1,Modifier,Input Variable 2,Input Set 2,Output Value\n";
     for(int controller = 0; controller < POP; controller++) {
-      for(int i = 0; i < NUM_RULES; i++) {
+      for(int i = 0; i < cont[controller].ruleNum; i++) {
         output << controller << ",";
         output << i << ",";
         output << cont[controller].rules[i].inputvar << ",";
@@ -139,9 +140,6 @@ void WriteLog(){
 
     //fuzzy
     output << "NUM_INPUT," << NUM_INPUT << "\n";
-    output << "NUM_SETS," << NUM_SETS << "\n";
-    output << "NUM_RULES," << NUM_RULES << "\n";
-    output << "HEIGHT," << HEIGHT << "\n";
 
     output.close();
     ss.str("");

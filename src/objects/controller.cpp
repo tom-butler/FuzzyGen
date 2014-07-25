@@ -44,7 +44,7 @@ float Lerp(float x1, float y1, float x2, float y2, float value) {
 
 void CleanVar(int controller, int var){
 
-  for(int i = 0; i < NUM_SETS; i++){
+  for(int i = 0; i < cont[controller].input[var].setNum; i++){
     Set set = cont[controller].input[var].sets[i];
       //ensure they actually look like sets
     if(set.leftTop > set.leftBase)
@@ -89,8 +89,8 @@ void ResetAccumulator(int controller) {
   delete[] cont[controller].output.value;
   delete[] cont[controller].output.scale;
 
-  cont[controller].output.value = new float[NUM_RULES];
-  cont[controller].output.scale = new float[NUM_RULES];
+  cont[controller].output.value = new float[cont[controller].ruleNum];
+  cont[controller].output.scale = new float[cont[controller].ruleNum];
 
   cont[controller].output.output = 0.0f;
   cont[controller].output.active = 0;
@@ -101,26 +101,31 @@ void CreateControllers(int num_controllers, FuzzyVar input[], Accumulator output
   //seed random
   srand(static_cast <unsigned>(time(0)));
 
-   for(int i = 0; i < num_controllers;i++) {
+ for(int i = 0; i < num_controllers;i++) {
 
     //create input sets
     cont[i].input = new FuzzyVar[NUM_INPUT];
     copy(input,input+NUM_INPUT, cont[i].input);
-
+    cont[i].ruleNum = 1;
     for(int j = 0; j < NUM_INPUT; j++)
     {
-      cont[i].input[j].sets = new Set[NUM_SETS];
-      InitSets(i, j, NUM_SETS);
+      cont[i].input[j].sets = new Set[MAX_NUM_SETS];
+      if(MUT_SET_NUM){
+        InitSets(i, j, GetRandInt(MIN_NUM_SETS, MAX_NUM_SETS));
+      }
+      else{
+        InitSets(i, j,MIN_NUM_SETS);
+      }
+      cont[i].ruleNum *= cont[i].input[j].setNum;
     }
-
     //create output singletons
     cont[i].output = output;
 
-    cont[i].output.value = new float[NUM_RULES];
-    cont[i].output.scale = new float[NUM_RULES];
+    cont[i].output.value = new float[cont[i].ruleNum];
+    cont[i].output.scale = new float[cont[i].ruleNum];
 
     //make some Rules
-    cont[i].rules = new Rule[NUM_RULES];
+    cont[i].rules = new Rule[cont[i].ruleNum];
     InitRules(i);
   }
 }
@@ -149,21 +154,15 @@ void InitSets(int controller, int variable,short int numSets) {
       rtop = end - centre;
       rbase = end - centre;
     }
-/*
-    cout << (centre - lbase);
-    cout << " " << (centre -ltop);
-    cout << " " << centre;
-    cout << " " << (centre + rtop);
-    cout << " " << (centre + rbase);
-    cout << "\n";
-*/
+
     //build the set
-    Set s = {HEIGHT, centre, lbase, rbase, ltop, rtop};
+    Set s = {GetRandFloat(HEIGHT_LOW, HEIGHT_HIGH), centre, lbase, rbase, ltop, rtop};
 
       cont[controller].input[variable].sets[j] = s;
     //increment the centre for next set
     centre += space;
   }
+  cont[controller].input[variable].setNum = numSets;
 }
 
 
@@ -171,10 +170,10 @@ void InitSets(int controller, int variable,short int numSets) {
 //initialises all rules for a given output
 void InitRules(int controller) {
   int currentRule = 0;
-  for(int i = 0; i < NUM_INPUT; ++i) {
-    for (int j = 0; j < NUM_SETS; ++j) {
-      for(int k = i + 1; k < NUM_INPUT; ++k) {
-        for(int l = 0; l < NUM_SETS; l++) {
+  for(int i = 0; i < NUM_INPUT; i++) {
+    for (int j = 0; j < cont[controller].input[i].setNum; ++j) {
+      for(int k = i+1; k < NUM_INPUT; ++k) {
+        for(int l = 0; l < cont[controller].input[k].setNum; ++l) {
           int output = GetRandInt(cont[controller].output.low,cont[controller].output.high);
           Rule r = {i, j,"AND", k, l, GetRandFloat(cont[controller].output.low,cont[controller].output.high), false};
           cont[controller].rules[currentRule] = r;
@@ -193,7 +192,7 @@ void EvaluateRules(int controller) {
   float rcount = 0.0f;
   float returnValue = 0.0f;
   float variable;
-  for(int i = 0; i < NUM_RULES; i++) {
+  for(int i = 0; i < cont[controller].ruleNum; i++) {
     cont[controller].rules[i].isActive = false;
     res1 = EvaluateSet(controller, cont[controller].rules[i].inputvar, cont[controller].rules[i].inputset, cont[controller].input[cont[controller].rules[i].inputvar].value);
     res2 = EvaluateSet(controller, cont[controller].rules[i].inputvar2, cont[controller].rules[i].inputset2, cont[controller].input[cont[controller].rules[i].inputvar2].value);
@@ -326,7 +325,7 @@ void SelectMean(float mean){
   }
 //if not enough are selected
   while(c < ANCESTOR){
-    random = GetRandInt(0,POP);
+    random = GetRandInt(0,POP-1);
     if(cont[random].score != -2){
       cont[random].score = -2;
       parents[c] = random;
@@ -339,6 +338,11 @@ void SelectMean(float mean){
 void Breed(int parents[]){
   int c = 0;
   for(int i = 0; i < POP; i++) {
+    //preserve best
+    if(ELITISM)
+      if(i == BEST_CONT)
+        continue;
+
     if(cont[i].score != -2){
 
       //breed sets
@@ -354,31 +358,35 @@ void Breed(int parents[]){
   }
 }
 void BreedSets(int id1, int id2){
-  random = GetRandInt(0, NUM_INPUT);
+  random = GetRandInt(0, NUM_INPUT-1);
   delete [] cont[id1].input[random].sets;
-  cont[id1].input[random].sets =  new Set[NUM_SETS];
-  copy(cont[id2].input[random].sets, cont[id2].input[random].sets + NUM_SETS, cont[id1].input[random].sets);
+  cont[id1].input[random].sets = new Set[MAX_NUM_SETS];
+  copy(cont[id2].input[random].sets, cont[id2].input[random].sets + MAX_NUM_SETS, cont[id1].input[random].sets);
 }
 void BreedRules(int id1, int id2){
-  random = GetRandInt(0, NUM_RULES);
-  for(int i = 0; i < random; i++)
-    cont[id1].rules[i].output = cont[id2].rules[i].output;
+  random = GetRandInt(0, cont[id1].ruleNum -1);
+  for(int i = 0; i < random; i++){
+    if(cont[id1].rules[i].output != 0 && cont[id2].rules[i].output != 0){
+      cont[id1].rules[i].output = cont[id2].rules[i].output;
+    }
+  }
 }
 
 void Mutate(int id) {
   random = GetRandInt(0, 2);
   if(random == 0){
-    int var = GetRandInt(0,NUM_INPUT);
-    MutateSet(id, var, GetRandInt(0,NUM_SETS));
+    int var = GetRandInt(0,NUM_INPUT -1);
+    MutateSet(id, var, GetRandInt(0,cont[id].input[var].setNum -1));
     CleanVar(id, var);
   }
   else if (random == 1){
-    int var = GetRandInt(0,NUM_INPUT);
+    int var = GetRandInt(0,NUM_INPUT -1);
     MutateCol(id, var);
     CleanVar(id, var);
   }
-  else
-    MutateRule(id, GetRandInt(0, NUM_RULES ));
+  else{
+    MutateRule(id, GetRandInt(0, cont[id].ruleNum -1 ));
+  }
 
 }
 
@@ -390,7 +398,7 @@ void MutateCol(int controller, int var) {
   switch(mut){
     case 0:
       if(MUT_COL_GROW){
-          for(int s = 0; s < NUM_SETS; s++){
+          for(int s = 0; s < cont[controller].input[var].setNum; s++){
             cont[controller].input[var].sets[s].leftTop -= random;
             cont[controller].input[var].sets[s].leftBase -= random;
             cont[controller].input[var].sets[s].rightTop += random;
@@ -400,14 +408,14 @@ void MutateCol(int controller, int var) {
       }
     case 1:
       if(MUT_COL_SLIDE){
-        for(int s = 0; s < NUM_SETS; s++){
+        for(int s = 0; s < cont[controller].input[var].setNum; s++){
             cont[controller].input[var].sets[s].centreX += random;
           }
         break;
       }
     case 2:
       if(MUT_COL_ADD){
-          for(int s = 0; s < NUM_SETS; s++){
+          for(int s = 0; s < cont[controller].input[var].setNum; s++){
             cont[controller].input[var].sets[s].leftTop += random;
             cont[controller].input[var].sets[s].leftBase += random;
             cont[controller].input[var].sets[s].rightTop += random;
@@ -466,20 +474,15 @@ void MutateSet(int controller, int var, int setID) {
 }
 
 void MutateRule(int controller, int ruleID) {
-  short int mut = GetRandInt(0,0);
+  short int mut = GetRandInt(0,1);
   cont[controller].mutations++;
+  if(cont[controller].rules[ruleID].output != 0){
+    switch(mut){
+      case 0: //swap the output
+          random = GetRandFloat(cont[controller].output.low,cont[controller].output.high);
+          cont[controller].rules[ruleID].output = random;
+          break;
 
-  switch(mut){
-    case 0: //swap the output
-      do {
-        random = GetRandFloat(cont[controller].output.low,cont[controller].output.high);
-        if(random != cont[controller].rules[ruleID].output) {
-        cont[controller].rules[ruleID].output = random;
-      }
-  } while(1);
-      break;
-    default:
-      return;
-      break;
+    }
   }
 }

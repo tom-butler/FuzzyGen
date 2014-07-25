@@ -118,7 +118,10 @@ void Display() {
       DrawSim();
       if(result != -1) {
         if(cont[controller].score > 0) {
-          if(BEST < cont[controller].score) {
+          if(cont[controller].score > MAX_BEST){
+            MAX_BEST = cont[controller].score;
+          }
+          if(cont[controller].score > BEST){
             BEST = cont[controller].score;
             BEST_CONT = controller;
           }
@@ -188,7 +191,7 @@ void DrawCollection(float x, float y,string name, FuzzyVar collection) {
   float scale = collection.high - collection.low;
   // for height
 
-  for(int i = 0; i < NUM_SETS;i++) {
+  for(int i = 0; i < collection.setNum;i++) {
     //scale the points
     float centre = collection.sets[i].centreX - collection.low;
     centre /= scale;
@@ -201,7 +204,7 @@ void DrawCollection(float x, float y,string name, FuzzyVar collection) {
     //rTop /= scale;
     float rBase = collection.sets[i].rightBase / scale;
     //rBase /= scale;
-    float height = collection.sets[i].height / HEIGHT;
+    float height = collection.sets[i].height / 2;
 
     float value = collection.value - collection.low;
     value /= scale;
@@ -209,17 +212,17 @@ void DrawCollection(float x, float y,string name, FuzzyVar collection) {
       glColor3f(1.0f, 0.0f, 0.0f);
     glBegin(GL_LINES);
       glVertex2f(x + (centre - lBase), y);
-      glVertex2f(x + (centre - lTop), y + 0.4f);
-      glVertex2f(x + (centre - lTop), y + 0.4f);
-      glVertex2f(x + (centre + rTop), y + 0.4f);
-      glVertex2f(x + (centre + rTop), y + 0.4f);
+      glVertex2f(x + (centre - lTop), y + height);
+      glVertex2f(x + (centre - lTop), y + height);
+      glVertex2f(x + (centre + rTop), y + height);
+      glVertex2f(x + (centre + rTop), y + height);
       glVertex2f(x + (centre + rBase), y);
     glEnd();
   glColor3f(1.0f, 1.0f, 0.0f);
     glColor3f(1.0f, 1.0f, 0.0f);
     glBegin(GL_LINES);
       glVertex2f(x + value, y);
-      glVertex2f(x + value, y + 0.4f);
+      glVertex2f(x + value, y + 0.5f);
     glEnd();
 
   }
@@ -230,7 +233,7 @@ void DrawBestCollection(float x, float y,string name, FuzzyVar collection) {
   float scale = collection.high - collection.low;
   // for height
 
-  for(int i = 0; i < NUM_SETS;i++) {
+  for(int i = 0; i < collection.setNum;i++) {
     //scale the points
     float centre = collection.sets[i].centreX - collection.low;
     centre /= scale;
@@ -243,7 +246,7 @@ void DrawBestCollection(float x, float y,string name, FuzzyVar collection) {
     //rTop /= scale;
     float rBase = collection.sets[i].rightBase / scale;
     //rBase /= scale;
-    float height = collection.sets[i].height / HEIGHT;
+    float height = collection.sets[i].height / 2;
 
     float value = collection.value - collection.low;
     value /= scale;
@@ -251,10 +254,10 @@ void DrawBestCollection(float x, float y,string name, FuzzyVar collection) {
   glColor3f(0.2f, 0.2f, 0.2f);
     glBegin(GL_LINES);
       glVertex2f(x + (centre - lBase), y);
-      glVertex2f(x + (centre - lTop), y + 0.4f);
-      glVertex2f(x + (centre - lTop), y + 0.4f);
-      glVertex2f(x + (centre + rTop), y + 0.4f);
-      glVertex2f(x + (centre + rTop), y + 0.4f);
+      glVertex2f(x + (centre - lTop), y + height);
+      glVertex2f(x + (centre - lTop), y + height);
+      glVertex2f(x + (centre + rTop), y + height);
+      glVertex2f(x + (centre + rTop), y + height);
       glVertex2f(x + (centre + rBase), y);
     glEnd();
   }
@@ -270,25 +273,27 @@ void PrintFloat(float x, float y, string name, float value) {
 
 void DrawRules(float x, float y, int controller) {
   //draw current
-  for(int i = 0; i < NUM_RULES; i++) {
-    if(cont[controller].rules[i].isActive)
-      glColor3f(1.0f, 1.0f, 0.0f);
-    else
-      glColor3f(1.0f, 0.0f, 0.0f);
-    ostringstream ss;
-    ss << "IF " << cont[controller].rules[i].inputset << " " << cont[controller].rules[i].modifier << " " << cont[controller].rules[i].inputset2 << " THEN " << cont[controller].rules[i].output;
-    string text(ss.str());
-    glRasterPos2f(x + 0.05f, y + (0.05f * i));
-    glutBitmapString(GLUT_BITMAP_8_BY_13, (const unsigned char *) text.c_str());
-  }
-  //draw best
-  for(int i = 0; i < NUM_RULES; i++){
-  ostringstream ss;
-    ss << cont[BEST_CONT].rules[i].output;
-    string text(ss.str());
-    glColor3f(0.2f, 0.2f, 0.2f);
-    glRasterPos2f(x + 0.6f, y + (0.05f * i));
-    glutBitmapString(GLUT_BITMAP_8_BY_13, (const unsigned char *) text.c_str());
-  }
+  for(int i = 0; i < cont[controller].ruleNum; i++) {
+    if(cont[controller].rules[i].output != 0){
+        if(cont[controller].rules[i].isActive)
+          glColor3f(1.0f, 1.0f, 0.0f);
+        else
+          glColor3f(1.0f, 0.0f, 0.0f);
+        ostringstream ss;
+        ss << "IF " << cont[controller].rules[i].inputset << " " << cont[controller].rules[i].modifier << " " << cont[controller].rules[i].inputset2 << " THEN " << cont[controller].rules[i].output;
+        string text(ss.str());
+        glRasterPos2f(x + 0.05f, y + (0.05f * i));
+        glutBitmapString(GLUT_BITMAP_8_BY_13, (const unsigned char *) text.c_str());
+      }
+      //draw best
+      for(int i = 0; i < cont[controller].ruleNum; i++){
+      ostringstream ss;
+        ss << cont[BEST_CONT].rules[i].output;
+        string text(ss.str());
+        glColor3f(0.2f, 0.2f, 0.2f);
+        glRasterPos2f(x + 0.6f, y + (0.05f * i));
+        glutBitmapString(GLUT_BITMAP_8_BY_13, (const unsigned char *) text.c_str());
+      }
+    }
 
 }
