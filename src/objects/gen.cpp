@@ -1,7 +1,7 @@
 #include "controller.h"
 #include "shared.h"
 #include "gen.h"
-#include "..\sims\moon.h"
+#include "..\sims\sim.h"
 #include <stdio.h>
 #include <iomanip>
 #include <sstream>
@@ -13,17 +13,17 @@ using namespace std;
 
 void InitControllers() {
   CreateControllers(POP, simInput, *simOutput);
+  if(INCLUDE_CONTROL)
+    SimControlController(0);
 }
 
 void InitSimulation(int controller) {
-  if(SIM == MOONLANDER)
-    MoonInitSim(controller);
+  SimInitSim(controller);
 }
 
 int RunSim(int controller) {
   EvaluateRules(controller);
-  if(SIM == MOONLANDER)
-    return MoonNextStep(controller);
+  return SimNextStep(controller);
 }
 
 void Breed() {

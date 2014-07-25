@@ -12,10 +12,9 @@ static int random;
 //util
 float Lerp(float x1, float y1, float x2, float y2, float value);
 void ResetAccumulator(int controller);
-
+void CleanVar(int controller, int var);
 
 //init
-void InitControlController(int controller);
 void InitSets(int controller, int variable,short int numSets);
 void InitRules(int controller);
 
@@ -32,6 +31,7 @@ void BreedRules(int id1, int id2);
 
 //mutate
 void Mutate(int id);
+void MutateCol(int controller, int var);
 void MutateSet(int controller, int var, int setID);
 void MutateRule(int controller, int ruleID);
 
@@ -40,6 +40,48 @@ float Lerp(float x1, float y1, float x2, float y2, float value) {
   float v = ((value - x1)/(x2 - x1));
   //perform lerp
   return y1 + (v * (y2 - y1));
+}
+
+void CleanVar(int controller, int var){
+
+  for(int i = 0; i < NUM_SETS; i++){
+    Set set = cont[controller].input[var].sets[i];
+      //ensure they actually look like sets
+    if(set.leftTop > set.leftBase)
+      set.leftTop = set.leftBase;
+    if(set.rightTop > set.rightBase)
+      set.rightTop = set.rightBase;
+
+    if(set.leftTop < 0)
+      set.leftTop = 0;
+    if(set.rightTop < 0)
+      set.rightTop = 0;
+    if(set.leftBase < 0)
+      set.leftBase = 0;
+    if(set.rightBase < 0)
+      set.rightBase = 0;
+
+    //ensure they are in bounds
+    if(set.centreX < cont[controller].input[var].low)
+      set.centreX = cont[controller].input[var].low;
+    if(set.centreX > cont[controller].input[var].high)
+      set.centreX = cont[controller].input[var].high;
+
+    if(set.centreX - set.leftTop < cont[controller].input[var].low)
+      set.leftTop = set.centreX - cont[controller].input[var].low;
+
+    if(set.centreX + set.rightTop > cont[controller].input[var].high)
+      set.rightTop = cont[controller].input[var].high - set.centreX;
+
+    if(set.centreX - set.leftBase < cont[controller].input[var].low)
+      set.leftBase = set.centreX - cont[controller].input[var].low;
+
+    if(set.centreX + set.rightBase > cont[controller].input[var].high)
+      set.rightBase = cont[controller].input[var].high - set.centreX;
+
+    //SAVE SET
+    cont[controller].input[var].sets[i] = set;
+  }
 }
 
 //clean the controller accumulator variable
@@ -81,97 +123,8 @@ void CreateControllers(int num_controllers, FuzzyVar input[], Accumulator output
     cont[i].rules = new Rule[NUM_RULES];
     InitRules(i);
   }
-  if(INCLUDE_CONTROL)
-    InitControlController(0);
 }
-//manually created controller to prove the system works
-void InitControlController(int controller) {
-  //height
 
-  //landing
-  cont[controller].input[0].sets[0].height = 1;
-  cont[controller].input[0].sets[0].centreX = 0;
-  cont[controller].input[0].sets[0].leftBase = 0;
-  cont[controller].input[0].sets[0].rightBase = 50;
-  cont[controller].input[0].sets[0].leftTop = 0;
-  cont[controller].input[0].sets[0].rightTop = 25;
-
-  //low
-  cont[controller].input[0].sets[1].height = 1;
-  cont[controller].input[0].sets[1].centreX = 60;
-  cont[controller].input[0].sets[1].leftBase = 50;
-  cont[controller].input[0].sets[1].rightBase = 45;
-  cont[controller].input[0].sets[1].leftTop = 10;
-  cont[controller].input[0].sets[1].rightTop = 10;
-
-  //high
-  cont[controller].input[0].sets[2].height = 1;
-  cont[controller].input[0].sets[2].centreX = 100;
-  cont[controller].input[0].sets[2].leftBase = 60;
-  cont[controller].input[0].sets[2].rightBase = 900;
-  cont[controller].input[0].sets[2].leftTop = 10;
-  cont[controller].input[0].sets[2].rightTop = 200;
-
-  //velocity
-
-  //up
-  cont[controller].input[1].sets[0].height = 1;
-  cont[controller].input[1].sets[0].centreX = -30;
-  cont[controller].input[1].sets[0].leftBase = 0;
-  cont[controller].input[1].sets[0].rightBase = 28;
-  cont[controller].input[1].sets[0].leftTop = 0;
-  cont[controller].input[1].sets[0].rightTop = 15;
-
-  //slow
-  cont[controller].input[1].sets[1].height = 1;
-  cont[controller].input[1].sets[1].centreX = 0;
-  cont[controller].input[1].sets[1].leftBase = 10;
-  cont[controller].input[1].sets[1].rightBase = 10;
-  cont[controller].input[1].sets[1].leftTop = 5;
-  cont[controller].input[1].sets[1].rightTop = 5;
-
-  //fast
-  cont[controller].input[1].sets[2].height = 1;
-  cont[controller].input[1].sets[2].centreX = 30;
-  cont[controller].input[1].sets[2].leftBase = 28;
-  cont[controller].input[1].sets[2].rightBase = 0;
-  cont[controller].input[1].sets[2].leftTop = 10;
-  cont[controller].input[1].sets[2].rightTop = 0;
-
-  //rules
-  //if height landing and vel up
-   Rule r0 = {0,0,"AND",1,0, 2.0f, false};
-  //if height landing and vel slow
-   Rule r1 = {0,0,"AND",1,1, 8.0f, false};
-  //if height landing and vel fast
-   Rule r2 = {0,0,"AND",1,2, 9.0f, false};
-
-  //if height low and vel up
-   Rule r3 = {0,1,"AND",1,0, 1.0f, false};
-  //if height low and vel slow
-   Rule r4 = {0,1,"AND",1,1, 5.0f, false};
-  //if height low and vel fast
-   Rule r5 = {0,1,"AND",1,2, 7.0f, false};
-
-  //if height high and vel up
-   Rule r6 = {0,2,"AND",1,0, 1.0f, false};
-  //if height high and vel slow
-   Rule r7 = {0,2,"AND",1,1, 5.0f, false};
-  //if height high and vel fast
-   Rule r8 = {0,2,"AND",1,2, 6.0f,false};
-
-  cont[controller].rules[0] = r0;
-  cont[controller].rules[1] = r1;
-  cont[controller].rules[2] = r2;
-  cont[controller].rules[3] = r3;
-  cont[controller].rules[4] = r4;
-  cont[controller].rules[5] = r5;
-  cont[controller].rules[6] = r6;
-  cont[controller].rules[7] = r7;
-  cont[controller].rules[8] = r8;
-
-
-}
 //@TODO: REPLACE MULTIPLE ARRAY CALLS WITH POINTER
 void InitSets(int controller, int variable,short int numSets) {
   //create initial variables
@@ -413,35 +366,57 @@ void BreedRules(int id1, int id2){
 }
 
 void Mutate(int id) {
-  random = GetRandInt(0, 1);
-  if(random == 0)
-    MutateSet(id, GetRandInt(0,NUM_INPUT), GetRandInt(0,NUM_SETS));
+  random = GetRandInt(0, 2);
+  if(random == 0){
+    int var = GetRandInt(0,NUM_INPUT);
+    MutateSet(id, var, GetRandInt(0,NUM_SETS));
+    CleanVar(id, var);
+  }
+  else if (random == 1){
+    int var = GetRandInt(0,NUM_INPUT);
+    MutateCol(id, var);
+    CleanVar(id, var);
+  }
   else
     MutateRule(id, GetRandInt(0, NUM_RULES ));
+
 }
 
 void MutateCol(int controller, int var) {
+
+  short int mut = GetRandInt(0, 2);
   int region = cont[controller].input[var].high - cont[controller].input[var].low;
   random = GetRandFloat(-region * 0.05f, region * 0.05f);
-
-  short int mut = GetRandInt(0, 4);
-  /*
   switch(mut){
     case 0:
-      if(MUT_COL_GROW)
-
-    break;
+      if(MUT_COL_GROW){
+          for(int s = 0; s < NUM_SETS; s++){
+            cont[controller].input[var].sets[s].leftTop -= random;
+            cont[controller].input[var].sets[s].leftBase -= random;
+            cont[controller].input[var].sets[s].rightTop += random;
+            cont[controller].input[var].sets[s].rightBase += random;
+          }
+        break;
+      }
     case 1:
-      if(MUT_COL_SLIDE)
-
-    break;
+      if(MUT_COL_SLIDE){
+        for(int s = 0; s < NUM_SETS; s++){
+            cont[controller].input[var].sets[s].centreX += random;
+          }
+        break;
+      }
     case 2:
-      if(MUT_COL_ADD)
-
-    break;
-    case 3:
+      if(MUT_COL_ADD){
+          for(int s = 0; s < NUM_SETS; s++){
+            cont[controller].input[var].sets[s].leftTop += random;
+            cont[controller].input[var].sets[s].leftBase += random;
+            cont[controller].input[var].sets[s].rightTop += random;
+            cont[controller].input[var].sets[s].rightBase += random;
+          }
+        break;
+      }
   }
-  */
+
 }
 
 void MutateSet(int controller, int var, int setID) {
@@ -455,61 +430,38 @@ void MutateSet(int controller, int var, int setID) {
   cont[controller].mutations++;
   switch(mut){
     case 0: //grow top
-      set.leftTop -= random;
-      set.rightTop += random;
-      break;
+      if(MUT_SET_GROW_TOP){
+        set.leftTop -= random;
+        set.rightTop += random;
+        break;
+      }
     case 1: //grow bottom
-      set.leftBase -=random;
-      set.rightBase +=random;
-      break;
+      if(MUT_SET_GROW_BOT){
+        set.leftBase -=random;
+        set.rightBase +=random;
+        break;
+      }
     case 2: //slide top
-      set.leftTop +=random;
-      set.rightTop +=random;
-      break;
+      if(MUT_SET_SLIDE_TOP){
+        set.leftTop +=random;
+        set.rightTop +=random;
+        break;
+      }
     case 3: //slide bottom
-      set.leftBase +=random;
-      set.rightBase +=random;
-      break;
+      if(MUT_SET_SLIDE_BOT){
+        set.leftBase +=random;
+        set.rightBase +=random;
+        break;
+      }
     case 4: //shift centre
-      set.centreX +=random;
-      break;
+      if(MUT_SET_SLIDE){
+        set.centreX +=random;
+        break;
+      }
     default:
       return;
       break;
   }
-  //ensure they actually look like sets
-  if(set.leftTop > set.leftBase)
-    set.leftTop = set.leftBase;
-  if(set.rightTop > set.rightBase)
-    set.rightTop = set.rightBase;
-
-  if(set.leftTop < 0)
-    set.leftTop = 0;
-  if(set.rightTop < 0)
-    set.rightTop = 0;
-  if(set.leftBase < 0)
-    set.leftBase = 0;
-  if(set.rightBase < 0)
-    set.rightBase = 0;
-
-  //ensure they are in bounds
-  if(set.centreX < cont[controller].input[var].low)
-    set.centreX = cont[controller].input[var].low;
-  if(set.centreX > cont[controller].input[var].high)
-    set.centreX = cont[controller].input[var].high;
-
-  if(set.centreX - set.leftTop < cont[controller].input[var].low)
-    set.leftTop = set.centreX - cont[controller].input[var].low;
-
-  if(set.centreX + set.rightTop > cont[controller].input[var].high)
-    set.rightTop = cont[controller].input[var].high - set.centreX;
-
-  if(set.centreX - set.leftBase < cont[controller].input[var].low)
-    set.leftBase = set.centreX - cont[controller].input[var].low;
-
-  if(set.centreX + set.rightBase > cont[controller].input[var].high)
-    set.rightBase = cont[controller].input[var].high - set.centreX;
-
   cont[controller].input[var].sets[setID] = set;
 }
 

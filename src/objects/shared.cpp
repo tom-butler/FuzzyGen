@@ -6,14 +6,14 @@
 #include "shared.h"
 #include <cstring>
 //sims
-#include "..\sims\moon.h"
+#include "..\sims\sim.h"
 #include <fstream>
 using namespace std;
   //define the standard options ----------------
 
   //genetic
-  short int POP = 500;
-  short int GENERATIONS = 1000;
+  short int POP = 50;
+  short int GENERATIONS = 100;
   float VARIANCE = 0.10f;
   float MUT_CHANCE = 0.4f;
   bool INCLUDE_CONTROL = false;
@@ -25,8 +25,11 @@ using namespace std;
   bool MUT_COL_ADD = true;
 
   bool MUT_SET_INITIAL = true;
-  bool MUT_SET_GROW = true;
+  bool MUT_SET_GROW_TOP = true;
+  bool MUT_SET_GROW_BOT = true;
   bool MUT_SET_SLIDE = true;
+  bool MUT_SET_SLIDE_TOP = true;
+  bool MUT_SET_SLIDE_BOT = true;
   bool MUT_SET_ADD = true;
 
   bool MUT_RULE_RAND = true;
@@ -61,8 +64,7 @@ void InitSystem() {
   simInput = new FuzzyVar[NUM_INPUT];
   if(LOGGING)
     LOG = new string[GENERATIONS];
-  if(SIM == MOONLANDER)
-    MoonCreateVars();
+  SimCreateSim();
 }
 int InitTest(int test) {
   ifstream file;

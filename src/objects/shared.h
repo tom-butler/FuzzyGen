@@ -68,8 +68,11 @@ extern bool MUT_COL_SLIDE;
 extern bool MUT_COL_ADD;
 
 extern bool MUT_SET_INITIAL;
-extern bool MUT_SET_GROW;
+extern bool MUT_SET_GROW_TOP;
+extern bool MUT_SET_GROW_BOT;
 extern bool MUT_SET_SLIDE;
+extern bool MUT_SET_SLIDE_TOP;
+extern bool MUT_SET_SLIDE_BOT;
 extern bool MUT_SET_ADD;
 
 extern bool MUT_RULE_RAND;
