@@ -183,17 +183,39 @@ void InitRules(int controller, int accumulator) {
     cont[controller].output[accumulator].rules[currentRule] = r;
     ++currentRule;
   }
+bool isDifferent = false;
+int last = 0;
+for (int i = 0; i < cont[controller].output[accumulator].varsNum; i++){
+  int next = cont[controller].input[cont[controller].output[accumulator].vars[i]].setNum;
+  if(i == 0)
+    last = next;
+  else{
+    if(last != next)
+      isDifferent = true;
+    last = next;
+  }
+
+}
+
 
   //allocate the rules
-  int set = 0;
+  int set = 1;
   for(int var = 0; var < cont[controller].output[accumulator].varsNum; ++var) {
-    for(int rule = 0; rule < cont[controller].output[accumulator].ruleNum; ++ rule){
-        if(set >= cont[controller].input[var].setNum )
+    int count = 0;
+    for(int rule = 0; rule < cont[controller].output[accumulator].ruleNum; ++rule){
+      if(!isDifferent){
+        if(count >= cont[controller].input[var].setNum){
+          set += var;
+          count = 0;
+        }
+      }
+        if(set >= cont[controller].input[var].setNum ){
           set = 0;
-        cont[controller].output[accumulator].rules[currentRule].sets[var] = set;
-        set++;
+        }
+        cont[controller].output[accumulator].rules[rule].sets[var] = set;
+        ++count;
+        ++set;
     }
-    set += var;
   }
 }
 

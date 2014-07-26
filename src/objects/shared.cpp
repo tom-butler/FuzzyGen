@@ -43,7 +43,7 @@ using namespace std;
 
   //fuzzy
   short int MIN_NUM_SETS = 2;
-  short int MAX_NUM_SETS = 3;
+  short int MAX_NUM_SETS = 4;
   float HEIGHT_LOW = 0.5;
   float HEIGHT_HIGH = 1;
 
