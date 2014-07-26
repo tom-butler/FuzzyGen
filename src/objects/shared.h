@@ -61,8 +61,10 @@ extern bool INCLUDE_CONTROL;
 extern bool LOGGING;
 extern bool RANDOM_START;
 extern bool ELITISM;
-extern bool RELATIONAL_BOUNDS;
 
+extern bool FORCE_RELATIONAL;
+extern float FORCE_OVERLAP;
+extern bool FORCE_COVERAGE;
 //Mutations
 extern float MUT_CHANCE;
 extern float VARIANCE;

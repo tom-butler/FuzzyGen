@@ -12,13 +12,16 @@ using namespace std;
   //define the standard options ----------------
 
   //genetic
-  short int POP = 1000;
-  short int GENERATIONS = 100;
+  short int POP = 10;
+  short int GENERATIONS = 1000;
   bool INCLUDE_CONTROL = false;
   bool LOGGING = true;
   bool RANDOM_START = true;
   bool ELITISM = false;
-  bool RELATIONAL_BOUNDS = false;
+
+  bool FORCE_RELATIONAL = false;
+  float FORCE_OVERLAP = 0.3; //0 for none
+  bool FORCE_COVERAGE = true;
 
   //mutation
   float MUT_CHANCE = 0.4f;

@@ -45,6 +45,7 @@ float Lerp(float x1, float y1, float x2, float y2, float value) {
 
 void ForceVarBounds(int controller, int var){
 
+  Set last;
   for(int i = 0; i < cont[controller].input[var].setNum; i++){
     Set set = cont[controller].input[var].sets[i];
 
@@ -78,10 +79,37 @@ void ForceVarBounds(int controller, int var){
 
     //check relational compliance
 
-
-
+    //check overlap
+    if(FORCE_OVERLAP){
+      if(i == 0)
+        last = set;
+      else{
+        //if the sets overlap less that FORCE_OVERLAP stretch them out
+        if((last.centreX + last.rightBase - set.centreX - set.leftBase < (last.rightBase) * FORCE_OVERLAP) ||
+           (last.centreX + last.rightBase - set.centreX - set.leftBase < (set.leftBase) * FORCE_OVERLAP)){
+          //find the centre of the two sets
+          float centre = last.centreX + ((set.centreX - last.centreX)/2);
+          float overlap1 = (last.rightBase) * FORCE_OVERLAP;
+          float overlap2 = (set.leftBase) * FORCE_OVERLAP;
+          last.rightBase = centre - last.centreX + overlap1;
+          set.leftBase = set.centreX - centre + overlap2;
+          cont[controller].input[var].sets[i-1] = last;
+        }
+      last = set;
+      }
+    }
     //SAVE SET
     cont[controller].input[var].sets[i] = set;
+  }
+  if(FORCE_COVERAGE > 0){
+    if(cont[controller].input[var].sets[0].centreX - cont[controller].input[var].sets[0].leftTop != cont[controller].input[var].low){
+       cont[controller].input[var].sets[0].leftTop = cont[controller].input[var].sets[0].centreX - cont[controller].input[var].low;
+       cont[controller].input[var].sets[0].leftBase = cont[controller].input[var].sets[0].leftTop;
+    }
+    if(cont[controller].input[var].sets[cont[controller].input[var].setNum -1].centreX + cont[controller].input[var].sets[cont[controller].input[var].setNum -1].rightTop != cont[controller].input[var].high){
+       cont[controller].input[var].sets[cont[controller].input[var].setNum -1].rightTop = cont[controller].input[var].high - cont[controller].input[var].sets[cont[controller].input[var].setNum -1].centreX;
+       cont[controller].input[var].sets[cont[controller].input[var].setNum -1].rightBase = cont[controller].input[var].sets[cont[controller].input[var].setNum -1].rightTop;
+    }
   }
 }
 
