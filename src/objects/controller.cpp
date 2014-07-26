@@ -12,7 +12,7 @@ static int random;
 //util
 float Lerp(float x1, float y1, float x2, float y2, float value);
 void ResetAccumulator(int controller);
-void CleanVar(int controller, int var);
+void ForceVarBounds(int controller, int var);
 
 //init
 void InitSets(int controller, int variable,short int numSets);
@@ -42,16 +42,16 @@ float Lerp(float x1, float y1, float x2, float y2, float value) {
   return y1 + (v * (y2 - y1));
 }
 
-void CleanVar(int controller, int var){
+void ForceVarBounds(int controller, int var){
 
   for(int i = 0; i < cont[controller].input[var].setNum; i++){
     Set set = cont[controller].input[var].sets[i];
-      //ensure they actually look like sets
+
+    //force set formation
     if(set.leftTop > set.leftBase)
       set.leftTop = set.leftBase;
     if(set.rightTop > set.rightBase)
       set.rightTop = set.rightBase;
-
     if(set.leftTop < 0)
       set.leftTop = 0;
     if(set.rightTop < 0)
@@ -66,18 +66,18 @@ void CleanVar(int controller, int var){
       set.centreX = cont[controller].input[var].low;
     if(set.centreX > cont[controller].input[var].high)
       set.centreX = cont[controller].input[var].high;
-
     if(set.centreX - set.leftTop < cont[controller].input[var].low)
       set.leftTop = set.centreX - cont[controller].input[var].low;
-
     if(set.centreX + set.rightTop > cont[controller].input[var].high)
       set.rightTop = cont[controller].input[var].high - set.centreX;
-
     if(set.centreX - set.leftBase < cont[controller].input[var].low)
       set.leftBase = set.centreX - cont[controller].input[var].low;
-
     if(set.centreX + set.rightBase > cont[controller].input[var].high)
       set.rightBase = cont[controller].input[var].high - set.centreX;
+
+    //check relational compliance
+
+
 
     //SAVE SET
     cont[controller].input[var].sets[i] = set;
@@ -377,12 +377,12 @@ void Mutate(int id) {
   if(random == 0){
     int var = GetRandInt(0,NUM_INPUT -1);
     MutateSet(id, var, GetRandInt(0,cont[id].input[var].setNum -1));
-    CleanVar(id, var);
+    ForceVarBounds(id, var);
   }
   else if (random == 1){
     int var = GetRandInt(0,NUM_INPUT -1);
     MutateCol(id, var);
-    CleanVar(id, var);
+    ForceVarBounds(id, var);
   }
   else{
     MutateRule(id, GetRandInt(0, cont[id].ruleNum -1 ));

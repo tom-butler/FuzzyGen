@@ -59,12 +59,15 @@ typedef struct {
 //genetic
 extern short int POP;
 extern short int GENERATIONS;
-extern float VARIANCE;
-extern float MUT_CHANCE;
 extern bool INCLUDE_CONTROL;
 extern bool LOGGING;
 extern bool RANDOM_START;
 extern bool ELITISM;
+extern bool RELATIONAL_BOUNDS;
+
+//Mutations
+extern float MUT_CHANCE;
+extern float VARIANCE;
 
 extern bool MUT_COL_INITIAL;
 extern bool MUT_COL_GROW;
@@ -96,7 +99,7 @@ const short int MOONLANDER = 0;
 const short int PENDULUMCART = 1;
 const short int HARRIER = 2;
 
-//runtime variables -------------
+//runtime --------------------------------
 extern bool GUI;
 extern short int ANCESTOR;
 extern short int MAX_BEST;
@@ -113,7 +116,6 @@ extern Controller *cont;
 
 void InitSystem();
 int InitTest(int test);
-//util
 short int GetRandInt(short int low, short int high);
 float GetRandFloat(float low, float high);
 

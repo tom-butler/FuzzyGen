@@ -14,12 +14,15 @@ using namespace std;
   //genetic
   short int POP = 1000;
   short int GENERATIONS = 100;
-  float VARIANCE = 0.10f;
-  float MUT_CHANCE = 0.4f;
   bool INCLUDE_CONTROL = false;
   bool LOGGING = true;
   bool RANDOM_START = true;
   bool ELITISM = false;
+  bool RELATIONAL_BOUNDS = false;
+
+  //mutation
+  float MUT_CHANCE = 0.4f;
+  float VARIANCE = 0.10f;
 
   bool MUT_COL_INITIAL = true;
   bool MUT_COL_GROW = true;
@@ -39,7 +42,6 @@ using namespace std;
   bool MUT_RULE_ADDALL = true;
 
   //fuzzy
-  short int NUM_INPUT = 2;
   short int MIN_NUM_SETS = 2;
   short int MAX_NUM_SETS = 3;
   float HEIGHT_LOW = 0.5;
@@ -48,6 +50,7 @@ using namespace std;
   short int SIM = 0;
 
   //runtime variables ---------------------------
+  short int NUM_INPUT = 0;
   bool GUI = false;
   short int ANCESTOR = POP/2;
   short int MAX_BEST = 0;

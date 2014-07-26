@@ -40,6 +40,7 @@ static FuzzyVar fuelSet  = {0, START_FUEL, START_FUEL, 0};
 
 void MoonCreateVars(){
   //sim init vars
+  NUM_INPUT = 2;
   simInput[0] = heightSet;
   simInput[1] = velocitySet;
   simOutput = &thrustSet;
