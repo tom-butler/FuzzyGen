@@ -3,7 +3,7 @@
 
 #include "shared.h"
 
-void CreateControllers(int num, FuzzyVar input[], Accumulator output);
+void CreateControllers(int num, FuzzyVar input[], Accumulator output[]);
 void EvaluateRules(int controller);
 void Select();
 

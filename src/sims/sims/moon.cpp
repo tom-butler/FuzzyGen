@@ -32,23 +32,35 @@ float * height;
 float * velocity;
 short int * score;
 
-static Accumulator thrustSet = {0, MAX_THRUST, 0.f, 0, 0, 0};
-//low, high, start, sets(null)
-static FuzzyVar heightSet  = {0, SIM_HEIGHT, START_HEIGHT, 0};
-static FuzzyVar velocitySet = {-TERMINAL_VELOCITY, TERMINAL_VELOCITY, MAX_START_VEL, 0};
-static FuzzyVar fuelSet  = {0, START_FUEL, START_FUEL, 0};
+
+//input
+static FuzzyVar heightSet  = {0, SIM_HEIGHT, START_HEIGHT, 0, 0};
+static FuzzyVar velocitySet = {-TERMINAL_VELOCITY, TERMINAL_VELOCITY, MAX_START_VEL, 0, 0};
+static FuzzyVar fuelSet  = {0, START_FUEL, START_FUEL, 0, 0};
+//output
+static Accumulator thrustSet = {0, MAX_THRUST, 0.f, 0, 0, 0, 0, 0, 0};
 
 void MoonCreateVars(){
-  //sim init vars
+  //sim input vars
   NUM_INPUT = 2;
+  simInput = new FuzzyVar[NUM_INPUT];
   simInput[0] = heightSet;
   simInput[1] = velocitySet;
-  simOutput = &thrustSet;
+
+  //sim output vars
+  NUM_OUTPUT = 1;
+  simOutput = new Accumulator[NUM_OUTPUT];
+  simOutput[0] = thrustSet;
+  simOutput[0].vars = new short int[2];
+  simOutput[0].vars[0] = 0;
+  simOutput[0].vars[1] = 1;
+  simOutput[0].varsNum = 2;
+
   simFitness = &fuelSet;
 }
 
 void MoonInitSim(int controller) {
-  throttle = &cont[controller].output.output;
+  throttle = &cont[controller].output[0].output;
   height = &cont[controller].input[0].value;
   velocity = &cont[controller].input[1].value;
   score = &cont[controller].score;
@@ -125,6 +137,8 @@ int MoonNextStep(int controller) {
 
 //manually created controller to prove the system works
 void MoonControlController(int controller) {
+
+  /*
   //height
 
   //landing
@@ -208,5 +222,5 @@ void MoonControlController(int controller) {
   cont[controller].rules[6] = r6;
   cont[controller].rules[7] = r7;
   cont[controller].rules[8] = r8;
-
+*/
 }

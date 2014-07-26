@@ -12,7 +12,7 @@
 using namespace std;
 
 void InitControllers() {
-  CreateControllers(POP, simInput, *simOutput);
+  CreateControllers(POP, simInput, simOutput);
   if(INCLUDE_CONTROL)
     SimControlController(0);
 }
@@ -59,8 +59,7 @@ void WriteLog(){
     for(int controller = 0; controller < POP; controller++) {
       output << controller << ",";
       output << cont[controller].score << ",";
-      output << cont[controller].mutations << ",";
-      output << cont[controller].ruleNum <<"\n";
+      output << cont[controller].mutations << "\n";
     }
     output.close();
     ss.str("");
@@ -103,6 +102,7 @@ void WriteLog(){
     ss.clear();
 
     //Rules
+    /*
     ss << "logs/rule/rule" << now << ".csv";
     output.open(ss.str().c_str());
     output << "Controller,Rule,Input Variable 1,Input Set 1,Modifier,Input Variable 2,Input Set 2,Output Value\n";
@@ -121,7 +121,7 @@ void WriteLog(){
     output.close();
     ss.str("");
     ss.clear();
-
+*/
     //Rules
     ss << "logs/var/var" << now << ".csv";
     output.open(ss.str().c_str());

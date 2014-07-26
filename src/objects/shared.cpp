@@ -51,6 +51,7 @@ using namespace std;
 
   //runtime variables ---------------------------
   short int NUM_INPUT = 0;
+  short int NUM_OUTPUT = 0;
   bool GUI = false;
   short int ANCESTOR = POP/2;
   short int MAX_BEST = 0;
@@ -66,12 +67,11 @@ using namespace std;
   Controller *cont;
 
 void InitSystem() {
+  SimCreateSim();
   //init system variables
   cont = new Controller[POP];
-  simInput = new FuzzyVar[NUM_INPUT];
   if(LOGGING)
     LOG = new string[GENERATIONS];
-  SimCreateSim();
 }
 int InitTest(int test) {
   ifstream file;

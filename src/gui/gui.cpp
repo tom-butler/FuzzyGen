@@ -271,29 +271,32 @@ void PrintFloat(float x, float y, string name, float value) {
   glutBitmapString(GLUT_BITMAP_8_BY_13, (const unsigned char *) text.c_str());
 }
 
-void DrawRules(float x, float y, int controller) {
+void DrawRules(float x, float y, int controller, int accumulator) {
   //draw current
-  for(int i = 0; i < cont[controller].ruleNum; i++) {
-    if(cont[controller].rules[i].output != 0){
-        if(cont[controller].rules[i].isActive)
-          glColor3f(1.0f, 1.0f, 0.0f);
-        else
-          glColor3f(1.0f, 0.0f, 0.0f);
-        ostringstream ss;
-        ss << "IF " << cont[controller].rules[i].inputset << " " << cont[controller].rules[i].modifier << " " << cont[controller].rules[i].inputset2 << " THEN " << cont[controller].rules[i].output;
-        string text(ss.str());
-        glRasterPos2f(x + 0.05f, y + (0.05f * i));
-        glutBitmapString(GLUT_BITMAP_8_BY_13, (const unsigned char *) text.c_str());
-      }
-      //draw best
-      for(int i = 0; i < cont[controller].ruleNum; i++){
+  for(int i = 0; i < cont[controller].output[accumulator].ruleNum; i++) {
+    if(cont[controller].output[accumulator].rules[i].output != 0){
+      if(cont[controller].output[accumulator].rules[i].isActive)
+        glColor3f(1.0f, 1.0f, 0.0f);
+      else
+        glColor3f(1.0f, 0.0f, 0.0f);
       ostringstream ss;
-        ss << cont[BEST_CONT].rules[i].output;
-        string text(ss.str());
-        glColor3f(0.2f, 0.2f, 0.2f);
-        glRasterPos2f(x + 0.6f, y + (0.05f * i));
-        glutBitmapString(GLUT_BITMAP_8_BY_13, (const unsigned char *) text.c_str());
+      ss << "IF ";
+      for(int s = 0; s < cont[controller].output[accumulator].varsNum; s++){
+        ss << cont[controller].output[accumulator].rules[i].sets[s] << " ";
       }
+      ss << "THEN " << cont[controller].output[accumulator].rules[i].output;
+      string text(ss.str());
+      glRasterPos2f(x + 0.05f, y + (0.05f * i));
+      glutBitmapString(GLUT_BITMAP_8_BY_13, (const unsigned char *) text.c_str());
     }
-
+  }
+  //draw best
+  for(int i = 0; i < cont[controller].output[accumulator].ruleNum; i++){
+    ostringstream ss;
+    ss << cont[BEST_CONT].output[accumulator].rules[i].output;
+    string text(ss.str());
+    glColor3f(0.2f, 0.2f, 0.2f);
+    glRasterPos2f(x + 0.6f, y + (0.05f * i));
+    glutBitmapString(GLUT_BITMAP_8_BY_13, (const unsigned char *) text.c_str());
+  }
 }

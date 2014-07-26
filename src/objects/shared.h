@@ -5,11 +5,7 @@
 
 //rule
 typedef struct {
-  short int inputvar;
-  short int inputset;
-  std::string modifier;
-  short int inputvar2;
-  short int inputset2;
+  short int *sets;
   float output;
   bool isActive;
 } Rule;
@@ -40,6 +36,10 @@ typedef struct {
   short int active;
   float *value;
   float *scale;
+  Rule *rules;
+  short int ruleNum;
+  short int *vars;
+  short int varsNum;
 } Accumulator;
 
 //Controller
@@ -47,9 +47,7 @@ typedef struct {
   short int score;
   short int mutations;
   FuzzyVar *input;
-  Accumulator output;
-  Rule *rules;
-  int ruleNum;
+  Accumulator *output;
 } Controller;
 
 
@@ -88,6 +86,7 @@ extern bool MUT_RULE_ADDALL;
 
 //fuzzy
 extern short int NUM_INPUT;
+extern short int NUM_OUTPUT;
 extern short int MIN_NUM_SETS;
 extern short int MAX_NUM_SETS;
 extern float HEIGHT_LOW;
@@ -110,7 +109,7 @@ extern int LOW;
 
 extern std::string *LOG;
 extern FuzzyVar *simInput;
-extern Accumulator * simOutput;
+extern Accumulator *simOutput;
 extern FuzzyVar * simFitness;
 extern Controller *cont;
 

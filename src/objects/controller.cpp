@@ -11,16 +11,17 @@ static int random;
 
 //util
 float Lerp(float x1, float y1, float x2, float y2, float value);
-void ResetAccumulator(int controller);
+void ResetAccumulator(int controller, int accumulator);
 void ForceVarBounds(int controller, int var);
 
 //init
 void InitSets(int controller, int variable,short int numSets);
-void InitRules(int controller);
+void InitRules(int controller, int accumulator);
 
 //evaluate
+float EvaluateRule(int controller, int accumulator, int rule); 
 float EvaluateSet(int controller, int inputVar, int setID, int variable);
-void EvaluateOutput(int controller);
+void EvaluateOutput(int controller, int accumulator);
 
 void SelectHalf();
 void SelectMean(float mean);
@@ -85,19 +86,19 @@ void ForceVarBounds(int controller, int var){
 }
 
 //clean the controller accumulator variable
-void ResetAccumulator(int controller) {
-  delete[] cont[controller].output.value;
-  delete[] cont[controller].output.scale;
+void ResetAccumulator(int controller, int accumulator) {
+  delete[] cont[controller].output[accumulator].value;
+  delete[] cont[controller].output[accumulator].scale;
 
-  cont[controller].output.value = new float[cont[controller].ruleNum];
-  cont[controller].output.scale = new float[cont[controller].ruleNum];
+  cont[controller].output[accumulator].value = new float[cont[controller].output[accumulator].ruleNum];
+  cont[controller].output[accumulator].scale = new float[cont[controller].output[accumulator].ruleNum];
 
-  cont[controller].output.output = 0.0f;
-  cont[controller].output.active = 0;
+  cont[controller].output[accumulator].output = 0.0f;
+  cont[controller].output[accumulator].active = 0;
 }
 
 //initialisation
-void CreateControllers(int num_controllers, FuzzyVar input[], Accumulator output) {
+void CreateControllers(int num_controllers, FuzzyVar input[], Accumulator output[]) {
   //seed random
   srand(static_cast <unsigned>(time(0)));
 
@@ -106,7 +107,6 @@ void CreateControllers(int num_controllers, FuzzyVar input[], Accumulator output
     //create input sets
     cont[i].input = new FuzzyVar[NUM_INPUT];
     copy(input,input+NUM_INPUT, cont[i].input);
-    cont[i].ruleNum = 1;
     for(int j = 0; j < NUM_INPUT; j++)
     {
       cont[i].input[j].sets = new Set[MAX_NUM_SETS];
@@ -116,17 +116,25 @@ void CreateControllers(int num_controllers, FuzzyVar input[], Accumulator output
       else{
         InitSets(i, j,MIN_NUM_SETS);
       }
-      cont[i].ruleNum *= cont[i].input[j].setNum;
     }
-    //create output singletons
-    cont[i].output = output;
 
-    cont[i].output.value = new float[cont[i].ruleNum];
-    cont[i].output.scale = new float[cont[i].ruleNum];
+    //create accumulators
+    cont[i].output = new Accumulator[NUM_OUTPUT];
+    copy(output,output+NUM_OUTPUT, cont[i].output);
 
-    //make some Rules
-    cont[i].rules = new Rule[cont[i].ruleNum];
-    InitRules(i);
+    for(int o = 0; o < NUM_OUTPUT; o++){
+      cont[i].output[o].ruleNum = 1;
+      for(int p = 0; p < cont[i].output[o].varsNum; p++){
+        cont[i].output[o].ruleNum *= cont[i].input[cont[i].output[o].vars[p]].setNum;
+      }
+
+      cont[i].output[o].value = new float[cont[i].output[o].ruleNum];
+      cont[i].output[o].scale = new float[cont[i].output[o].ruleNum];
+
+      //make some Rules
+      cont[i].output[o].rules = new Rule[cont[i].output[o].ruleNum];
+      InitRules(i, o);
+    }
   }
 }
 
@@ -165,68 +173,61 @@ void InitSets(int controller, int variable,short int numSets) {
   cont[controller].input[variable].setNum = numSets;
 }
 
-
-
 //initialises all rules for a given output
-void InitRules(int controller) {
+void InitRules(int controller, int accumulator) {
+  //init the rules
   int currentRule = 0;
-  for(int i = 0; i < NUM_INPUT; i++) {
-    for (int j = 0; j < cont[controller].input[i].setNum; ++j) {
-      for(int k = i+1; k < NUM_INPUT; ++k) {
-        for(int l = 0; l < cont[controller].input[k].setNum; ++l) {
-          int output = GetRandInt(cont[controller].output.low,cont[controller].output.high);
-          Rule r = {i, j,"AND", k, l, GetRandFloat(cont[controller].output.low,cont[controller].output.high), false};
-          cont[controller].rules[currentRule] = r;
-          ++currentRule;
-        }
-      }
+  for(int rule = 0; rule < cont[controller].output[accumulator].ruleNum; ++rule){
+    Rule r = {0, GetRandFloat(cont[controller].output[accumulator].low,cont[controller].output[accumulator].high), 0};
+    r.sets = new short int[cont[controller].output[accumulator].varsNum];
+    cont[controller].output[accumulator].rules[currentRule] = r;
+    ++currentRule;
+  }
+
+  //allocate the rules
+  int set = 0;
+  for(int var = 0; var < cont[controller].output[accumulator].varsNum; ++var) {
+    for(int rule = 0; rule < cont[controller].output[accumulator].ruleNum; ++ rule){
+        if(set >= cont[controller].input[var].setNum )
+          set = 0;
+        cont[controller].output[accumulator].rules[currentRule].sets[var] = set;
+        set++;
     }
+    set += var;
   }
 }
 
-//@TODO: THIS NEEDS A RE-WRITE (DAFUQ WAS I DOING?)
+
 //evaluate all rules that have a single output
 void EvaluateRules(int controller) {
-  ResetAccumulator(controller);
-  float  res1, res2 = 0.0f;
-  float rcount = 0.0f;
-  float returnValue = 0.0f;
-  float variable;
-  for(int i = 0; i < cont[controller].ruleNum; i++) {
-    cont[controller].rules[i].isActive = false;
-    res1 = EvaluateSet(controller, cont[controller].rules[i].inputvar, cont[controller].rules[i].inputset, cont[controller].input[cont[controller].rules[i].inputvar].value);
-    res2 = EvaluateSet(controller, cont[controller].rules[i].inputvar2, cont[controller].rules[i].inputset2, cont[controller].input[cont[controller].rules[i].inputvar2].value);
+  for(int o = 0; o < NUM_OUTPUT; o++){
+    ResetAccumulator(controller, o);
 
-    //decide on the value to pass to output
-    if(cont[controller].rules[i].modifier.compare("AND") == 0) {
-        if(res1 < res2)
-          variable = res1;
-        else
-          variable = res2;
+    for(int i = 0; i < cont[controller].output[o].ruleNum; i++) {
+      cont[controller].output[o].rules[i].isActive = false;
+      float variable = EvaluateRule(controller,o, i);
+      
+      //add result
+      if(variable > 0.0f) {
+        cont[controller].output[o].rules[i].isActive = true;
+        cont[controller].output[o].scale[cont[controller].output[o].active] = variable;
+        cont[controller].output[o].value[cont[controller].output[o].active] = cont[controller].output[o].rules[i].output;
+        cont[controller].output[o].active++;
+      }
     }
-    else if(cont[controller].rules[i].modifier.compare("OR") == 0) {
-        if(res1 > res2)
-          variable = res1;
-        else
-          variable = res2;
-    }
-    //add result
-    if(variable > 0.0f) {
-      cont[controller].rules[i].isActive = true;
-      cont[controller].output.scale[cont[controller].output.active] = variable;
-      cont[controller].output.value[cont[controller].output.active] = cont[controller].rules[i].output;
-      cont[controller].output.active++;
-    }
+    EvaluateOutput(controller, o);
   }
+}
 
-   /*cout << returnValue;
-   cout << " ";
-   cout << rcount;
-   cout << " ";
-   cout << temp;
-   cout << "\n";
-*/
-  EvaluateOutput(controller);
+float EvaluateRule(int controller, int accumulator, int rule){
+  cont[controller].output[accumulator].rules[rule].isActive = false;
+  float bestResult = cont[controller].output[accumulator].high;
+  for(int i = 0; i < cont[controller].output[accumulator].varsNum; i++){
+    float result = EvaluateSet(controller, cont[controller].output[accumulator].vars[i], cont[controller].output[accumulator].rules[rule].sets[i], cont[controller].input[cont[controller].output[accumulator].vars[i]].value);
+    if(result < bestResult)
+      bestResult = result;
+  }
+  return bestResult;
 }
 
 //@TODO: repalce sets[setID] with a pointer
@@ -248,19 +249,19 @@ float EvaluateSet(int controller, int inputVar, int setID, int variable) {
     return 0;
 }
 
-void EvaluateOutput(int controller) {
-  if(cont[controller].output.active == 0)
+void EvaluateOutput(int controller, int accumulator) {
+  if(cont[controller].output[accumulator].active == 0)
     return;
 
   float total = 0.0f;
   float totalWeight = 0.0f;
-  for(int i = 0; i < cont[controller].output.active; i++) {
-   total += cont[controller].output.scale[i] * cont[controller].output.value[i];
-   totalWeight += cont[controller].output.scale[i];
+  for(int i = 0; i < cont[controller].output[accumulator].active; i++) {
+   total += cont[controller].output[accumulator].scale[i] * cont[controller].output[accumulator].value[i];
+   totalWeight += cont[controller].output[accumulator].scale[i];
   }
 
   total /= totalWeight;
-  cont[controller].output.output = total;
+  cont[controller].output[accumulator].output = total;
 }
 
 void Select() {
@@ -290,13 +291,11 @@ void SelectHalf(){
 
   int parents[ANCESTOR];
   int c = 0;
-  int max = 0;
-  int highest = 0;
 
   //get parents
   for(int i = 0; i < ANCESTOR; i++){
-    max = 0;
-    highest = 0;
+    int max = 0;
+    int highest = 0;
     for(int j = 0; j < POP; j++){
       if(cont[j].score >= max)
         highest = j;
@@ -364,12 +363,12 @@ void BreedSets(int id1, int id2){
   copy(cont[id2].input[random].sets, cont[id2].input[random].sets + MAX_NUM_SETS, cont[id1].input[random].sets);
 }
 void BreedRules(int id1, int id2){
-  random = GetRandInt(0, cont[id1].ruleNum -1);
+  /*random = GetRandInt(0, cont[id1].ruleNum -1);
   for(int i = 0; i < random; i++){
     if(cont[id1].rules[i].output != 0 && cont[id2].rules[i].output != 0){
       cont[id1].rules[i].output = cont[id2].rules[i].output;
     }
-  }
+  }*/
 }
 
 void Mutate(int id) {
@@ -384,9 +383,9 @@ void Mutate(int id) {
     MutateCol(id, var);
     ForceVarBounds(id, var);
   }
-  else{
+/*  else{
     MutateRule(id, GetRandInt(0, cont[id].ruleNum -1 ));
-  }
+  }*/
 
 }
 
@@ -474,6 +473,7 @@ void MutateSet(int controller, int var, int setID) {
 }
 
 void MutateRule(int controller, int ruleID) {
+  /*
   short int mut = GetRandInt(0,1);
   cont[controller].mutations++;
   if(cont[controller].rules[ruleID].output != 0){
@@ -485,4 +485,5 @@ void MutateRule(int controller, int ruleID) {
 
     }
   }
+  */
 }

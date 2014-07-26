@@ -23,24 +23,24 @@ void DrawMoonSim() {
   PrintFloat(0, -0.5f,"Generation",generation);
   PrintFloat(0, -0.55f,"Controller",controller);
   PrintFloat(0, -0.6f,"Mutations",cont[controller].mutations);
-  PrintFloat(0, -0.65f,"Active Rules",cont[controller].output.active );
+  PrintFloat(0, -0.65f,"Active Rules",cont[controller].output[0].active );
   PrintFloat(0, -0.7f,"Fuel",fuel );
-  PrintFloat(0, -0.75f,"Thrust", cont[controller].output.output);
+  PrintFloat(0, -0.75f,"Thrust", cont[controller].output[0].output);
   PrintFloat(0, -0.8f, "Sim Speed", 10 - (speed / 1000));
   PrintFloat(0, -0.85f, "BEST", BEST);
   PrintFloat(0, -0.9f, "MEAN", MEAN);
   PrintFloat(0, -0.95f, "LOW", LOW);
   //rules
-  DrawRules(0.3f, -0.45f, controller);
+  DrawRules(0.3f, -0.45f, controller, 0);
   //draw accumulator
   DrawPlot(0, -0.999);
-  DrawAccumulator(0, -0.999, "Output", cont[controller].output);
+  DrawAccumulator(0, -0.999, "Output", cont[controller].output[0]);
 
   //DRAW SIM
   float y = cont[controller].input[0].value - cont[controller].input[0].low;
   y /= cont[controller].input[0].high;
 
-  float thrust = cont[controller].output.output;
+  float thrust = cont[controller].output[0].output;
 
   //draw ground
   glColor3f(140.0f/255, 140.0f/255, 140.0f/255);
