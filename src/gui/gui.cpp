@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 
   glutInit(&argc, argv);
   glutInitWindowSize(800, 600);
-  glutCreateWindow("FuzzyGen Gui");
+  glutCreateWindow("Sim");
   glutKeyboardFunc(&ProcessNormalKeys);
   glutSpecialFunc(&ProcessSpecialKeys);
   glutDisplayFunc(&Display);
@@ -114,7 +114,6 @@ void Display() {
   if(state == 2) {
     if(tick % speed == 0) {
       result = RunSim(controller);
-      glClear(GL_COLOR_BUFFER_BIT);
       DrawSim();
       if(result != -1) {
         if(cont[controller].score > 0) {
@@ -147,12 +146,12 @@ void Display() {
 }
 
 //util functions
-void DrawPlot(float x, float y){
+void DrawPlot(float x, float y, float width){
   glColor3f(1.0f, 0.0f, 0.0f);
   //draw x plane
   glBegin(GL_LINES);
     glVertex2f(x, y);
-    glVertex2f(x + 1, y);
+    glVertex2f(x + width, y);
   glEnd();
 
   //draw y plane
@@ -162,7 +161,7 @@ void DrawPlot(float x, float y){
   glEnd();
 }
 
-void DrawAccumulator(float x, float y,string name, Accumulator output) {
+void DrawAccumulator(float x, float y, string name, Accumulator output) {
   PrintFloat(x, y,name, output.output);
   float xScale = 1.0f / output.high;
   glColor3f(1.0f, 1.0f, 1.0f);
@@ -183,12 +182,12 @@ void DrawAccumulator(float x, float y,string name, Accumulator output) {
   glEnd();
 }
 
-void DrawCollection(float x, float y,string name, FuzzyVar collection) {
+void DrawCollection(float x, float y, float width, string name, FuzzyVar collection) {
   //draw current value
   glColor3f(1.0f, 0.0f, 0.0f);
   PrintFloat(x, y,name, collection.value);
   //find the appropriate scale
-  float scale = collection.high - collection.low;
+  float scale = (collection.high - collection.low) / width;
   // for height
 
   for(int i = 0; i < collection.setNum;i++) {
@@ -204,12 +203,16 @@ void DrawCollection(float x, float y,string name, FuzzyVar collection) {
     //rTop /= scale;
     float rBase = collection.sets[i].rightBase / scale;
     //rBase /= scale;
-    float height = collection.sets[i].height / 2;
+    float height = collection.sets[i].height / 2.5f;
 
     float value = collection.value - collection.low;
     value /= scale;
+    glColor3f(1.0f, 0.0f, 0.0f);
+     glBegin(GL_LINES);
+      glVertex2f(x, y + 1 / 2.5f);
+      glVertex2f(x + width, y + 1 / 2.5f);
+     glEnd();
     //draw the lines
-      glColor3f(1.0f, 0.0f, 0.0f);
     glBegin(GL_LINES);
       glVertex2f(x + (centre - lBase), y);
       glVertex2f(x + (centre - lTop), y + height);
@@ -228,9 +231,9 @@ void DrawCollection(float x, float y,string name, FuzzyVar collection) {
   }
 
 }
-void DrawBestCollection(float x, float y,string name, FuzzyVar collection) {
+void DrawBestCollection(float x, float y, float width, string name, FuzzyVar collection) {
   //find the appropriate scale
-  float scale = collection.high - collection.low;
+  float scale = (collection.high - collection.low) / width;
   // for height
 
   for(int i = 0; i < collection.setNum;i++) {
@@ -246,7 +249,7 @@ void DrawBestCollection(float x, float y,string name, FuzzyVar collection) {
     //rTop /= scale;
     float rBase = collection.sets[i].rightBase / scale;
     //rBase /= scale;
-    float height = collection.sets[i].height / 2;
+    float height = collection.sets[i].height / 2.5f;
 
     float value = collection.value - collection.low;
     value /= scale;
@@ -286,17 +289,17 @@ void DrawRules(float x, float y, int controller, int accumulator) {
       }
       ss << "THEN " << cont[controller].output[accumulator].rules[i].output;
       string text(ss.str());
-      glRasterPos2f(x + 0.05f, y + (0.05f * i));
+      glRasterPos2f(x, y + (0.05f * -i));
       glutBitmapString(GLUT_BITMAP_8_BY_13, (const unsigned char *) text.c_str());
     }
   }
   //draw best
-  for(int i = 0; i < cont[controller].output[accumulator].ruleNum; i++){
+  for(int i = 0; i < cont[BEST_CONT].output[accumulator].ruleNum; i++){
     ostringstream ss;
     ss << cont[BEST_CONT].output[accumulator].rules[i].output;
     string text(ss.str());
     glColor3f(0.2f, 0.2f, 0.2f);
-    glRasterPos2f(x + 0.6f, y + (0.05f * i));
+    glRasterPos2f(x + 0.4f, y + (0.05f * -i));
     glutBitmapString(GLUT_BITMAP_8_BY_13, (const unsigned char *) text.c_str());
   }
 }

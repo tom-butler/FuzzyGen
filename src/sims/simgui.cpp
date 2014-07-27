@@ -2,39 +2,62 @@
 #include "..\gui\gui.h"
 #include "sims\moon.h"
 #include <GL\freeglut.h>
-void DrawMoonSim();
 
+void DrawMoonSets(int window);
+void DrawMoonSim(int window);
+bool isInit = false;
+int sets;
+int vars;
+int sim;
 void DrawSim() {
-  if(SIM == MOONLANDER)
-    DrawMoonSim();
+  if(!isInit){
+    sim = glutGetWindow();
+    sets = glutCreateWindow("Sets");
+    isInit = true;
+  }
+  if(SIM == MOONLANDER){
+    DrawMoonSets(sets);
+    DrawMoonSim(sim);
+  }
+
 }
 
-void DrawMoonSim() {
-
+void DrawMoonSets(int window) {
+  glutSetWindow(window);
+  glClear(GL_COLOR_BUFFER_BIT);
   //DRAW PLOTS
-  DrawPlot(0, 0);
-  DrawBestCollection(0,0.5f,"Height", cont[BEST_CONT].input[0]);
-  DrawCollection(0,0.5f,"Height", cont[controller].input[0]);
-  DrawPlot(0, 0.5f);
-  DrawBestCollection(0,0,"Velocity", cont[BEST_CONT].input[1]);
-  DrawCollection(0,0,"Velocity", cont[controller].input[1]);
 
-  //Draw diagnostics
-  PrintFloat(0, -0.5f,"Generation",generation);
-  PrintFloat(0, -0.55f,"Controller",controller);
-  PrintFloat(0, -0.6f,"Mutations",cont[controller].mutations);
-  PrintFloat(0, -0.65f,"Active Rules",cont[controller].output[0].active );
-  PrintFloat(0, -0.7f,"Fuel",fuel );
-  PrintFloat(0, -0.75f,"Thrust", cont[controller].output[0].output);
-  PrintFloat(0, -0.8f, "Sim Speed", 10 - (speed / 1000));
-  PrintFloat(0, -0.85f, "BEST", BEST);
-  PrintFloat(0, -0.9f, "MEAN", MEAN);
-  PrintFloat(0, -0.95f, "LOW", LOW);
+
+  DrawBestCollection(0,0, 0.5f, "Velocity", cont[BEST_CONT].input[1]);
+  DrawCollection(0,0, 0.5f, "Velocity", cont[controller].input[1]);
+  DrawPlot(0, 0, 0.5f);
+
+  DrawBestCollection(0,0.5f, 0.5f, "Height", cont[BEST_CONT].input[0]);
+  DrawCollection(0,0.5f, 0.5f, "Height", cont[controller].input[0]);
+  DrawPlot(0, 0.5f, 0.5f);
+
   //rules
-  DrawRules(0.3f, -0.45f, controller, 0);
+  DrawRules(0.5f, 0.95f, controller, 0);
   //draw accumulator
-  DrawPlot(0, -0.999);
+  DrawPlot(0, -0.999, 1);
   DrawAccumulator(0, -0.999, "Output", cont[controller].output[0]);
+}
+
+
+void DrawMoonSim(int window) {
+  glutSetWindow(window);
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  PrintFloat(0.5, 0.5f,"Generation",generation);
+  PrintFloat(0.5, 0.45f,"Controller",controller);
+  PrintFloat(0.5, 0.4f,"Mutations",cont[controller].mutations);
+  PrintFloat(0.5, 0.35f,"Active Rules",cont[controller].output[0].active );
+  PrintFloat(0.5, 0.3f,"Fuel",fuel );
+  PrintFloat(0.5, 0.25f,"Thrust", cont[controller].output[0].output);
+  PrintFloat(0.5, 0.2f, "Sim Speed", 10 - (speed / 1000));
+  PrintFloat(0.5, 0.15f, "BEST", BEST);
+  PrintFloat(0.5, 0.1f, "MEAN", MEAN);
+  PrintFloat(0.5, 0.05f, "LOW", LOW);
 
   //DRAW SIM
   float y = cont[controller].input[0].value - cont[controller].input[0].low;
@@ -48,8 +71,8 @@ void DrawMoonSim() {
   glBegin(GL_POLYGON);
     glVertex2f(-1, -0.9f);
     glVertex2f(-1, -1);
-    glVertex2f(-0.006f, -1);
-    glVertex2f(-0.006f, -0.9f);
+    glVertex2f(1, -1);
+    glVertex2f(1, -0.9f);
   glEnd();
 
   //draw the moonlander
