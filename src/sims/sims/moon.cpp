@@ -2,6 +2,7 @@
 #include "..\..\objects\shared.h"
 #include "..\..\gui\gui.h"
 #include <iostream>
+#include <stdlib.h>
 
 using namespace std;
 
@@ -11,44 +12,65 @@ const short int MAX_THRUST = 100;
 const short int MAX_FUEL = 8845;
 const short int LANDER_WEIGHT = 5655;
 const short int SIM_HEIGHT = 5000;
+const short int SIM_WIDTH = 1000;
+const short int SAFE_WIDTH = 200;
 const float GRAVITY = 1.633f;
 const float Y_CRASH_SPEED = 3.05f;
 const float X_CRASH_SPEED = 1.22f;
 
 //relative
+static short int SAFE_X = 100 + GetRandInt(0, 260);
 static float MAX_FUEL_BURN = MAX_FUEL / 15 / 60.0; //maximum fuel to be burnt in one sec (tic)
 static short int START_HEIGHT = SIM_HEIGHT - (SIM_HEIGHT * 0.1); //10 % down
 static float START_FUEL = MAX_FUEL * 0.2; //70 % of fuel burnt on entry
 static short int TERMINAL_VELOCITY = 100;
 
 
-const float MAX_SCORE = (SIM_HEIGHT)/ 10 + (TERMINAL_VELOCITY - -TERMINAL_VELOCITY) + START_FUEL;
+const float MAX_SCORE = (SIM_HEIGHT)/ 10 + SIM_WIDTH / 10 + (TERMINAL_VELOCITY - -TERMINAL_VELOCITY)  + TERMINAL_VELOCITY + START_FUEL;
+
 //sim runtime vars
 float landerMass;
 float fuel;
+float landerX;
+float safeX;
 
 float * throttle;
+float * sideThrust;
 float * height;
-float * velocity;
+float * YVelocity;
+float * XVelocity;
+float * safeDist;
 short int * score;
 
 
-//input
+//throttle accumulator
 static FuzzyVar heightSet  = {0, SIM_HEIGHT, START_HEIGHT, 0, 0};
-static FuzzyVar velocitySet = {-TERMINAL_VELOCITY, TERMINAL_VELOCITY, MAX_START_VEL, 0, 0};
+static FuzzyVar YVelocitySet = {-TERMINAL_VELOCITY, TERMINAL_VELOCITY, MAX_START_VEL, 0, 0};
+
+//x thrust accumulator
+static FuzzyVar XVelocitySet = {-TERMINAL_VELOCITY, TERMINAL_VELOCITY, 0, 0};
+static FuzzyVar safeDistSet = {-SIM_WIDTH, SIM_WIDTH,0,0};
+
+//fitness
 static FuzzyVar fuelSet  = {0, START_FUEL, START_FUEL, 0, 0};
+
 //output
-static Accumulator thrustSet = {0, MAX_THRUST, 0.f, 0, 0, 0, 0, 0, 0};
+static Accumulator sideThrustSet = {-5, 5, 0.0f, 0, 0, 0, 0, 0, 0};
+static Accumulator thrustSet = {0, MAX_THRUST, 0.0f, 0, 0, 0, 0, 0, 0};
 
 void MoonCreateVars(){
   //sim input vars
-  NUM_INPUT = 2;
+  NUM_INPUT = 3;
   simInput = new FuzzyVar[NUM_INPUT];
+
   simInput[0] = heightSet;
-  simInput[1] = velocitySet;
+  simInput[1] = YVelocitySet;
+
+  simInput[2] = XVelocitySet;
+  simInput[3] = safeDistSet;
 
   //sim output vars
-  NUM_OUTPUT = 1;
+  NUM_OUTPUT = 2;
   simOutput = new Accumulator[NUM_OUTPUT];
   simOutput[0] = thrustSet;
   simOutput[0].vars = new short int[2];
@@ -56,25 +78,43 @@ void MoonCreateVars(){
   simOutput[0].vars[1] = 1;
   simOutput[0].varsNum = 2;
 
+  simOutput[1] = sideThrustSet;
+  simOutput[1].vars = new short int[1];
+  simOutput[1].vars[0] = 2;
+  simOutput[1].vars[0] = 3;
+  simOutput[1].varsNum = 2;
+
   simFitness = &fuelSet;
 }
 
 void MoonInitSim(int controller) {
   throttle = &cont[controller].output[0].output;
+  sideThrust = &cont[controller].output[1].output;
+
   height = &cont[controller].input[0].value;
-  velocity = &cont[controller].input[1].value;
+  YVelocity = &cont[controller].input[1].value;
+  XVelocity = &cont[controller].input[2].value;
+  safeDist = &cont[controller].input[3].value;
   score = &cont[controller].score;
+
 
   landerMass = LANDER_WEIGHT + START_FUEL;
   if(RANDOM_START){
     *height = START_HEIGHT + GetRandInt(0, 250);
-    *velocity = GetRandFloat(-MAX_START_VEL, MAX_START_VEL);
+    *YVelocity = GetRandFloat(-MAX_START_VEL, MAX_START_VEL);
+    *XVelocity = GetRandFloat(-MAX_START_VEL, MAX_START_VEL);
+    safeX = 250 + GetRandInt(0, 250);
+    landerX = 100 + GetRandInt(0, 150);
   }
   else{
     *height = START_HEIGHT + 250;
-    *velocity = 0;
+    *YVelocity = 0;
+    *XVelocity = 0;
+    safeX = 500;
+    landerX = 200;
   }
   fuel = START_FUEL;
+  *safeDist = safeX - landerX;
 }
 
 int MoonNextStep(int controller) {
@@ -86,23 +126,32 @@ int MoonNextStep(int controller) {
     if(*throttle < 10){
       *throttle = 0;
     }
-
     //calculate velocity
     fuel -= MAX_FUEL_BURN * (*throttle / 100);
+    fuel -= MAX_FUEL_BURN * (abs(*sideThrust) /10);
     landerMass = LANDER_WEIGHT + fuel;
-    *velocity += GRAVITY;
-    *velocity -= ((*throttle * 44000 / 100) / landerMass);
+    *YVelocity += GRAVITY;
+    *YVelocity -= (*throttle * 440) / landerMass;
+    *XVelocity += (*sideThrust * 100) / landerMass;
 
     //ensure it is within bounds
-    if(*velocity < -TERMINAL_VELOCITY)
-      *velocity = -TERMINAL_VELOCITY;
-    if(*velocity > TERMINAL_VELOCITY)
-      *velocity = TERMINAL_VELOCITY;
+    if(*YVelocity < -TERMINAL_VELOCITY)
+      *YVelocity = -TERMINAL_VELOCITY;
+    if(*YVelocity > TERMINAL_VELOCITY)
+      *YVelocity = TERMINAL_VELOCITY;
+
+    if(*XVelocity < -TERMINAL_VELOCITY)
+      *XVelocity = -TERMINAL_VELOCITY;
+    if(*XVelocity > TERMINAL_VELOCITY)
+      *XVelocity = TERMINAL_VELOCITY;
     if(fuel < 0)
       fuel = 0.0f;
 
     //move
-    *height -= *velocity;
+    *height -= *YVelocity;
+    landerX += *XVelocity;
+
+    *safeDist = safeX - landerX;
 
     //check the height
     if(*height < 0.0f)
@@ -111,20 +160,20 @@ int MoonNextStep(int controller) {
       *height = SIM_HEIGHT;
 
     //score
-    if(fuel == 0.0f) {
-      *score = (SIM_HEIGHT - *height) / 10;
+    else if(*height <= 0.0f && *YVelocity < Y_CRASH_SPEED && abs(*XVelocity) < X_CRASH_SPEED) { //safe
+      *score = (SIM_HEIGHT - *height)/ 10 + (SIM_WIDTH - abs(*safeDist)) / 10 + (TERMINAL_VELOCITY - *YVelocity) + (TERMINAL_VELOCITY - abs(*XVelocity)) + fuel;
       *score = (*score / MAX_SCORE) * 1000;
       return 0; //fail
     }
-    else if(*height <= 0.0f && *velocity < Y_CRASH_SPEED) {
-      *score = (SIM_HEIGHT - *height)/ 10 + (TERMINAL_VELOCITY - *velocity) + fuel;
-      *score = (*score / MAX_SCORE) * 1000;
-      return 0; //succeed
-    }
-    else if(*height <= 0.0f) {
-      *score = (SIM_HEIGHT - *height)/ 10 + (TERMINAL_VELOCITY - *velocity);
+    else if(*height <= 0.0f) { //crashed
+      *score = (SIM_HEIGHT - *height)/ 10 + (SIM_WIDTH - abs(*safeDist)) / 10 + (TERMINAL_VELOCITY - *YVelocity) + (TERMINAL_VELOCITY - abs(*XVelocity));
       *score = (*score / MAX_SCORE) * 1000;
       return 0; //semi-fail
+    }
+    if(fuel == 0.0f) { //if it ran out of fuel
+      *score = (SIM_HEIGHT - *height) / 10 + (SIM_WIDTH - abs(*safeDist)) / 10;
+      *score = (*score / MAX_SCORE) * 1000;
+      return 0; //fail
     }
     else {
       return -1; //continue
