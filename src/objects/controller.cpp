@@ -31,7 +31,7 @@ void BreedSets(int id1, int id2);
 void BreedRules(int id1, int id2);
 
 //mutate
-void Mutate(int id);
+void Mutate(int id, int var);
 void MutateCol(int controller, int var);
 void MutateSet(int controller, int var, int setID);
 void MutateRule(int controller, int ruleID);
@@ -44,43 +44,23 @@ float Lerp(float x1, float y1, float x2, float y2, float value) {
 }
 
 void ForceVarBounds(int controller, int var){
-
   Set last;
-  for(int i = 0; i < cont[controller].input[var].setNum; i++){
+  for(int i = 0; i < cont[controller].input[var].setNum; ++i){
     Set set = cont[controller].input[var].sets[i];
 
-    //force set formation
-    if(set.leftTop > set.leftBase)
-      set.leftTop = set.leftBase;
-    if(set.rightTop > set.rightBase)
-      set.rightTop = set.rightBase;
-    if(set.leftTop < 0)
-      set.leftTop = 0;
-    if(set.rightTop < 0)
-      set.rightTop = 0;
-    if(set.leftBase < 0)
-      set.leftBase = 0;
-    if(set.rightBase < 0)
-      set.rightBase = 0;
-
-    //ensure they are in bounds
-    if(set.centreX < cont[controller].input[var].low)
-      set.centreX = cont[controller].input[var].low;
-    if(set.centreX > cont[controller].input[var].high)
-      set.centreX = cont[controller].input[var].high;
-    if(set.centreX - set.leftTop < cont[controller].input[var].low)
-      set.leftTop = set.centreX - cont[controller].input[var].low;
-    if(set.centreX + set.rightTop > cont[controller].input[var].high)
-      set.rightTop = cont[controller].input[var].high - set.centreX;
-    if(set.centreX - set.leftBase < cont[controller].input[var].low)
-      set.leftBase = set.centreX - cont[controller].input[var].low;
-    if(set.centreX + set.rightBase > cont[controller].input[var].high)
-      set.rightBase = cont[controller].input[var].high - set.centreX;
-
-    //check relational compliance
+    if(FORCE_COVERAGE){
+      if(i == 0 && set.centreX - set.leftTop != cont[controller].input[var].low){
+        set.leftTop = set.centreX - cont[controller].input[var].low;
+        set.leftBase = set.leftTop;
+      }
+      if(i == cont[controller].input[var].setNum -1 && set.centreX + set.rightTop != cont[controller].input[var].high){
+        set.rightTop = cont[controller].input[var].high -  set.centreX;
+        set.rightBase = set.rightTop;
+      }
+    }
 
     //check overlap
-    if(FORCE_OVERLAP){
+    if(FORCE_OVERLAP > 0.0f){
       if(i == 0)
         last = set;
       else{
@@ -95,21 +75,45 @@ void ForceVarBounds(int controller, int var){
           set.leftBase = set.centreX - centre + overlap2;
           cont[controller].input[var].sets[i-1] = last;
         }
-      last = set;
+        last = set;
       }
     }
+
+    //ensure they are in bounds
+    if(set.centreX < cont[controller].input[var].low)
+      set.centreX = cont[controller].input[var].low;
+    if(set.centreX > cont[controller].input[var].high)
+      set.centreX = cont[controller].input[var].high;
+
+    if(set.centreX - set.leftTop < cont[controller].input[var].low)
+      set.leftTop = set.centreX - cont[controller].input[var].low;
+    if(set.centreX + set.rightTop > cont[controller].input[var].high)
+      set.rightTop = cont[controller].input[var].high - set.centreX;
+
+    //force set formation
+    if(set.leftTop > set.leftBase)
+      set.leftBase = set.leftTop;
+    if(set.rightTop > set.rightBase)
+      set.rightBase = set.rightTop;
+
+    if(set.centreX - set.leftBase < cont[controller].input[var].low)
+      set.leftBase = set.centreX - cont[controller].input[var].low;
+    if(set.centreX + set.rightBase > cont[controller].input[var].high)
+      set.rightBase = cont[controller].input[var].high - set.centreX;
+
+    if(set.leftTop < 0)
+      set.leftTop = 0;
+    if(set.rightTop < 0)
+      set.rightTop = 0;
+    if(set.leftBase < 0)
+      set.leftBase = 0;
+    if(set.rightBase < 0)
+      set.rightBase = 0;
+
+
+    //check relational compliance
     //SAVE SET
     cont[controller].input[var].sets[i] = set;
-  }
-  if(FORCE_COVERAGE > 0){
-    if(cont[controller].input[var].sets[0].centreX - cont[controller].input[var].sets[0].leftTop != cont[controller].input[var].low){
-       cont[controller].input[var].sets[0].leftTop = cont[controller].input[var].sets[0].centreX - cont[controller].input[var].low;
-       cont[controller].input[var].sets[0].leftBase = cont[controller].input[var].sets[0].leftTop;
-    }
-    if(cont[controller].input[var].sets[cont[controller].input[var].setNum -1].centreX + cont[controller].input[var].sets[cont[controller].input[var].setNum -1].rightTop != cont[controller].input[var].high){
-       cont[controller].input[var].sets[cont[controller].input[var].setNum -1].rightTop = cont[controller].input[var].high - cont[controller].input[var].sets[cont[controller].input[var].setNum -1].centreX;
-       cont[controller].input[var].sets[cont[controller].input[var].setNum -1].rightBase = cont[controller].input[var].sets[cont[controller].input[var].setNum -1].rightTop;
-    }
   }
 }
 
@@ -203,46 +207,30 @@ void InitSets(int controller, int variable,short int numSets) {
 
 //initialises all rules for a given output
 void InitRules(int controller, int accumulator) {
-  //init the rules
+  int varsNum = cont[controller].output[accumulator].varsNum;
+  int var[varsNum] = {};
+  int n = varsNum - 1;
   int currentRule = 0;
-  for(int rule = 0; rule < cont[controller].output[accumulator].ruleNum; ++rule){
-    Rule r = {0, GetRandFloat(cont[controller].output[accumulator].low,cont[controller].output[accumulator].high), 0};
-    r.sets = new short int[cont[controller].output[accumulator].varsNum];
-    cont[controller].output[accumulator].rules[currentRule] = r;
-    ++currentRule;
-  }
-bool isDifferent = false;
-int last = 0;
-for (int i = 0; i < cont[controller].output[accumulator].varsNum; i++){
-  int next = cont[controller].input[cont[controller].output[accumulator].vars[i]].setNum;
-  if(i == 0)
-    last = next;
-  else{
-    if(last != next)
-      isDifferent = true;
-    last = next;
-  }
-
-}
-
-
-  //allocate the rules
-  int set = 1;
-  for(int var = 0; var < cont[controller].output[accumulator].varsNum; ++var) {
-    int count = 0;
-    for(int rule = 0; rule < cont[controller].output[accumulator].ruleNum; ++rule){
-      if(!isDifferent){
-        if(count >= cont[controller].input[var].setNum){
-          set += var;
-          count = 0;
-        }
+  //loop rulenum / last vars num of sets
+  int lastSetNum = cont[controller].input[cont[controller].output[accumulator].vars[n]].setNum;
+  int loop = cont[controller].output[accumulator].ruleNum / lastSetNum;
+  for(int r = 0; r < loop; ++r){
+    for(int s = 0; s < lastSetNum; ++s){
+      var[n] = s;
+      Rule rule = {0, GetRandFloat(cont[controller].output[accumulator].low,cont[controller].output[accumulator].high), 0};
+      cont[controller].output[accumulator].rules[currentRule] = rule;
+      cont[controller].output[accumulator].rules[currentRule].sets = new short int[cont[controller].output[accumulator].varsNum];
+      for(int v = 0; v < varsNum; ++v){
+        cont[controller].output[accumulator].rules[currentRule].sets[v] = var[v];
       }
-        if(set >= cont[controller].input[var].setNum ){
-          set = 0;
-        }
-        cont[controller].output[accumulator].rules[rule].sets[var] = set;
-        ++count;
-        ++set;
+      ++currentRule;
+    }
+    ++var[n];
+    for(int v = n; v > 0; --v){
+      if(var[v] = cont[controller].input[v].setNum){
+        var[v] = 0;
+        ++var[v-1];
+      }
     }
   }
 }
@@ -402,7 +390,7 @@ void Breed(int parents[]){
       //ParentMutation(i,parents[b]);
       float mut = GetRandFloat(0.0f, 1.0f);
       if(mut <= MUT_CHANCE)
-        Mutate(i);
+        Mutate(i, GetRandInt(0,NUM_INPUT -1));
     }
   }
 }
@@ -411,6 +399,8 @@ void BreedSets(int id1, int id2){
   delete [] cont[id1].input[random].sets;
   cont[id1].input[random].sets = new Set[MAX_NUM_SETS];
   copy(cont[id2].input[random].sets, cont[id2].input[random].sets + MAX_NUM_SETS, cont[id1].input[random].sets);
+  cont[id1].input[random].setNum = cont[id2].input[random].setNum;
+  ForceVarBounds(id1, random);
 }
 void BreedRules(int id1, int id2){
   /*random = GetRandInt(0, cont[id1].ruleNum -1);
@@ -421,18 +411,15 @@ void BreedRules(int id1, int id2){
   }*/
 }
 
-void Mutate(int id) {
+void Mutate(int id, int var) {
   random = GetRandInt(0, 2);
   if(random == 0){
-    int var = GetRandInt(0,NUM_INPUT -1);
     MutateSet(id, var, GetRandInt(0,cont[id].input[var].setNum -1));
-    ForceVarBounds(id, var);
   }
   else if (random == 1){
-    int var = GetRandInt(0,NUM_INPUT -1);
     MutateCol(id, var);
-    ForceVarBounds(id, var);
   }
+  ForceVarBounds(id, var);
 /*  else{
     MutateRule(id, GetRandInt(0, cont[id].ruleNum -1 ));
   }*/

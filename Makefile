@@ -18,14 +18,14 @@ cmd: cmd.o gen.o controller.o moon.o shared.o sim.o
 	g++ -o $(BUILD_DIR)\cmd cmd.o gen.o controller.o moon.o shared.o sim.o -m64
 
 cmd.o: $(CMD_DIR)\cmd.cpp
-	g++ -c $(CMD_DIR)\cmd.cpp -m64
+	g++ -c -g $(CMD_DIR)\cmd.cpp -m64
 
 #TEST BUILD
 test: test.o controller.o moon.o gen.o shared.o
 	g++ -o $(BUILD_DIR)\test test.o controller.o moon.o shared.o gen.o
 
 test.o: $(CMD_DIR)\test.cpp
-	g++ -c $(CMD_DIR)\test.cpp -m64
+	g++ -c -g $(CMD_DIR)\test.cpp -m64
 
 #GRAPHICAL USER INTERFACE
 gui: gui.o gen.o controller.o moon.o shared.o sim.o simgui.o
@@ -36,20 +36,20 @@ gui.o: $(GUI_DIR)\gui.cpp
 
 #SHARED OBJECTS
 gen.o: $(OBJ_DIR)\gen.cpp $(OBJ_DIR)\gen.h
-	g++ -c $(OBJ_DIR)\gen.cpp -m64
+	g++ -c -g $(OBJ_DIR)\gen.cpp -m64
 
 controller.o: $(OBJ_DIR)\controller.cpp $(OBJ_DIR)\controller.h
-	g++ -c $(OBJ_DIR)\controller.cpp -m64
+	g++ -c -g $(OBJ_DIR)\controller.cpp -m64
 
 shared.o: $(OBJ_DIR)\shared.cpp $(OBJ_DIR)\shared.h
-	g++ -c $(OBJ_DIR)\shared.cpp -m64
+	g++ -c -g $(OBJ_DIR)\shared.cpp -m64
 
 #SIMULATIONS
 moon.o: $(SIMULATION_DIR)\moon.cpp $(SIMULATION_DIR)\moon.h
-	g++ -c $(SIMULATION_DIR)\moon.cpp -m64
+	g++ -c -g $(SIMULATION_DIR)\moon.cpp -m64
 
 sim.o: $(SIM_DIR)\sim.cpp $(SIM_DIR)\sim.h
-	g++ -c $(SIM_DIR)\sim.cpp -m64
+	g++ -c -g $(SIM_DIR)\sim.cpp -m64
 
 simgui.o: $(SIM_DIR)\simgui.cpp $(SIM_DIR)\simgui.h
 	g++ -c $(SIM_DIR)\simgui.cpp -m64 -D FREEGLUT_STATIC -I"C:\Program Files\mingw-w64\x86_64-4.9.0-posix-sjlj-rt_v3-rev2\mingw64\include"

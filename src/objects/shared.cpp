@@ -12,7 +12,7 @@ using namespace std;
   //define the standard options ----------------
 
   //genetic
-  short int POP = 10;
+  short int POP = 1000;
   short int GENERATIONS = 1000;
   bool INCLUDE_CONTROL = false;
   bool LOGGING = true;
@@ -20,7 +20,7 @@ using namespace std;
   bool ELITISM = false;
 
   bool FORCE_RELATIONAL = false;
-  float FORCE_OVERLAP = 0.3; //0 for none
+  float FORCE_OVERLAP = 0.3f; //0 for none
   bool FORCE_COVERAGE = true;
 
   //mutation
