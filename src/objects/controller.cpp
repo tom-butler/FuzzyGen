@@ -135,7 +135,6 @@ void CreateControllers(int num_controllers, FuzzyVar input[], Accumulator output
   srand(static_cast <unsigned>(time(0)));
 
  for(int i = 0; i < num_controllers;i++) {
-
     //create input sets
     cont[i].input = new FuzzyVar[NUM_INPUT];
     copy(input,input+NUM_INPUT, cont[i].input);
@@ -146,25 +145,20 @@ void CreateControllers(int num_controllers, FuzzyVar input[], Accumulator output
         InitSets(i, j, GetRandInt(MIN_NUM_SETS, MAX_NUM_SETS));
       }
       else{
-        InitSets(i, j,MIN_NUM_SETS);
+        InitSets(i, j ,MIN_NUM_SETS);
       }
     }
-
     //create accumulators
     cont[i].output = new Accumulator[NUM_OUTPUT];
     copy(output,output+NUM_OUTPUT, cont[i].output);
-
     for(int o = 0; o < NUM_OUTPUT; o++){
       cont[i].output[o].ruleNum = 1;
       for(int p = 0; p < cont[i].output[o].varsNum; p++){
         cont[i].output[o].ruleNum *= cont[i].input[cont[i].output[o].vars[p]].setNum;
       }
-
       cont[i].output[o].value = new float[cont[i].output[o].ruleNum];
       cont[i].output[o].scale = new float[cont[i].output[o].ruleNum];
-
-      //make some Rules
-      cont[i].output[o].rules = new Rule[cont[i].output[o].ruleNum];
+      cont[i].output[o].rules = new  Rule[cont[i].output[o].ruleNum];
       InitRules(i, o);
     }
   }

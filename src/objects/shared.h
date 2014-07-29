@@ -26,7 +26,7 @@ typedef struct {
   short int high;
   float value;
   Set *sets;
-  int setNum;
+  short int setNum;
 } FuzzyVar;
 
 typedef struct {

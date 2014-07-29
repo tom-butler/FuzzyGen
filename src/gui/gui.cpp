@@ -163,19 +163,19 @@ void DrawPlot(float x, float y, float width){
 
 void DrawAccumulator(float x, float y, string name, Accumulator output) {
   PrintFloat(x, y,name, output.output);
-  float xScale = 1.0f / output.high;
+  float xScale = 1.0f / (output.high - output.low);
   glColor3f(1.0f, 1.0f, 1.0f);
   //draw singletons
   for (int i = 0; i < output.active; i++) {
-    float xPos = x + output.value[i] * xScale;
+    float xPos = x + (output.value[i] - output.low) * xScale;
     glBegin(GL_LINES);
-      glVertex2f(xPos, y + output.scale[i] / 2);
+      glVertex2f(xPos, y + output.scale[i]/ 2);
       glVertex2f(xPos, y);
     glEnd();
   }
   //draw output
   glColor3f(1.0f, 0.0f, 0.0f);
-  float xPos = x + output.output * xScale;
+  float xPos = x + (output.output - output.low) * xScale;
   glBegin(GL_LINES);
     glVertex2f(xPos, y + 0.51f);
     glVertex2f(xPos, y + 0.5f);

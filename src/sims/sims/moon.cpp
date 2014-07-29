@@ -48,11 +48,9 @@ static FuzzyVar heightSet  = {0, SIM_HEIGHT, START_HEIGHT, 0, 0};
 static FuzzyVar YVelocitySet = {-TERMINAL_VELOCITY, TERMINAL_VELOCITY, MAX_START_VEL, 0, 0};
 
 //x thrust accumulator
-static FuzzyVar XVelocitySet = {-TERMINAL_VELOCITY, TERMINAL_VELOCITY, 0, 0};
-static FuzzyVar safeDistSet = {-SIM_WIDTH, SIM_WIDTH,0,0};
+static FuzzyVar XVelocitySet = {-TERMINAL_VELOCITY, TERMINAL_VELOCITY, 0, 0, 0};
+static FuzzyVar safeDistSet = {-SIM_WIDTH, SIM_WIDTH, 0, 0, 0};
 
-//fitness
-static FuzzyVar fuelSet  = {0, START_FUEL, START_FUEL, 0, 0};
 
 //output
 static Accumulator sideThrustSet = {-5, 5, 0.0f, 0, 0, 0, 0, 0, 0};
@@ -60,7 +58,7 @@ static Accumulator thrustSet = {0, MAX_THRUST, 0.0f, 0, 0, 0, 0, 0, 0};
 
 void MoonCreateVars(){
   //sim input vars
-  NUM_INPUT = 3;
+  NUM_INPUT = 4;
   simInput = new FuzzyVar[NUM_INPUT];
 
   simInput[0] = heightSet;
@@ -79,12 +77,10 @@ void MoonCreateVars(){
   simOutput[0].varsNum = 2;
 
   simOutput[1] = sideThrustSet;
-  simOutput[1].vars = new short int[1];
+  simOutput[1].vars = new short int[2];
   simOutput[1].vars[0] = 2;
-  simOutput[1].vars[0] = 3;
+  simOutput[1].vars[1] = 3;
   simOutput[1].varsNum = 2;
-
-  simFitness = &fuelSet;
 }
 
 void MoonInitSim(int controller) {
@@ -152,6 +148,11 @@ int MoonNextStep(int controller) {
     landerX += *XVelocity;
 
     *safeDist = safeX - landerX;
+    
+    if(*safeDist > SIM_WIDTH)
+      *safeDist = SIM_WIDTH;
+    if(*safeDist < -SIM_WIDTH)
+      *safeDist = -SIM_WIDTH;
 
     //check the height
     if(*height < 0.0f)
