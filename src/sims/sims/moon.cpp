@@ -169,12 +169,12 @@ int MoonNextStep(int controller) {
     else if(*height <= 0.0f) { //crashed
       *score = (SIM_HEIGHT - *height)/ 10 + (SIM_WIDTH - abs(*safeDist)) / 10 + (TERMINAL_VELOCITY - *YVelocity) + (TERMINAL_VELOCITY - abs(*XVelocity));
       *score = (*score / MAX_SCORE) * 1000;
-      return 0; //semi-fail
+      return 1; //semi-fail
     }
     if(fuel == 0.0f) { //if it ran out of fuel
       *score = (SIM_HEIGHT - *height) / 10 + (SIM_WIDTH - abs(*safeDist)) / 10;
       *score = (*score / MAX_SCORE) * 1000;
-      return 0; //fail
+      return 1; //fail
     }
     else {
       return -1; //continue

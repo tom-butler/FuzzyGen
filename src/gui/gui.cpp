@@ -11,6 +11,8 @@
 #include <sstream>
 
 using namespace std;
+bool bestOnly = true;
+bool breed = false;
 
 int generation = 0;
 int speed = 5000;
@@ -22,7 +24,7 @@ int tick = 0;
 void ProcessNormalKeys(unsigned char key, int x, int y);
 void ProcessSpecialKeys(int key, int x, int y);
 void Display(void);
-
+void RunAll();
 int main(int argc, char *argv[])
 {
   //Init GLUT
@@ -53,6 +55,12 @@ void ProcessNormalKeys(unsigned char key, int x, int y)
     case '\x1B': //exit key
       exit(EXIT_SUCCESS);
       break;
+    case 'b':
+      if(bestOnly)
+        bestOnly = false;
+      else
+        bestOnly = true;
+      break;
   }
 }
 
@@ -76,29 +84,13 @@ void ProcessSpecialKeys(int key, int x, int y)
 }
 
 void Display() {
-
   //end
   if(state == 5) {
     PrintFloat(-0.5f, 0.2f, "FINISHED: ",BEST);
   }
 
-  //end
-  if(state == 4) {
-    if(cont[controller].score > 0)
-      PrintFloat(-0.5f, 0.0f, "SUCCESS", cont[controller].score);
-    else
-      PrintFloat(-0.5f, 0.0f, "FAILED", cont[controller].score);
-
-    if(tick % speed == 0) {
-      if(controller < POP -1)
-        state = 1;
-      else
-        state = 3;
-    }
-  }
-
   //breed
-  if(state == 3) {
+  if(state == 4) {
     if(generation < GENERATIONS - 1) {
       PrintFloat(-0.5f, 0.1f, "BREEDING", 0.0f);
       Breed();
@@ -111,38 +103,83 @@ void Display() {
   }
 
   //run
-  if(state == 2) {
+  if(state == 2){
+    DrawSim();
+    if(result == 0){
+      PrintFloat(-0.5f, 0.0f, "SUCCESS", cont[controller].score);
+      state = 1;
+    }
+    
+    else if(result == 1){
+      PrintFloat(-0.5f, 0.0f, "FAILED", cont[controller].score);
+      state = 1;
+    }
+    
     if(tick % speed == 0) {
       result = RunSim(controller);
-      DrawSim();
-      if(result != -1) {
-        if(cont[controller].score > 0) {
-          if(cont[controller].score > MAX_BEST){
-            MAX_BEST = cont[controller].score;
-          }
-          if(cont[controller].score > BEST){
-            BEST = cont[controller].score;
-            BEST_CONT = controller;
-          }
-          state = 4;
+      if(!bestOnly && result != -1) {
+        if(cont[controller].score > MAX_BEST){
+          MAX_BEST = cont[controller].score;
         }
-        else
-          state = 4;
+        if(cont[controller].score > BEST){
+          BEST = cont[controller].score;
+          BEST_CONT = controller;
+        }
       }
     }
   }
 
   //load
   if(state == 1) {
-    controller++;
-    InitSimulation(controller);
-    result = -1;
-    state = 2;
+    if(bestOnly){
+      if(!breed){
+        breed = true;
+        PrintFloat(-0.5f, 0.0f, "RUNNING", generation);
+        RunAll();
+        controller = BEST_CONT;
+        InitSimulation(controller);
+        result = -1;
+        state = 2;
+      }
+      else{
+        breed = false;
+        state = 4;
+      }
+    }
+    else{
+      if(controller < POP - 1){
+        controller++;
+        InitSimulation(controller);
+        result = -1;
+        state = 2;
+      }
+      else{
+        state = 4;//breed
+      }
+    }
   }
 
-  tick++;
+  tick+= 100;
   glutPostRedisplay();
   glutSwapBuffers();
+}
+
+void RunAll(){
+    BEST = 0;
+    for(int c = 0; c < POP; ++c) {
+      InitSimulation(c);
+      int result = -1;
+      while(result == -1) {
+        result = RunSim(c);
+      }
+      if(cont[c].score > MAX_BEST){
+        MAX_BEST = cont[c].score;
+      }
+      if(cont[c].score > BEST){
+        BEST = cont[c].score;
+        BEST_CONT = c;
+      }
+    }
 }
 
 //util functions
