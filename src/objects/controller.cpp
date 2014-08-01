@@ -27,6 +27,7 @@ void SelectHalf();
 void SelectMean(float mean);
 
 void Breed(int parents[]);
+void BreedVars(int id1, int id2);
 void BreedSets(int id1, int id2);
 void BreedRules(int id1, int id2);
 
@@ -34,7 +35,7 @@ void BreedRules(int id1, int id2);
 void Mutate(int id, int var);
 void MutateCol(int controller, int var);
 void MutateSet(int controller, int var, int setID);
-void MutateRule(int controller, int ruleID);
+void MutateRule(int controller, int accumulator, int ruleID);
 
 float Lerp(float x1, float y1, float x2, float y2, float value) {
   //find the percentage by the x values
@@ -377,6 +378,7 @@ void Breed(int parents[]){
     if(cont[i].score != -2){
 
       //breed sets
+      BreedVars(i, parents[c]);
       BreedSets(i, parents[c]);
       BreedRules(i,parents[c]);
       c++;
@@ -388,13 +390,39 @@ void Breed(int parents[]){
     }
   }
 }
-void BreedSets(int id1, int id2){
+void BreedVars(int id1, int id2){
   random = GetRandInt(0, NUM_INPUT-1);
   delete [] cont[id1].input[random].sets;
   cont[id1].input[random].sets = new Set[MAX_NUM_SETS];
+
   copy(cont[id2].input[random].sets, cont[id2].input[random].sets + MAX_NUM_SETS, cont[id1].input[random].sets);
   cont[id1].input[random].setNum = cont[id2].input[random].setNum;
-  ForceVarBounds(id1, random);
+
+  //regen any rules in accumulator that uses the random var
+  for(int a = 0; a < NUM_OUTPUT; ++a){
+    for(int v = 0; v < cont[id1].output[a].varsNum; ++v){
+      if(cont[id1].output[a].vars[v] == random){
+        cont[id1].output[a].ruleNum = 1;
+        for(int p = 0; p < cont[id1].output[a].varsNum; p++){
+          cont[id1].output[a].ruleNum *= cont[id1].input[cont[id1].output[a].vars[p]].setNum;
+        }
+        delete [] cont[id1].output[a].rules;
+        cont[id1].output[a].rules = new  Rule[cont[id1].output[a].ruleNum];
+        InitRules(id1, a);
+      }
+    }
+  }
+}
+void BreedSets(int id1, int id2){
+  int var  = GetRandInt(0, NUM_INPUT-1);
+  int set1 = GetRandInt(0, cont[id1].input[var].setNum-1);
+  int set2 = GetRandInt(0, cont[id2].input[var].setNum-1);
+
+  float oldcentre = cont[id1].input[var].sets[set1].centreX;
+  cont[id1].input[var].sets[set1] = cont[id2].input[var].sets[set2];
+  cont[id1].input[var].sets[set1].centreX = oldcentre;
+
+  ForceVarBounds(id1, var);  
 }
 void BreedRules(int id1, int id2){
   /*random = GetRandInt(0, cont[id1].ruleNum -1);
@@ -413,11 +441,11 @@ void Mutate(int id, int var) {
   else if (random == 1){
     MutateCol(id, var);
   }
+  else{
+    int accumulator = GetRandInt(0, NUM_OUTPUT-1);
+    MutateRule(id,accumulator, GetRandInt(0, cont[id].output[accumulator].ruleNum -1 ));
+  }
   ForceVarBounds(id, var);
-/*  else{
-    MutateRule(id, GetRandInt(0, cont[id].ruleNum -1 ));
-  }*/
-
 }
 
 void MutateCol(int controller, int var) {
@@ -503,18 +531,8 @@ void MutateSet(int controller, int var, int setID) {
   cont[controller].input[var].sets[setID] = set;
 }
 
-void MutateRule(int controller, int ruleID) {
-  /*
-  short int mut = GetRandInt(0,1);
+void MutateRule(int controller, int accumulator, int ruleID) {
   cont[controller].mutations++;
-  if(cont[controller].rules[ruleID].output != 0){
-    switch(mut){
-      case 0: //swap the output
-          random = GetRandFloat(cont[controller].output.low,cont[controller].output.high);
-          cont[controller].rules[ruleID].output = random;
-          break;
-
-    }
-  }
-  */
+  random = GetRandFloat(cont[controller].output[accumulator].low,cont[controller].output[accumulator].high);
+  cont[controller].output[accumulator].rules[ruleID].output = random;
 }

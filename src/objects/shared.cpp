@@ -16,7 +16,7 @@ using namespace std;
   short int GENERATIONS = 1000;
   bool INCLUDE_CONTROL = false;
   bool LOGGING = true;
-  bool RANDOM_START = true;
+  bool RANDOM_START = false;
   bool ELITISM = false;
 
   bool FORCE_RELATIONAL = false;
