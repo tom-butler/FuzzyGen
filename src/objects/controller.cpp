@@ -10,7 +10,7 @@ using namespace std;
 static int random;
 
 //util
-float Lerp(float x1, float y1, float x2, float y2, float value);
+float Intersect(float x1, float y1, float x2, float y2, float value);
 void ResetAccumulator(int controller, int accumulator);
 void ForceVarBounds(int controller, int var);
 
@@ -37,11 +37,11 @@ void MutateCol(int controller, int var);
 void MutateSet(int controller, int var, int setID);
 void MutateRule(int controller, int accumulator, int ruleID);
 
-float Lerp(float x1, float y1, float x2, float y2, float value) {
+float Intersect(float x1, float y1, float x2, float y2, float value) {
   //find the percentage by the x values
   float v = ((value - x1)/(x2 - x1));
   //perform lerp
-  return y1 + (v * (y2 - y1));
+  return Lerp(v, y1, y2);
 }
 
 void ForceVarBounds(int controller, int var){
@@ -270,12 +270,12 @@ float EvaluateSet(int controller, int inputVar, int setID, int variable) {
   if(variable >= (set.centreX - set.leftBase) && variable <= ( set.centreX + set.rightBase))
     if(variable < set.centreX) //left
       if(variable < (set.centreX - set.leftTop))
-        return Lerp(set.centreX - set.leftBase, 0.0f, set.centreX - set.leftTop, set.height, variable);
+        return Intersect(set.centreX - set.leftBase, 0.0f, set.centreX - set.leftTop, set.height, variable);
       else //variable > leftTop - centreX
         return set.height;
     else //right or centre
       if(variable > (set.centreX + set.rightTop))
-        return Lerp(set.centreX + set.rightTop, set.height, set.centreX + set.rightBase, 0.0f,variable);
+        return Intersect(set.centreX + set.rightTop, set.height, set.centreX + set.rightBase, 0.0f,variable);
       else
         return set.height;
   else

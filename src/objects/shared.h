@@ -119,5 +119,5 @@ void InitSystem();
 int InitTest(int test);
 short int GetRandInt(short int low, short int high);
 float GetRandFloat(float low, float high);
-
+float Lerp(float value, float low, float high);
 #endif

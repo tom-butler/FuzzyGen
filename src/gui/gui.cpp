@@ -340,3 +340,7 @@ void DrawRules(float x, float y, int controller, int accumulator) {
     glutBitmapString(GLUT_BITMAP_8_BY_13, (const unsigned char *) text.c_str());
   }
 }
+
+float ConvertToSimScale(float var, float min, float max){
+  return (((var - min) * 2) / (max - min)) - 1.0f;
+}

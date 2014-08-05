@@ -6,18 +6,25 @@
 
 using namespace std;
 
-const int MAX_FORCE = 106000; //(newtons)
-const int MAX_FUEL_BURN;
-const int MIN_FUEL_BURN;
+//harrier
+const float   MIN_FUEL_BURN = 0.1f;
+const float   MAX_FUEL_BURN = 0.5f;
+const int   MAX_FORCE = 106000; //(newtons)
 const float MAX_LANDING_SPEED_Y = 3.4f;
 const float MAX_LANDING_SPEED_X = 3.4f;
-const int SIM_HEIGHT = 200;
-const int SIM_WIDTH = 600;
-const int TERMINAL_VELOCITY = 100;
-const int HARRIER_MASS = 5700 + 3500; //mass + missles
-const int START_FUEL = 80;
-const float GRAVITY = 9.8f;
+const int   TERMINAL_VELOCITY = 100;
+const int   START_FUEL = 80;
 
+const int   HARRIER_MASS = 5655 + 3500; //mass + missles
+const float HARRIER_FRICTION = 0.013f;
+const int   GROUND_EFFECT_HEIGHT = 16;
+
+//environment
+const float SIM_GRAVITY = 9.8f;
+const int   SIM_HEIGHT = 200;
+const int   SIM_WIDTH = 600;
+const int   WIND_SPEED = 10;
+const int   MAX_WIND_GUST = 20;
 
 //harrier status
 float XPos;
@@ -25,22 +32,23 @@ float YPos;
 float force;
 float fuel;
 float harrierMass;
+float XVel;
+
+//simStatus
 bool isBoom;
 bool landed;
 bool groundEffect;
+
 //ship
 float safeX;
+float safeY;
 float safeWidth;
 float shipSpeed;
-//environment
-float windSpeed;
-float maxWindGust;
-float windGustTarget;
 
 //controller variables
 float * height;
 float * YVel;
-float * XVel;
+float * RelativeXVel;
 float * safeDist;
 
 float * throttle;
@@ -93,7 +101,7 @@ void HarrierInitSim(int controller) {
 
   height = &cont[controller].input[0].value;
   YVel = &cont[controller].input[1].value;
-  XVel = &cont[controller].input[2].value;
+  RelativeXVel = &cont[controller].input[2].value;
   safeDist = &cont[controller].input[3].value;
 
   score = &cont[controller].score;
@@ -104,10 +112,22 @@ void HarrierInitSim(int controller) {
   else{
     XPos = 15;
     YPos = 170;
+    XVel = 46;
+    YVel = 2;
+    shipSpeed = 22;
     *vector = 92;
-    *xVel = 23;
+    *RelativeXVel = 22;
+    *throttle = 89;
+    groundEffect = true;
+    safeX = 400;
+    safeY = 16;
+    safeWidth = 
   }
+  force = 0.0f;
   fuel = START_FUEL;
+  harrierMass = HARRIER_MASS + fuel;
+  isBoom = false;
+  landed = false;
   *safeDist = safeX - landerX;
 }
 
@@ -120,29 +140,94 @@ int HarrierNextStep(int controller) {
     if(*throttle > 100)
       *throttle = 100;
 
+    //re-calculate harrier status
     harrierMass = HARRIER_MASS + fuel;
     *YVel -= GRAVITY;
 
+    //burn fuel
     float tFuel = (MAX_FUEL_BURN - MIN_FUEL_BURN) * (*throttle /100) + MIN_FUEL_BURN;
     fuel -= tFuel;
-
     if(fuel < 0)
       fuel = 0;
 
-    force = *throttle * MAX_FORCE / 100 * 0.95; //0.95 allows for 5% cold air bleed
+
+    //adjust the velocity by thrust
+    force = *throttle * MAX_FORCE / 100 * 0.95; //0.95 allows for 5% cold air bleed 
     if(fuel == 0)
       force = 0;
 
-    float angle = 270  - vector;
-    float xx;
-    float yy;
+    float angle = DegToRad(270 - *vector);
+    float xx = XPos + force * cos(angle);
+    float yy = YPos + force * sin(angle);
+
+    xx *= -1;
+    yy *= -1;
+
+    XVel += xx / harrierMass;
+    *YVel += yy / harrierMass;
+
+    //adjust velocity by ground effect
+    if(groundEffect && YPos <= GROUND_EFFECT_HEIGHT + safeY){
+      *YVel -= Apportion(safeY, GROUND_EFFECT_HEIGHT + safeY,YPos, 0, 0.5);
+    }
     
+    //adjust velocity by base wind
+    XVel -= KnotsToMps(windSpeed) * HARRIER_FRICTION;
+
+    //adjust for wind gusts
+    //@TODO make gusts last a random number of ticks
+    float gust = getRandomFloat(0, KnotsToMps(MAX_WIND_GUST));
+    XVel -= gust * HARRIER_FRICTION;
+
+    //adjust for ship speed
+    XPos -= KnotsToMps(shipSpeed);
+    *RelativeXVel = XVel - KnotsToMps(shipSpeed);
+
+    //adjust pos
+    XPos += XVel;
+    YPos += *Yvel;
+
+    //re-calculate system status
+    *height = YPos;
+    *safeDist = XPos - safeX;
+
+    //check if it has landed
+    if(*height <= 0){
+      return 0; //crashed
+    }
+    else if(height <= safeX + 3){
+      if(abs(safeDist) < safeWidth){
+        if(RelativeXVel <= MAX_LANDING_SPEED_X && YVEL <= MAX_LANDING_SPEED_Y){
+          landed = true;
+          *score = fuel;
+          return 1;
+        }
+        else{
+          isBoom = true;
+          *score = 0;
+          return 0;
+        }
+      }
+    }
+    //@TODO: Add some functions to explode if the ship is hit 
+
   }
   else {
-    return 0;
+    return 0; //ran out of fuel
   }
 }
-
+float DegToRad(float deg){
+  return (deg * 3.14159 / 180.0);
+}
+float KnotsToMps(float knots){
+  return knots * 0.514;
+}
+float Apportion(float inLow, float inHigh, float in, float outLow, float outHigh){
+  if(inHigh - inLow == 0)
+    return 0;
+  float value = (in - inLow) / (inHigh - inLow);
+  return Lerp(1 - value, outLow, outHigh);
+}
 //manually created controller to prove the system works
 void HarrierControlController(int controller) {
 

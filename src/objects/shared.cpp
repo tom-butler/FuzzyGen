@@ -120,3 +120,7 @@ short int GetRandInt(short int low, short int high){
 float GetRandFloat(float low, float high) {
   return low + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(high-low)));
 }
+
+float Lerp(float value, float low, float high){
+  return low + (value*(high - low));
+}

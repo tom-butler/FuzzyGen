@@ -1,10 +1,16 @@
 #include "..\objects\shared.h"
 #include "..\gui\gui.h"
-#include "sims\moon.h"
 #include <GL\freeglut.h>
+
+#include "sims\moon.h"
+#include "sims\harrier.h"
 
 void DrawMoonSets(int window);
 void DrawMoonSim(int window);
+
+void DrawHarrierSets(int window);
+void DrawHarrierSim(int window);
+
 bool isInit = false;
 int sets;
 int vars;
@@ -18,6 +24,10 @@ void DrawSim() {
   if(SIM == MOONLANDER){
     DrawMoonSets(sets);
     DrawMoonSim(sim);
+  }
+  else if(SIM == HARRIER){
+    DrawHarrierSets(sets);
+    DrawHarrierSim(sim);
   }
 
 }
@@ -51,7 +61,6 @@ void DrawMoonSets(int window) {
   //draw accumulator
   DrawPlot(0, -0.999, 1);
   DrawAccumulator(0, -0.999, "Thrust", cont[controller].output[1]);
-
 }
 
 
@@ -169,5 +178,69 @@ void DrawMoonSim(int window) {
   glBegin(GL_LINES);
     glVertex2f((safeX - 500) / 1000, -1);
     glVertex2f((safeX - 500) / 1000, -0.9);
+  glEnd();
+}
+
+void DrawHarrierSets(int window) {
+  glutSetWindow(window);
+  glClear(GL_COLOR_BUFFER_BIT);
+  
+  //Y
+  DrawBestCollection(-1,0, 0.5f, "Height", cont[BEST_CONT].input[0]);
+  DrawCollection(-1,0, 0.5f, "Height", cont[controller].input[0]);
+  DrawPlot(-1, 0, 0.5f);
+  DrawBestCollection(-1,0.5f, 0.5f, "Y Velocity", cont[BEST_CONT].input[1]);
+  DrawCollection(-1,0.5f, 0.5f, "Y Velocity", cont[controller].input[1]);
+  DrawPlot(-1, 0.5f, 0.5f);
+  //rules
+  DrawRules(-0.5f, 0.95f, controller, 0);
+  //draw accumulator
+  DrawPlot(-1, -0.999, 1);
+  DrawAccumulator(-1, -0.999, "Throttle", cont[controller].output[0]);
+
+  //X
+  DrawBestCollection(0,0, 0.5f, "X Velocity", cont[BEST_CONT].input[2]);
+  DrawCollection(0,0, 0.5f, "X Velocity", cont[controller].input[2]);
+  DrawPlot(0, 0, 0.5f);
+  DrawBestCollection(0,0.5f, 0.5f, "SafeDist", cont[BEST_CONT].input[3]);
+  DrawCollection(0,0.5f, 0.5f, "SafeDist", cont[controller].input[3]);
+  DrawPlot(0, 0.5f, 0.5f);
+  //rules
+  DrawRules(0.5f, 0.95f, controller, 1);
+  //draw accumulator
+  DrawPlot(0, -0.999, 1);
+  DrawAccumulator(0, -0.999, "Vector", cont[controller].output[1]);
+}
+
+void DrawHarrierSim(int window) {
+  glutSetWindow(window);
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  //ocean
+  glColor3f(24/256,64/256,64/256); //blue
+  glBegin(GL_POLYGON);
+    glVertex2f(-1,-0.99);
+    glVertex2f( 1,-0.99);
+    glVertex2f( 1,-1);
+    glVertex2f( 1,-1);
+  glEnd();
+
+  //ship
+  float DrawSafeX = ConvertToSimScale(safeX, 0, SIM_WIDTH);
+  float DrawSafeWidth = ConvertToSimScale(safeWidth, 0, SIM_WIDTH);
+  float DrawSafeY = ConvertToSimScale(safeY, 0, SIM_HEIGHT);
+
+  glColor3f(0.3514f,0.3514f, 0.3514f); //dark grey
+  glBegin(GL_POLYGON);
+    glVertex2f(DrawSafeX - DrawSafeWidth/2, DrawSafeY);
+    glVertex2f(DrawSafeX - DrawSafeWidth/2 *1.01, -1);
+    glVertex2f(DrawSafeX + DrawSafeWidth/2, DrawSafeY);
+    glVertex2f(DrawSafeX + DrawSafeWidth/2 *0.01, -1);
+  glEnd();
+  //landing
+  glColor3f(1.0f,0,0); //red
+  glBegin(GL_LINES);
+    glVertex2f(DrawSafeX - DrawSafeWidth/2, DrawSafeY);
+    glVertex2f(DrawSafeX + DrawSafeWidth/2, DrawSafeY);
   glEnd();
 }

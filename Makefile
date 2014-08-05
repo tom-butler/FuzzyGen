@@ -28,7 +28,7 @@ test.o: $(CMD_DIR)\test.cpp
 	g++ -c -g $(CMD_DIR)\test.cpp -m64
 
 #GRAPHICAL USER INTERFACE
-gui: gui.o gen.o controller.o moon.o shared.o sim.o simgui.o
+gui: gui.o gen.o controller.o moon.o harrier.o shared.o sim.o simgui.o
 	g++ -o $(BUILD_DIR)\gui gui.o gen.o controller.o moon.o shared.o sim.o simgui.o -m64 -L"C:\Program Files\mingw-w64\x86_64-4.9.0-posix-sjlj-rt_v3-rev2\mingw64\lib\x64" -lfreeglut -lopengl32 -Wl,--subsystem,windows
 
 gui.o: $(GUI_DIR)\gui.cpp
@@ -47,6 +47,12 @@ shared.o: $(OBJ_DIR)\shared.cpp $(OBJ_DIR)\shared.h
 #SIMULATIONS
 moon.o: $(SIMULATION_DIR)\moon.cpp $(SIMULATION_DIR)\moon.h
 	g++ -c -g $(SIMULATION_DIR)\moon.cpp -m64
+
+pendulum.o: $(SIMULATION_DIR)\pendulum.cpp $(SIMULATION_DIR)\pendulum.h
+	g++ -c -g $(SIMULATION_DIR)\pendulum.cpp -m64
+
+harrier.o: $(SIMULATION_DIR)\harrier.cpp $(SIMULATION_DIR)\harrier.h
+	g++ -c -g $(SIMULATION_DIR)\harrier.cpp -m64
 
 sim.o: $(SIM_DIR)\sim.cpp $(SIM_DIR)\sim.h
 	g++ -c -g $(SIM_DIR)\sim.cpp -m64

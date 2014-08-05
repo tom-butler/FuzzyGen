@@ -14,5 +14,5 @@ void DrawCollection(float x, float y, float width, std::string name, FuzzyVar co
 void DrawBestCollection(float x, float y, float width, std::string name, FuzzyVar collection);
 void PrintFloat(float x, float y, std::string name, float value);
 void DrawRules(float x, float y, int controller, int accumulator);
-
+float ConvertToSimScale(float var, float min, float max);
 #endif
