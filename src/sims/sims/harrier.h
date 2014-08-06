@@ -1,16 +1,22 @@
-#ifndef MOON_H
-#define MOON_H
+#ifndef HARRIER_H
+#define HARRIER_H
+
+extern float harrier_YPos;
+extern float harrier_XPos;
+extern float harrier_fuel;
+//extern float RelativeXVel;
+extern float harrier_mass;
+
+extern float harrier_safeX;
+extern float harrier_safeY;
+extern float harrier_safeWidth;
+
+extern int HARRIER_SIM_WIDTH;
+extern int HARRIER_SIM_HEIGHT;
 
 void HarrierCreateVars();
 void HarrierInitSim(int controller);
 int HarrierNextStep(int controller);
 void HarrierControlController(int controller);
-extern float fuel;
-extern float RelativeXPos;
-extern float landerMass;
-extern float safeX;
-extern float safeY;
-extern float safeWidth;
-extern int SIM_WIDTH;
-extern int SIM_HEIGHT;
+
 #endif

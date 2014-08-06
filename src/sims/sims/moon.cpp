@@ -29,10 +29,10 @@ static short int TERMINAL_VELOCITY = 100;
 const float MAX_SCORE = (SIM_HEIGHT)/ 10 + SIM_WIDTH / 10 + (TERMINAL_VELOCITY - -TERMINAL_VELOCITY)  + TERMINAL_VELOCITY + START_FUEL;
 
 //sim runtime vars
-float landerMass;
-float fuel;
-float landerX;
-float safeX;
+float moon_landerMass;
+float moon_fuel;
+float moon_landerX;
+float moon_safeX;
 
 float * throttle;
 float * sideThrust;
@@ -94,41 +94,41 @@ void MoonInitSim(int controller) {
   score = &cont[controller].score;
 
 
-  landerMass = LANDER_WEIGHT + START_FUEL;
+  moon_landerMass = LANDER_WEIGHT + START_FUEL;
   if(RANDOM_START){
     *height = START_HEIGHT + GetRandInt(0, 250);
     *YVelocity = GetRandFloat(-MAX_START_VEL, MAX_START_VEL);
     *XVelocity = GetRandFloat(-MAX_START_VEL, MAX_START_VEL);
-    safeX = 250 + GetRandInt(0, 250);
-    landerX = 100 + GetRandInt(0, 150);
+    moon_safeX = 250 + GetRandInt(0, 250);
+    moon_landerX = 100 + GetRandInt(0, 150);
   }
   else{
     *height = START_HEIGHT + 250;
     *YVelocity = 0;
     *XVelocity = 0;
-    safeX = 500;
-    landerX = 200;
+    moon_safeX = 500;
+    moon_landerX = 200;
   }
-  fuel = START_FUEL;
-  *safeDist = safeX - landerX;
+  moon_fuel = START_FUEL;
+  *safeDist = moon_safeX - moon_landerX;
 }
 
 int MoonNextStep(int controller) {
 
   //only move if we have fuel
-  if(fuel > 0) {
+  if(moon_fuel > 0) {
 
     //throttle only works 10-100
     if(*throttle < 10){
       *throttle = 0;
     }
     //calculate velocity
-    fuel -= MAX_FUEL_BURN * (*throttle / 100);
-    fuel -= MAX_FUEL_BURN * (abs(*sideThrust) /10);
-    landerMass = LANDER_WEIGHT + fuel;
+    moon_fuel -= MAX_FUEL_BURN * (*throttle / 100);
+    moon_fuel -= MAX_FUEL_BURN * (abs(*sideThrust) /10);
+    moon_landerMass = LANDER_WEIGHT + moon_fuel;
     *YVelocity += GRAVITY;
-    *YVelocity -= (*throttle * 440) / landerMass;
-    *XVelocity += (*sideThrust * 100) / landerMass;
+    *YVelocity -= (*throttle * 440) / moon_landerMass;
+    *XVelocity += (*sideThrust * 100) / moon_landerMass;
 
     //ensure it is within bounds
     if(*YVelocity < -TERMINAL_VELOCITY)
@@ -140,14 +140,14 @@ int MoonNextStep(int controller) {
       *XVelocity = -TERMINAL_VELOCITY;
     if(*XVelocity > TERMINAL_VELOCITY)
       *XVelocity = TERMINAL_VELOCITY;
-    if(fuel < 0)
-      fuel = 0.0f;
+    if(moon_fuel < 0)
+      moon_fuel = 0.0f;
 
     //move
     *height -= *YVelocity;
-    landerX += *XVelocity;
+    moon_landerX += *XVelocity;
 
-    *safeDist = safeX - landerX;
+    *safeDist = moon_safeX - moon_landerX;
     
     if(*safeDist > SIM_WIDTH)
       *safeDist = SIM_WIDTH;
@@ -162,7 +162,7 @@ int MoonNextStep(int controller) {
 
     //score
     else if(*height <= 0.0f && *YVelocity < Y_CRASH_SPEED && abs(*XVelocity) < X_CRASH_SPEED) { //safe
-      *score = (SIM_HEIGHT - *height)/ 10 + (SIM_WIDTH - abs(*safeDist)) / 10 + (TERMINAL_VELOCITY - *YVelocity) + (TERMINAL_VELOCITY - abs(*XVelocity)) + fuel;
+      *score = (SIM_HEIGHT - *height)/ 10 + (SIM_WIDTH - abs(*safeDist)) / 10 + (TERMINAL_VELOCITY - *YVelocity) + (TERMINAL_VELOCITY - abs(*XVelocity)) + moon_fuel;
       *score = (*score / MAX_SCORE) * 1000;
       return 0; //fail
     }
@@ -171,7 +171,7 @@ int MoonNextStep(int controller) {
       *score = (*score / MAX_SCORE) * 1000;
       return 1; //semi-fail
     }
-    if(fuel == 0.0f) { //if it ran out of fuel
+    if(moon_fuel == 0.0f) { //if it ran out of fuel
       *score = (SIM_HEIGHT - *height) / 10 + (SIM_WIDTH - abs(*safeDist)) / 10;
       *score = (*score / MAX_SCORE) * 1000;
       return 1; //fail

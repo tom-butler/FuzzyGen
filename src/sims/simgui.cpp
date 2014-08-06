@@ -72,7 +72,7 @@ void DrawMoonSim(int window) {
   PrintFloat(0.5, 0.45f,"Controller",controller);
   PrintFloat(0.5, 0.4f,"Mutations",cont[controller].mutations);
   PrintFloat(0.5, 0.35f,"Active Rules",cont[controller].output[0].active );
-  PrintFloat(0.5, 0.3f,"Fuel",fuel );
+  PrintFloat(0.5, 0.3f,"Fuel",moon_fuel );
   PrintFloat(0.5, 0.25f,"Thrust", cont[controller].output[0].output);
   PrintFloat(0.5, 0.2f, "Sim Speed", 10 - (speed / 1000));
   PrintFloat(0.5, 0.15f, "BEST", BEST);
@@ -82,7 +82,7 @@ void DrawMoonSim(int window) {
   //DRAW SIM
   float y = cont[controller].input[0].value - cont[controller].input[0].low;
   y /= cont[controller].input[0].high;
-  float x = landerX - 500;
+  float x = moon_landerX - 500;
   x /= 1000;
 
   float throttle = cont[controller].output[0].output;
@@ -176,8 +176,8 @@ void DrawMoonSim(int window) {
 
   //draw landing zone
   glBegin(GL_LINES);
-    glVertex2f((safeX - 500) / 1000, -1);
-    glVertex2f((safeX - 500) / 1000, -0.9);
+    glVertex2f((moon_safeX - 500) / 1000, -1);
+    glVertex2f((moon_safeX - 500) / 1000, -0.9);
   glEnd();
 }
 
@@ -226,9 +226,10 @@ void DrawHarrierSim(int window) {
   glEnd();
 
   //ship
-  float DrawSafeX = ConvertToSimScale(safeX, 0, SIM_WIDTH);
-  float DrawSafeWidth = ConvertToSimScale(safeWidth, 0, SIM_WIDTH);
-  float DrawSafeY = ConvertToSimScale(safeY, 0, SIM_HEIGHT);
+  float DrawSafeX = ConvertToSimScale(harrier_safeX, 0, HARRIER_SIM_WIDTH);
+  float DrawSafeY = ConvertToSimScale(harrier_safeY, 0, HARRIER_SIM_HEIGHT);
+  float DrawSafeWidth = ConvertToSimScale(harrier_safeWidth, 0, HARRIER_SIM_WIDTH);
+
 
   glColor3f(0.3514f,0.3514f, 0.3514f); //dark grey
   glBegin(GL_POLYGON);
