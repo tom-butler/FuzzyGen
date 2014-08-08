@@ -1,8 +1,10 @@
-#include "moon.h"
-#include "..\..\objects\shared.h"
-#include "..\..\gui\gui.h"
 #include <iostream>
 #include <stdlib.h>
+
+#include "..\..\objects\shared.h"
+#include "..\..\gui\gui.h"
+
+#include "moon.h"
 
 using namespace std;
 
@@ -70,7 +72,7 @@ void MoonCreateVars(){
   //sim output vars
   NUM_OUTPUT = 2;
   simOutput = new Accumulator[NUM_OUTPUT];
-  
+
   simOutput[0] = moon_thrustSet;
   simOutput[0].vars = new short int[2];
   simOutput[0].vars[0] = 0;

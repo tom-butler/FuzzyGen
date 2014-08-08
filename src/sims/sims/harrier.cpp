@@ -1,14 +1,18 @@
-#include "harrier.h"
-#include "..\..\objects\shared.h"
-#include "..\..\gui\gui.h"
 #include <iostream>
 #include <stdlib.h>
 #include <cmath>
 
+#include "..\..\objects\shared.h"
+#include "..\..\gui\gui.h"
+
+#include "harrier.h"
+
 using namespace std;
+
 float DegToRad(float deg);
 float KnotsToMps(float knots);
 float Apportion(float inLow, float inHigh, float in, float outLow, float outHigh);
+
 //harrier
 const float   MIN_FUEL_BURN = 0.1f;
 const float   MAX_FUEL_BURN = 0.5f;
@@ -38,52 +42,52 @@ float harrier_safeX;
 float harrier_safeY;
 float harrier_safeWidth;
 
-float force;
-float XVel;
+float harrier_force;
+float harrier_XVel;
 
 //simStatus
-bool isBoom;
-bool landed;
-bool groundEffect;
+bool harrier_isBoom;
+bool harrier_landed;
+bool harrier_groundEffect;
 
 //ship
 
-float shipSpeed;
+float harrier_shipSpeed;
 
 //controller variables
-float * height;
-float * YVel;
-float * RelativeXVel;
-float * safeDist;
+float * harrier_height;
+float * harrier_YVel;
+float * harrier_RelativeXVel;
+float * harrier_safeDist;
 
-float * throttle;
-float * vector;
+float * harrier_throttle;
+float * harrier_vector;
 
-short int * score;
+short int * harrier_score;
 
-static FuzzyVar heightSet = {0, HARRIER_SIM_HEIGHT, HARRIER_SIM_HEIGHT, 0, 0};
-static FuzzyVar YVelocitySet  = {-TERMINAL_VELOCITY, TERMINAL_VELOCITY, 0, 0, 0};
-static FuzzyVar XVelocitySet = {-TERMINAL_VELOCITY, TERMINAL_VELOCITY, 0, 0, 0};
-static FuzzyVar safeDistSet  = {-SIM_WIDTH/2, -SIM_WIDTH/2, 0, 0, 0};
+static FuzzyVar harrier_heightSet = {0, HARRIER_SIM_HEIGHT, HARRIER_SIM_HEIGHT, 0, 0};
+static FuzzyVar harrier_YVelocitySet  = {-TERMINAL_VELOCITY, TERMINAL_VELOCITY, 0, 0, 0};
+static FuzzyVar harrier_XVelocitySet = {-TERMINAL_VELOCITY, TERMINAL_VELOCITY, 0, 0, 0};
+static FuzzyVar harrier_safeDistSet  = {-SIM_WIDTH/2, -SIM_WIDTH/2, 0, 0, 0};
 
 //output
-static Accumulator throttleAccumulator = {0, 100, 0.0f, 0, 0, 0, 0, 0, 0};
-static Accumulator vectorAccumulator = {-5, 5, 0.0f, 0, 0, 0, 0, 0, 0};
+static Accumulator harrier_throttleAccumulator = {0, 100, 0.0f, 0, 0, 0, 0, 0, 0};
+static Accumulator harrier_vectorAccumulator = {-5, 5, 0.0f, 0, 0, 0, 0, 0, 0};
 
 void HarrierCreateVars(){
   //sim input vars
   NUM_INPUT = 4;
   simInput = new FuzzyVar[NUM_INPUT];
 
-  simInput[0] = heightSet;
-  simInput[1] = YVelocitySet;
-  simInput[2] = XVelocitySet;
-  simInput[3] = safeDistSet;
+  simInput[0] = harrier_heightSet;
+  simInput[1] = harrier_YVelocitySet;
+  simInput[2] = harrier_XVelocitySet;
+  simInput[3] = harrier_safeDistSet;
 
   //sim output vars
   NUM_OUTPUT = 2;
   simOutput = new Accumulator[NUM_OUTPUT];
-  simOutput[0] = throttleAccumulator;
+  simOutput[0] = harrier_throttleAccumulator;
   simOutput[0].vars = new short int[4];
   simOutput[0].vars[0] = 0;
   simOutput[0].vars[1] = 1;
@@ -91,7 +95,7 @@ void HarrierCreateVars(){
   simOutput[0].vars[3] = 3;
   simOutput[0].varsNum = 4;
 
-  simOutput[1] = vectorAccumulator;
+  simOutput[1] = harrier_vectorAccumulator;
   simOutput[1].vars = new short int[4];
   simOutput[1].vars[0] = 0;
   simOutput[1].vars[1] = 1;
@@ -101,15 +105,15 @@ void HarrierCreateVars(){
 }
 
 void HarrierInitSim(int controller) {
-  throttle = &cont[controller].output[0].output;
-  vector = &cont[controller].output[1].output;
+  harrier_throttle = &cont[controller].output[0].output;
+  harrier_vector = &cont[controller].output[1].output;
 
-  height = &cont[controller].input[0].value;
-  YVel = &cont[controller].input[1].value;
-  RelativeXVel = &cont[controller].input[2].value;
-  safeDist = &cont[controller].input[3].value;
+  harrier_height = &cont[controller].input[0].value;
+  harrier_YVel = &cont[controller].input[1].value;
+  harrier_RelativeXVel = &cont[controller].input[2].value;
+  harrier_safeDist = &cont[controller].input[3].value;
 
-  score = &cont[controller].score;
+  harrier_score = &cont[controller].score;
 
   if(RANDOM_START){
     //random pos
@@ -117,99 +121,99 @@ void HarrierInitSim(int controller) {
   else{
     harrier_XPos = 15;
     harrier_YPos = 170;
-    XVel = 46;
-    *YVel = 2;
-    shipSpeed = 22;
-    *vector = 92;
-    *RelativeXVel = 22;
-    *throttle = 89;
-    groundEffect = true;
+    harrier_XVel = 46;
+    *harrier_YVel = 2;
+    harrier_shipSpeed = 22;
+    *harrier_vector = 92;
+    *harrier_RelativeXVel = 22;
+    *harrier_throttle = 89;
+    harrier_groundEffect = true;
     harrier_safeX = 400;
     harrier_safeY = 16;
     harrier_safeWidth = 20;
   }
-  force = 0.0f;
+  harrier_force = 0.0f;
   harrier_fuel = START_FUEL;
   harrier_mass = HARRIER_MASS + harrier_fuel;
-  isBoom = false;
-  landed = false;
-  *safeDist = harrier_safeX - harrier_XPos;
+  harrier_isBoom = false;
+  harrier_landed = false;
+  *harrier_safeDist = harrier_safeX - harrier_XPos;
 }
 
 int HarrierNextStep(int controller) {
 
   //only move if we have fuel
   if(harrier_fuel > 0) {
-    if(*throttle < 0)
-      *throttle = 0;
-    if(*throttle > 100)
-      *throttle = 100;
+    if(*harrier_throttle < 0)
+      *harrier_throttle = 0;
+    if(*harrier_throttle > 100)
+      *harrier_throttle = 100;
 
     //re-calculate harrier status
     harrier_mass = HARRIER_MASS + harrier_fuel;
-    *YVel -= SIM_GRAVITY;
+    *harrier_YVel -= SIM_GRAVITY;
 
     //burn fuel
-    float tFuel = (MAX_FUEL_BURN - MIN_FUEL_BURN) * (*throttle /100) + MIN_FUEL_BURN;
-    harrier_fuel -= tFuel;
+    float harrier_tFuel = (MAX_FUEL_BURN - MIN_FUEL_BURN) * (*harrier_throttle /100) + MIN_FUEL_BURN;
+    harrier_fuel -= harrier_tFuel;
     if(harrier_fuel < 0)
       harrier_fuel = 0;
 
 
     //adjust the velocity by thrust
-    force = *throttle * MAX_FORCE / 100 * 0.95; //0.95 allows for 5% cold air bleed 
+    harrier_force = *harrier_throttle * MAX_FORCE / 100 * 0.95; //0.95 allows for 5% cold air bleed 
     if(harrier_fuel == 0)
-      force = 0;
+      harrier_force = 0;
 
-    float angle = DegToRad(270 - *vector);
-    float xx = harrier_XPos + force * cos(angle);
-    float yy = harrier_YPos + force * sin(angle);
+    float harrier_angle = DegToRad(270 - *harrier_vector);
+    float harrier_xx = harrier_XPos + harrier_force * cos(harrier_angle);
+    float harrier_yy = harrier_YPos + harrier_force * sin(harrier_angle);
 
-    xx *= -1;
-    yy *= -1;
+    harrier_xx *= -1;
+    harrier_yy *= -1;
 
-    XVel += xx / harrier_mass;
-    *YVel += yy / harrier_mass;
+    harrier_XVel += harrier_xx / harrier_mass;
+    *harrier_YVel += harrier_yy / harrier_mass;
 
     //adjust velocity by ground effect
-    if(groundEffect && harrier_YPos <= GROUND_EFFECT_HEIGHT + harrier_safeY){
-      *YVel -= Apportion(harrier_safeY, GROUND_EFFECT_HEIGHT + harrier_safeY,harrier_YPos, 0, 0.5);
+    if(harrier_groundEffect && harrier_YPos <= GROUND_EFFECT_HEIGHT + harrier_safeY){
+      *harrier_YVel -= Apportion(harrier_safeY, GROUND_EFFECT_HEIGHT + harrier_safeY,harrier_YPos, 0, 0.5);
     }
     
     //adjust velocity by base wind
-    XVel -= KnotsToMps(WIND_SPEED) * HARRIER_FRICTION;
+    harrier_XVel -= KnotsToMps(WIND_SPEED) * HARRIER_FRICTION;
 
     //adjust for wind gusts
     //@TODO make gusts last a random number of ticks
-    float gust = GetRandFloat(0, KnotsToMps(MAX_WIND_GUST));
-    XVel -= gust * HARRIER_FRICTION;
+    float harrier_gust = GetRandFloat(0, KnotsToMps(MAX_WIND_GUST));
+    harrier_XVel -= harrier_gust * HARRIER_FRICTION;
 
     //adjust for ship speed
-    harrier_XPos -= KnotsToMps(shipSpeed);
-    *RelativeXVel = XVel - KnotsToMps(shipSpeed);
+    harrier_XPos -= KnotsToMps(harrier_shipSpeed);
+    *harrier_RelativeXVel = harrier_XVel - KnotsToMps(harrier_shipSpeed);
 
     //adjust pos
-    harrier_XPos += XVel;
-    harrier_YPos += *YVel;
+    harrier_XPos += harrier_XVel;
+    harrier_YPos += *harrier_YVel;
 
     //re-calculate system status
-    *height = harrier_YPos;
-    *safeDist = harrier_XPos - harrier_safeX;
+    *harrier_height = harrier_YPos;
+    *harrier_safeDist = harrier_XPos - harrier_safeX;
 
     //check if it has landed
-    if(*height <= 0){
+    if(*harrier_height <= 0){
       return 0; //crashed
     }
-    else if(*height <= harrier_safeX + 3){
-      if(abs(*safeDist) < harrier_safeWidth){
-        if(*RelativeXVel <= MAX_LANDING_SPEED_X && *YVel <= MAX_LANDING_SPEED_Y){
-          landed = true;
-          *score = harrier_fuel;
+    else if(*harrier_height <= harrier_safeX + 3){
+      if(abs(*harrier_safeDist) < harrier_safeWidth){
+        if(*harrier_RelativeXVel <= MAX_LANDING_SPEED_X && *harrier_YVel <= MAX_LANDING_SPEED_Y){
+          harrier_landed = true;
+          *harrier_score = harrier_fuel;
           return 1;
         }
         else{
-          isBoom = true;
-          *score = 0;
+          harrier_isBoom = true;
+          *harrier_score = 0;
           return 0;
         }
       }

@@ -5,11 +5,13 @@
 #include <cmath>
 #include <ctime>
 #include <sstream>
-#include "shared.h"
 #include <cstring>
-//sims
-#include "..\sims\sim.h"
 #include <fstream>
+
+#include "..\sims\sim.h"
+
+#include "shared.h"
+
 using namespace std;
   //define the standard options ----------------
 

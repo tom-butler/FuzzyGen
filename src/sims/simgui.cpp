@@ -1,8 +1,10 @@
+#include <GL\freeglut.h>
+
 #include "..\objects\shared.h"
 #include "sims\harrier.h"
 #include "sims\moon.h"
 #include "..\gui\gui.h"
-#include <GL\freeglut.h>
+
 
 
 void DrawMoonSets(int window);
@@ -15,6 +17,7 @@ bool isInit = false;
 int sets;
 int vars;
 int sim;
+
 void DrawSim() {
   if(!isInit){
     sim = glutGetWindow();

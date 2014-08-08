@@ -1,8 +1,9 @@
+#include <iostream>
+#include <stdlib.h>
+
 #include "..\objects\shared.h"
 #include "..\objects\gen.h"
 
-#include <iostream>
-#include <stdlib.h>
 using namespace std;
 
 void GALoop();

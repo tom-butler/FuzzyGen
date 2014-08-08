@@ -1,8 +1,10 @@
-#include "moon.h"
-#include "..\..\objects\shared.h"
-#include "..\..\gui\gui.h"
 #include <iostream>
 #include <stdlib.h>
+
+#include "..\..\objects\shared.h"
+#include "..\..\gui\gui.h"
+
+#include "pendulum.h"
 //http://www.control.isy.liu.se/student/tsrt03/files/invpendpmenglish.pdf
 using namespace std;
 

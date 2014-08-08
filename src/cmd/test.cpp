@@ -1,4 +1,7 @@
 #include <iostream>
+#include <stdio.h>
+#include <string.h>
+
 #include "../objects/shared.h"
 #include "../objects/controller.h"
 #include "../objects/controller.cpp"
@@ -6,8 +9,7 @@
 #include "../objects/gen.cpp"
 #include "../sims/moon.h"
 #include "../sims/moon.cpp"
-#include <stdio.h>
-#include <string.h>
+
 int TestGetRandInt();
 int TestIntersect();
 int TestController();

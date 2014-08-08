@@ -1,14 +1,15 @@
-#include "..\objects\shared.h"
-#include "..\objects\gen.h"
-#include "..\objects\controller\controller.h"
-#include "gui.h"
-
 #include <GL\freeglut.h>
 #include <stdio.h>
 #include <string>
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+
+#include "..\objects\shared.h"
+#include "..\objects\gen.h"
+#include "..\objects\controller\controller.h"
+
+#include "gui.h"
 
 using namespace std;
 bool bestOnly = true;
