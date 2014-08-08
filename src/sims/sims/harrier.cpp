@@ -29,12 +29,16 @@ int SIM_WIDTH = 600;
 const int   WIND_SPEED = 10;
 const int   MAX_WIND_GUST = 20;
 
-//harrier status
-float harrier_XPos;
+//extern
 float harrier_YPos;
-float force;
+float harrier_XPos;
 float harrier_fuel;
 float harrier_mass;
+float harrier_safeX;
+float harrier_safeY;
+float harrier_safeWidth;
+
+float force;
 float XVel;
 
 //simStatus
@@ -43,9 +47,7 @@ bool landed;
 bool groundEffect;
 
 //ship
-float harrier_safeX;
-float harrier_safeY;
-float harrier_safeWidth;
+
 float shipSpeed;
 
 //controller variables

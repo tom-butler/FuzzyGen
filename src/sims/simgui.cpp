@@ -1,9 +1,9 @@
 #include "..\objects\shared.h"
+#include "sims\harrier.h"
+#include "sims\moon.h"
 #include "..\gui\gui.h"
 #include <GL\freeglut.h>
 
-#include "sims\moon.h"
-#include "sims\harrier.h"
 
 void DrawMoonSets(int window);
 void DrawMoonSim(int window);
@@ -216,6 +216,19 @@ void DrawHarrierSim(int window) {
   glutSetWindow(window);
   glClear(GL_COLOR_BUFFER_BIT);
 
+  //vars
+  PrintFloat(0.5, 0.5f,"Generation",generation);
+  PrintFloat(0.5, 0.45f,"Controller",controller);
+  PrintFloat(0.5, 0.4f,"Mutations",cont[controller].mutations);
+  PrintFloat(0.5, 0.35f,"Active Rules",cont[controller].output[0].active );
+  PrintFloat(0.5, 0.15f, "BEST", BEST);
+  PrintFloat(0.5, 0.1f, "MEAN", MEAN);
+  PrintFloat(0.5, 0.05f, "LOW", LOW);
+  PrintFloat(0.5, 0.2f, "Sim Speed", 10 - (speed / 1000));
+
+  PrintFloat(0.5, 0.3f,"Fuel",harrier_fuel );
+  PrintFloat(0.5, 0.25f,"Throttle", cont[controller].output[0].output);
+
   //ocean
   glColor3f(24/256,64/256,64/256); //blue
   glBegin(GL_POLYGON);
@@ -226,10 +239,11 @@ void DrawHarrierSim(int window) {
   glEnd();
 
   //ship
-  float DrawSafeX = ConvertToSimScale(harrier_safeX, 0, HARRIER_SIM_WIDTH);
-  float DrawSafeY = ConvertToSimScale(harrier_safeY, 0, HARRIER_SIM_HEIGHT);
-  float DrawSafeWidth = ConvertToSimScale(harrier_safeWidth, 0, HARRIER_SIM_WIDTH);
 
+  //float DrawSafeX = ConvertToSimScale(harrier_safeX, 0, HARRIER_SIM_WIDTH);
+  //float DrawSafeY = ConvertToSimScale(harrier_safeY, 0, HARRIER_SIM_HEIGHT);
+  //float DrawSafeWidth = ConvertToSimScale(harrier_safeWidth, 0, HARRIER_SIM_WIDTH);
+/*
 
   glColor3f(0.3514f,0.3514f, 0.3514f); //dark grey
   glBegin(GL_POLYGON);
@@ -243,5 +257,5 @@ void DrawHarrierSim(int window) {
   glBegin(GL_LINES);
     glVertex2f(DrawSafeX - DrawSafeWidth/2, DrawSafeY);
     glVertex2f(DrawSafeX + DrawSafeWidth/2, DrawSafeY);
-  glEnd();
+  glEnd();*/
 }

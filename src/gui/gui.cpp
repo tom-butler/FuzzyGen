@@ -1,6 +1,6 @@
 #include "..\objects\shared.h"
 #include "..\objects\gen.h"
-#include "..\objects\controller.h"
+#include "..\objects\controller\controller.h"
 #include "gui.h"
 
 #include <GL\freeglut.h>

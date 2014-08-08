@@ -1,4 +1,4 @@
-#include "controller.h"
+#include "controller\controller.h"
 #include "shared.h"
 #include "gen.h"
 #include "..\sims\sim.h"
@@ -12,7 +12,7 @@
 using namespace std;
 
 void InitControllers() {
-  CreateControllers(POP, simInput, simOutput);
+  Create(POP, simInput, simOutput);
   if(INCLUDE_CONTROL)
     SimControlController(0);
 }
@@ -22,7 +22,7 @@ void InitSimulation(int controller) {
 }
 
 int RunSim(int controller) {
-  EvaluateRules(controller);
+  Run(controller);
   return SimNextStep(controller);
 }
 

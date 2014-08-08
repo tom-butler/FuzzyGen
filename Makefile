@@ -1,7 +1,11 @@
-BUILD_DIR = bin
+BIN_DIR = bin
+BUILD_DIR = build
 CMD_DIR = src\cmd
 GUI_DIR = src\gui
 OBJ_DIR = src\objects
+CONT_DIR = src\objects\controller
+CONT_H_DIR = src\objects\controller\h
+CONT_CPP_DIR = src\objects\controller\cpp
 SIM_DIR = src\sims
 SIMULATION_DIR = src\sims\sims
 
@@ -11,59 +15,77 @@ t: test clean
 
 g: gui clean
 
-c: clear
+clean: clean
+
+clear: clear
 
 #CMD BUILD
-cmd: cmd.o gen.o controller.o moon.o shared.o sim.o
-	g++ -o $(BUILD_DIR)\cmd cmd.o gen.o controller.o moon.o shared.o sim.o -m64
+cmd: $(BUILD_DIR)\cmd.o $(BUILD_DIR)\gen.o $(BUILD_DIR)\shared.o $(BUILD_DIR)\controller.o $(BUILD_DIR)\breed.o $(BUILD_DIR)\create.o $(BUILD_DIR)\mutate.o $(BUILD_DIR)\run.o $(BUILD_DIR)\select.o $(BUILD_DIR)\sim.o $(BUILD_DIR)\moon.o
+	g++ -o $(BIN_DIR)\cmd $(BUILD_DIR)\cmd.o $(BUILD_DIR)\gen.o $(BUILD_DIR)\shared.o $(BUILD_DIR)\sim.o $(BUILD_DIR)\moon.o $(BUILD_DIR)\controller.o $(BUILD_DIR)\breed.o $(BUILD_DIR)\create.o $(BUILD_DIR)\mutate.o $(BUILD_DIR)\run.o $(BUILD_DIR)\select.o -m64
 
-cmd.o: $(CMD_DIR)\cmd.cpp
-	g++ -c -g $(CMD_DIR)\cmd.cpp -m64
+$(BUILD_DIR)\cmd.o: $(CMD_DIR)\cmd.cpp
+	g++ -o $(BUILD_DIR)\cmd.o -c -g $(CMD_DIR)\cmd.cpp -m64
 
 #TEST BUILD
-test: test.o controller.o moon.o gen.o shared.o
-	g++ -o $(BUILD_DIR)\test test.o controller.o moon.o shared.o gen.o
+test: $(BUILD_DIR)\test.o $(BUILD_DIR)\controller.o $(BUILD_DIR)\moon.o $(BUILD_DIR)\gen.o $(BUILD_DIR)\shared.o
+	g++ -o $(BIN_DIR)\test $(BUILD_DIR)\test.o $(BUILD_DIR)\controller.o $(BUILD_DIR)\moon.o $(BUILD_DIR)\shared.o $(BUILD_DIR)\gen.o
 
-test.o: $(CMD_DIR)\test.cpp
-	g++ -c -g $(CMD_DIR)\test.cpp -m64
+$(BUILD_DIR)\test.o: $(CMD_DIR)\test.cpp
+	g++ -o $(BIN_DIR)\test.o -c -g $(CMD_DIR)\test.cpp -m64
 
 #GRAPHICAL USER INTERFACE
-gui: gui.o gen.o controller.o moon.o harrier.o shared.o sim.o simgui.o
-	g++ -o $(BUILD_DIR)\gui gui.o gen.o controller.o moon.o shared.o sim.o simgui.o -m64 -L"C:\Program Files\mingw-w64\x86_64-4.9.0-posix-sjlj-rt_v3-rev2\mingw64\lib\x64" -lfreeglut -lopengl32 -Wl,--subsystem,windows
+gui: $(BUILD_DIR)\gui.o $(BUILD_DIR)\simgui.o $(BUILD_DIR)\gen.o $(BUILD_DIR)\shared.o $(BUILD_DIR)\controller.o $(BUILD_DIR)\breed.o $(BUILD_DIR)\create.o $(BUILD_DIR)\mutate.o $(BUILD_DIR)\run.o $(BUILD_DIR)\select.o $(BUILD_DIR)\sim.o $(BUILD_DIR)\moon.o $(BUILD_DIR)\harrier.o
+	g++ -o $(BIN_DIR)\gui $(BUILD_DIR)\gui.o $(BUILD_DIR)\simgui.o $(BUILD_DIR)\gen.o $(BUILD_DIR)\shared.o $(BUILD_DIR)\controller.o $(BUILD_DIR)\breed.o $(BUILD_DIR)\create.o $(BUILD_DIR)\mutate.o $(BUILD_DIR)\run.o $(BUILD_DIR)\select.o $(BUILD_DIR)\sim.o $(BUILD_DIR)\moon.o $(BUILD_DIR)\harrier.o -m64 -L"C:\Program Files\mingw-w64\x86_64-4.9.0-posix-sjlj-rt_v3-rev2\mingw64\lib\x64" -lfreeglut -lopengl32 -Wl,--subsystem,windows
 
-gui.o: $(GUI_DIR)\gui.cpp
-	g++ -c $(GUI_DIR)\gui.cpp -m64 -D FREEGLUT_STATIC -I"C:\Program Files\mingw-w64\x86_64-4.9.0-posix-sjlj-rt_v3-rev2\mingw64\include"
+$(BUILD_DIR)\gui.o: $(GUI_DIR)\gui.cpp
+	g++ -o $(BUILD_DIR)\gui.o -c $(GUI_DIR)\gui.cpp -m64 -D FREEGLUT_STATIC -I"C:\Program Files\mingw-w64\x86_64-4.9.0-posix-sjlj-rt_v3-rev2\mingw64\include"
 
 #SHARED OBJECTS
-gen.o: $(OBJ_DIR)\gen.cpp $(OBJ_DIR)\gen.h
-	g++ -c -g $(OBJ_DIR)\gen.cpp -m64
+$(BUILD_DIR)\gen.o: $(OBJ_DIR)\gen.cpp $(OBJ_DIR)\gen.h
+	g++ -o $(BUILD_DIR)\gen.o -c -g $(OBJ_DIR)\gen.cpp -m64
 
-controller.o: $(OBJ_DIR)\controller.cpp $(OBJ_DIR)\controller.h
-	g++ -c -g $(OBJ_DIR)\controller.cpp -m64
+$(BUILD_DIR)\shared.o: $(OBJ_DIR)\shared.cpp $(OBJ_DIR)\shared.h
+	g++ -o $(BUILD_DIR)\shared.o -c -g $(OBJ_DIR)\shared.cpp -m64
 
-shared.o: $(OBJ_DIR)\shared.cpp $(OBJ_DIR)\shared.h
-	g++ -c -g $(OBJ_DIR)\shared.cpp -m64
+$(BUILD_DIR)\controller.o: $(CONT_DIR)\controller.cpp $(CONT_DIR)\controller.h
+	g++ -o $(BUILD_DIR)\controller.o -c -g $(CONT_DIR)\controller.cpp -m64
+
+#CONTROLLER OBJECTS
+$(BUILD_DIR)\breed.o: $(CONT_CPP_DIR)\breed.cpp $(CONT_H_DIR)\breed.h
+	g++ -o $(BUILD_DIR)\breed.o -c -g $(CONT_CPP_DIR)\breed.cpp -m64
+
+$(BUILD_DIR)\create.o: $(CONT_CPP_DIR)\create.cpp $(CONT_H_DIR)\create.h
+	g++ -o $(BUILD_DIR)\create.o -c -g $(CONT_CPP_DIR)\create.cpp -m64
+
+$(BUILD_DIR)\mutate.o: $(CONT_CPP_DIR)\mutate.cpp $(CONT_H_DIR)\mutate.h
+	g++ -o $(BUILD_DIR)\mutate.o -c -g $(CONT_CPP_DIR)\mutate.cpp -m64
+
+$(BUILD_DIR)\run.o: $(CONT_CPP_DIR)\run.cpp $(CONT_H_DIR)\run.h
+	g++ -o $(BUILD_DIR)\run.o -c -g $(CONT_CPP_DIR)\run.cpp -m64
+
+$(BUILD_DIR)\select.o: $(CONT_CPP_DIR)\select.cpp $(CONT_H_DIR)\select.h
+	g++ -o $(BUILD_DIR)\select.o -c -g $(CONT_CPP_DIR)\select.cpp -m64
 
 #SIMULATIONS
-moon.o: $(SIMULATION_DIR)\moon.cpp $(SIMULATION_DIR)\moon.h
-	g++ -c -g $(SIMULATION_DIR)\moon.cpp -m64
+$(BUILD_DIR)\moon.o: $(SIMULATION_DIR)\moon.cpp $(SIMULATION_DIR)\moon.h
+	g++ -o $(BUILD_DIR)\moon.o -c -g $(SIMULATION_DIR)\moon.cpp -m64
 
-pendulum.o: $(SIMULATION_DIR)\pendulum.cpp $(SIMULATION_DIR)\pendulum.h
-	g++ -c -g $(SIMULATION_DIR)\pendulum.cpp -m64
+$(BUILD_DIR)\pendulum.o: $(SIMULATION_DIR)\pendulum.cpp $(SIMULATION_DIR)\pendulum.h
+	g++ -o $(BUILD_DIR)\pendulum.o -c -g $(SIMULATION_DIR)\pendulum.cpp -m64
 
-harrier.o: $(SIMULATION_DIR)\harrier.cpp $(SIMULATION_DIR)\harrier.h
-	g++ -c -g $(SIMULATION_DIR)\harrier.cpp -m64
+$(BUILD_DIR)\harrier.o: $(SIMULATION_DIR)\harrier.cpp $(SIMULATION_DIR)\harrier.h
+	g++ -o $(BUILD_DIR)\harrier.o -c -g $(SIMULATION_DIR)\harrier.cpp -m64
 
-sim.o: $(SIM_DIR)\sim.cpp $(SIM_DIR)\sim.h
-	g++ -c -g $(SIM_DIR)\sim.cpp -m64
+$(BUILD_DIR)\sim.o: $(SIM_DIR)\sim.cpp $(SIM_DIR)\sim.h
+	g++ -o $(BUILD_DIR)\sim.o -c -g $(SIM_DIR)\sim.cpp -m64
 
-simgui.o: $(SIM_DIR)\simgui.cpp $(SIM_DIR)\simgui.h
-	g++ -c $(SIM_DIR)\simgui.cpp -m64 -D FREEGLUT_STATIC -I"C:\Program Files\mingw-w64\x86_64-4.9.0-posix-sjlj-rt_v3-rev2\mingw64\include"
+$(BUILD_DIR)\simgui.o: $(SIM_DIR)\simgui.cpp $(SIM_DIR)\simgui.h
+	g++ -o $(BUILD_DIR)\simgui.o -c $(SIM_DIR)\simgui.cpp -m64 -D FREEGLUT_STATIC -I"C:\Program Files\mingw-w64\x86_64-4.9.0-posix-sjlj-rt_v3-rev2\mingw64\include"
 
 #UTIL FUNCTIONS
 .PHONY : clean
 clean:
-	del *.o
+	del $(BUILD_DIR)\*.o
 
 .PHONY : clear
 clear:

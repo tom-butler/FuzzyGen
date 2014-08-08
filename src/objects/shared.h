@@ -108,6 +108,7 @@ extern short int BEST;
 extern short int BEST_CONT;
 extern float MEAN;
 extern int LOW;
+extern int random;
 
 extern std::string *LOG;
 extern FuzzyVar *simInput;
@@ -117,7 +118,12 @@ extern Controller *cont;
 
 void InitSystem();
 int InitTest(int test);
+
 short int GetRandInt(short int low, short int high);
 float GetRandFloat(float low, float high);
 float Lerp(float value, float low, float high);
+
+float Intersect(float x1, float y1, float x2, float y2, float value);
+void ResetAccumulator(int controller, int accumulator);
+void ForceVarBounds(int controller, int var);
 #endif

@@ -1,5 +1,5 @@
-#ifndef MOON_H
-#define MOON_H
+#ifndef PENDULUM_H
+#define PENDULUM_H
 
 void PendulumCreateVars();
 void PendulumInitSim(int controller);
