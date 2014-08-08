@@ -3,11 +3,11 @@ BUILD_DIR = build
 CMD_DIR = src\cmd
 GUI_DIR = src\gui
 OBJ_DIR = src\objects
+LIB_DIR = libs
 CONT_DIR = src\objects\controller
 CONT_H_DIR = src\objects\controller\h
 CONT_CPP_DIR = src\objects\controller\cpp
 SIM_DIR = src\sims
-SIMULATION_DIR = src\sims\sims
 
 all: cmd clean
 
@@ -34,11 +34,17 @@ $(BUILD_DIR)\test.o: $(CMD_DIR)\test.cpp
 	g++ -o $(BIN_DIR)\test.o -c -g $(CMD_DIR)\test.cpp -m64
 
 #GRAPHICAL USER INTERFACE
-gui: $(BUILD_DIR)\gui.o $(BUILD_DIR)\simgui.o $(BUILD_DIR)\gen.o $(BUILD_DIR)\shared.o $(BUILD_DIR)\controller.o $(BUILD_DIR)\breed.o $(BUILD_DIR)\create.o $(BUILD_DIR)\mutate.o $(BUILD_DIR)\run.o $(BUILD_DIR)\select.o $(BUILD_DIR)\sim.o $(BUILD_DIR)\moon.o $(BUILD_DIR)\harrier.o
-	g++ -o $(BIN_DIR)\gui $(BUILD_DIR)\gui.o $(BUILD_DIR)\simgui.o $(BUILD_DIR)\gen.o $(BUILD_DIR)\shared.o $(BUILD_DIR)\controller.o $(BUILD_DIR)\breed.o $(BUILD_DIR)\create.o $(BUILD_DIR)\mutate.o $(BUILD_DIR)\run.o $(BUILD_DIR)\select.o $(BUILD_DIR)\sim.o $(BUILD_DIR)\moon.o $(BUILD_DIR)\harrier.o -m64 -L"C:\Program Files\mingw-w64\x86_64-4.9.0-posix-sjlj-rt_v3-rev2\mingw64\lib\x64" -lfreeglut -lopengl32 -Wl,--subsystem,windows
+gui: $(BUILD_DIR)\gui.o $(BUILD_DIR)\simgui.o $(BUILD_DIR)\lodepng.o $(BUILD_DIR)\gen.o $(BUILD_DIR)\shared.o $(BUILD_DIR)\controller.o $(BUILD_DIR)\breed.o $(BUILD_DIR)\create.o $(BUILD_DIR)\mutate.o $(BUILD_DIR)\run.o $(BUILD_DIR)\select.o $(BUILD_DIR)\sim.o $(BUILD_DIR)\moon.o $(BUILD_DIR)\moondraw.o $(BUILD_DIR)\harrier.o $(BUILD_DIR)\harrierdraw.o
+	g++ -o $(BIN_DIR)\gui $(BUILD_DIR)\gui.o $(BUILD_DIR)\simgui.o $(BUILD_DIR)\lodepng.o $(BUILD_DIR)\gen.o $(BUILD_DIR)\shared.o $(BUILD_DIR)\controller.o $(BUILD_DIR)\breed.o $(BUILD_DIR)\create.o $(BUILD_DIR)\mutate.o $(BUILD_DIR)\run.o $(BUILD_DIR)\select.o $(BUILD_DIR)\sim.o $(BUILD_DIR)\moon.o $(BUILD_DIR)\moondraw.o $(BUILD_DIR)\harrier.o $(BUILD_DIR)\harrierdraw.o -m64 -L"C:\Program Files\mingw-w64\x86_64-4.9.0-posix-sjlj-rt_v3-rev2\mingw64\lib\x64" -lfreeglut -lopengl32 -Wl,--subsystem,windows
 
-$(BUILD_DIR)\gui.o: $(GUI_DIR)\gui.cpp
+$(BUILD_DIR)\gui.o: $(GUI_DIR)\gui.cpp $(GUI_DIR)\gui.h
 	g++ -o $(BUILD_DIR)\gui.o -c $(GUI_DIR)\gui.cpp -m64 -D FREEGLUT_STATIC -I"C:\Program Files\mingw-w64\x86_64-4.9.0-posix-sjlj-rt_v3-rev2\mingw64\include"
+
+$(BUILD_DIR)\simgui.o: $(SIM_DIR)\simgui.cpp $(SIM_DIR)\simgui.h
+	g++ -o $(BUILD_DIR)\simgui.o -c $(SIM_DIR)\simgui.cpp -m64 -D FREEGLUT_STATIC -I"C:\Program Files\mingw-w64\x86_64-4.9.0-posix-sjlj-rt_v3-rev2\mingw64\include"
+
+$(BUILD_DIR)\lodepng.o: $(LIB_DIR)\lodepng\lodepng.cpp $(LIB_DIR)\lodepng\lodepng.h
+	g++ -o $(BUILD_DIR)\lodepng.o -c $(LIB_DIR)\lodepng\lodepng.cpp -m64
 
 #SHARED OBJECTS
 $(BUILD_DIR)\gen.o: $(OBJ_DIR)\gen.cpp $(OBJ_DIR)\gen.h
@@ -67,20 +73,26 @@ $(BUILD_DIR)\select.o: $(CONT_CPP_DIR)\select.cpp $(CONT_H_DIR)\select.h
 	g++ -o $(BUILD_DIR)\select.o -c -g $(CONT_CPP_DIR)\select.cpp -m64
 
 #SIMULATIONS
-$(BUILD_DIR)\moon.o: $(SIMULATION_DIR)\moon.cpp $(SIMULATION_DIR)\moon.h
-	g++ -o $(BUILD_DIR)\moon.o -c -g $(SIMULATION_DIR)\moon.cpp -m64
+$(BUILD_DIR)\moon.o: $(SIM_DIR)\moon\moon.cpp $(SIM_DIR)\moon\moon.h
+	g++ -o $(BUILD_DIR)\moon.o -c -g $(SIM_DIR)\moon\moon.cpp -m64
 
-$(BUILD_DIR)\pendulum.o: $(SIMULATION_DIR)\pendulum.cpp $(SIMULATION_DIR)\pendulum.h
-	g++ -o $(BUILD_DIR)\pendulum.o -c -g $(SIMULATION_DIR)\pendulum.cpp -m64
+$(BUILD_DIR)\moondraw.o: $(SIM_DIR)\moon\moondraw.cpp $(SIM_DIR)\moon\moondraw.h
+	g++ -o $(BUILD_DIR)\moondraw.o -c $(SIM_DIR)\moon\moondraw.cpp -m64 -D FREEGLUT_STATIC -I"C:\Program Files\mingw-w64\x86_64-4.9.0-posix-sjlj-rt_v3-rev2\mingw64\include"
 
-$(BUILD_DIR)\harrier.o: $(SIMULATION_DIR)\harrier.cpp $(SIMULATION_DIR)\harrier.h
-	g++ -o $(BUILD_DIR)\harrier.o -c -g $(SIMULATION_DIR)\harrier.cpp -m64
+$(BUILD_DIR)\pendulum.o: $(SIM_DIR)\pendulum\pendulum.cpp $(SIM_DIR)\pendulum\pendulum.h
+	g++ -o $(BUILD_DIR)\pendulum\pendulum.o -c -g $(SIM_DIR)\pendulum\pendulum.cpp -m64
+
+$(BUILD_DIR)\pendulumdraw.o: $(SIM_DIR)\pendulum\pendulumdraw.cpp $(SIM_DIR)\pendulum\pendulumdraw.h
+	g++ -o $(BUILD_DIR)\pendulumdraw.o -c $(SIM_DIR)\pendulum\pendulumdraw.cpp -m64 -D FREEGLUT_STATIC -I"C:\Program Files\mingw-w64\x86_64-4.9.0-posix-sjlj-rt_v3-rev2\mingw64\include"
+
+$(BUILD_DIR)\harrier.o: $(SIM_DIR)\harrier\harrier.cpp $(SIM_DIR)\harrier\harrier.h
+	g++ -o $(BUILD_DIR)\harrier.o -c -g $(SIM_DIR)\harrier\harrier.cpp -m64
+
+$(BUILD_DIR)\harrierdraw.o: $(SIM_DIR)\harrier\harrierdraw.cpp $(SIM_DIR)\harrier\harrierdraw.h
+	g++ -o $(BUILD_DIR)\harrierdraw.o -c $(SIM_DIR)\harrier\harrierdraw.cpp -m64 -lSOIL -D FREEGLUT_STATIC -I"C:\Program Files\mingw-w64\x86_64-4.9.0-posix-sjlj-rt_v3-rev2\mingw64\include"
 
 $(BUILD_DIR)\sim.o: $(SIM_DIR)\sim.cpp $(SIM_DIR)\sim.h
 	g++ -o $(BUILD_DIR)\sim.o -c -g $(SIM_DIR)\sim.cpp -m64
-
-$(BUILD_DIR)\simgui.o: $(SIM_DIR)\simgui.cpp $(SIM_DIR)\simgui.h
-	g++ -o $(BUILD_DIR)\simgui.o -c $(SIM_DIR)\simgui.cpp -m64 -D FREEGLUT_STATIC -I"C:\Program Files\mingw-w64\x86_64-4.9.0-posix-sjlj-rt_v3-rev2\mingw64\include"
 
 #UTIL FUNCTIONS
 .PHONY : clean

@@ -1,8 +1,8 @@
 #include "sim.h"
 #include "..\objects\shared.h"
 //simulations
-#include "sims\moon.h"
-#include "sims\harrier.h"
+#include "moon\moon.h"
+#include "harrier\harrier.h"
 
 void SimCreateSim(){
   if(SIM == MOONLANDER)

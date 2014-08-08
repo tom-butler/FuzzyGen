@@ -1,5 +1,5 @@
-#ifndef HARRIER_H
-#define HARRIER_H
+#ifndef SIM_HARRIER_H
+#define SIM_HARRIER_H
 
 void HarrierCreateVars();
 void HarrierInitSim(int controller);
