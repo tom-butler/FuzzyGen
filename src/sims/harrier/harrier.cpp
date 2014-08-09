@@ -68,7 +68,7 @@ short int * harrier_score;
 static FuzzyVar harrier_heightSet = {0, HARRIER_SIM_HEIGHT, HARRIER_SIM_HEIGHT, 0, 0};
 static FuzzyVar harrier_YVelocitySet  = {-TERMINAL_VELOCITY, TERMINAL_VELOCITY, 0, 0, 0};
 static FuzzyVar harrier_XVelocitySet = {-TERMINAL_VELOCITY, TERMINAL_VELOCITY, 0, 0, 0};
-static FuzzyVar harrier_safeDistSet  = {-HARRIER_SIM_WIDTH/2, -HARRIER_SIM_WIDTH/2, 0, 0, 0};
+static FuzzyVar harrier_safeDistSet  = {-HARRIER_SIM_WIDTH/2, HARRIER_SIM_WIDTH/2, 0, 0, 0};
 
 //output
 static Accumulator harrier_throttleAccumulator = {0, 100, 0.0f, 0, 0, 0, 0, 0, 0};

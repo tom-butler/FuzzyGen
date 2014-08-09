@@ -13,7 +13,7 @@ all: cmd clean
 
 t: test clean
 
-g: gui clean
+g: gui
 
 clean: clean
 

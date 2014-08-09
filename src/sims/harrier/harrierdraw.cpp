@@ -80,7 +80,7 @@ void DrawHarrierSim(int window) {
   float DrawSafeY = ConvertToSimScale(harrier_safeY, 0, HARRIER_SIM_HEIGHT);
   float DrawSafeWidth = ConvertToSimScale(harrier_safeWidth, 0, HARRIER_SIM_WIDTH);
 
-
+  //ship
   glColor3f(0.3514f,0.3514f, 0.3514f); //dark grey
   glBegin(GL_POLYGON);
     glVertex2f(DrawSafeX - DrawSafeWidth/2      , -1);
@@ -95,31 +95,57 @@ void DrawHarrierSim(int window) {
     glVertex2f(DrawSafeX + DrawSafeWidth/2, DrawSafeY);
   glEnd();
 
-  float x = 0;
-  float y = 0;
+  float x = ConvertToSimScale(harrier_XPos, 0, HARRIER_SIM_WIDTH);
+  float y = ConvertToSimScale(harrier_YPos, 0, HARRIER_SIM_HEIGHT);
+
   //harrier
   glColor3f(1,1,1);
-
-  /*
+  //hull
   glColor3f(0.3514f,0.3514f, 0.3514f); //dark grey
   glBegin(GL_POLYGON);
-    glVertex2f(x - 0.1f, y+0.05f);
-    glVertex2f(x + 0.02f, y+0.05f);
-    glVertex2f(x + 0.03f, y+0.045f);
-    glVertex2f(x + 0.05f, y+0.025f);
-    glVertex2f(x + 0.1f, y);
-    glVertex2f(x - 0.025f, y);
+    glVertex2f(x - 0.15f, y + 0.03f);
+    glVertex2f(x + 0.07f, y + 0.03f);
+    glVertex2f(x + 0.15f, y - 0.03f);
+    glVertex2f(x - 0.12f, y - 0.03f);
   glEnd();
-  */
- /*
-  glColor3f(1.0f,0.0f,0.0f);
+  //tail
+  glBegin(GL_POLYGON);
+    glVertex2f(x - 0.15f, y + 0.03f);
+    glVertex2f(x - 0.17f, y + 0.08f);
+    glVertex2f(x - 0.15f, y + 0.08f);
+    glVertex2f(x - 0.10f, y + 0.03f);
+  glEnd();
+  //wing
+  glColor3f(0.3f,0.3f, 0.3f);
+  glBegin(GL_POLYGON);
+    glVertex2f(x - 0.05f, y);
+    glVertex2f(x - 0.04f, y + 0.02f);
+    glVertex2f(x + 0.04f, y + 0.02f);
+    glVertex2f(x + 0.05f, y);
+    glVertex2f(x + 0.04f, y - 0.03f);
+    glVertex2f(x - 0.02f, y - 0.04f);
+    glVertex2f(x - 0.04f, y - 0.03f);
+  glEnd();
+  //cockpit
+  glColor3f(0.0f,0.0f, 0.5f);
+  glBegin(GL_POLYGON);
+    glVertex2f(x + 0.05f, y +0.03f);
+    glVertex2f(x + 0.07f, y +0.03f);
+    glVertex2f(x + 0.08f, y +0.03f);
+    glVertex2f(x + 0.09f, y +0.03f);
+    glVertex2f(x + 0.1f , y  +0.03f);
+    glVertex2f(x + 0.13f, y +0.02f);
+    glVertex2f(x + 0.14f, y -0.02f);
+    glVertex2f(x + 0.15f, y -0.03f);
+  glEnd();
   //centre X
+  glColor3f(1.0f,0.0f,0.0f);
   glBegin(GL_LINES);
-    glVertex2f(x - 0.01, y - 0.01);
-    glVertex2f(x + 0.01, y + 0.01);
+    glVertex2f(x - 0.01f, y - 0.01);
+    glVertex2f(x + 0.01f, y + 0.01);
   glEnd();
   glBegin(GL_LINES);
-    glVertex2f(x - 0.01, y + 0.01);
-    glVertex2f(x + 0.01, y - 0.01);
-  glEnd();*/
+    glVertex2f(x - 0.01f, y + 0.01);
+    glVertex2f(x + 0.01f, y - 0.01);
+  glEnd();
 }
