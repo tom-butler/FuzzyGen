@@ -18,5 +18,4 @@ void DrawBestCollection(float x, float y, float width, std::string name, FuzzyVa
 void PrintFloat(float x, float y, std::string name, float value);
 void DrawRules(float x, float y, int controller, int accumulator);
 float ConvertToSimScale(float var, float min, float max);
-GLuint LoadTexture(std::string filename);
 #endif

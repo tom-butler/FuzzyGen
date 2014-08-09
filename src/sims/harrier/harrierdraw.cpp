@@ -18,10 +18,10 @@ GLuint shipTex;
 
 
 void InitHarrierDraw(){
-  harrierTex = LoadTexture("images/harrier.png");
-  harrierLandedTex = LoadTexture("images/harrierlanded.png");
-  boomTex = LoadTexture("images/explode.png");
-  shipTex = LoadTexture("images/Anzac.png");
+  //harrierTex = LoadTexture("images/harrier.bmp");
+  //harrierLandedTex = LoadTexture("images/harrierlanded.bmp");
+  //boomTex = LoadTexture("images/explode.bmp");
+  //shipTex = LoadTexture("images/Anzac.bmp");
 }
 
 void DrawHarrierSets(int window) {
@@ -107,47 +107,18 @@ void DrawHarrierSim(int window) {
   float y = 0;
   //harrier
   glColor3f(1,1,1);
-#define R 0xf30f
-#define W 0xffff
-#define X 0x0000
-#define G 0x5c6c
-#define B 0x111f
 
-  unsigned short mushroom_texture [(16 * 16)] = {
-    X,X,X,B,B,B,B,B,B,B,B,B,B,X,X,X,
-    X,X,B,B,W,W,W,W,W,W,W,W,B,B,X,X,
-    X,X,B,W,W,W,W,W,W,W,W,W,W,B,X,X,
-    X,B,B,W,W,W,R,W,W,R,W,W,W,B,B,X,
-    B,B,B,B,W,W,R,W,W,R,W,W,B,B,B,B,
-    B,W,W,B,B,B,B,B,B,B,B,B,B,W,W,B,
-    B,W,W,W,W,W,G,G,G,G,W,W,W,W,W,B,
-    B,G,G,W,W,G,G,G,G,G,G,W,W,G,G,B,
-    B,G,G,G,W,G,G,G,G,G,G,W,G,G,G,B,
-    B,G,G,G,W,G,G,G,G,G,G,W,G,G,G,B,
-    B,B,G,G,W,W,G,G,G,G,W,W,G,G,B,B,
-    X,B,G,W,W,W,W,W,W,W,W,W,W,G,B,X,
-    X,B,B,W,G,G,W,W,W,W,G,G,W,B,B,X,
-    X,X,B,B,G,G,G,W,W,G,G,G,B,B,X,X,
-    X,X,X,B,B,B,G,W,W,G,B,B,B,X,X,X,
-    X,X,X,X,X,B,B,B,B,B,B,X,X,X,X,X,
-};
-  // build our texture mipmaps
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA4, 16, 16, 0, GL_RGBA, GL_UNSIGNED_SHORT, mushroom_texture);
-
-  // by default, OpenGL uses mipmaps. We must disable that for this texture to be "complete"
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-
-  //glBindTexture(GL_TEXTURE_2D, harrierTex);
   glEnable(GL_TEXTURE_2D);
+  
+  harrierTex = LoadTexture("images/harrier.bmp");
+  glBindTexture(GL_TEXTURE_2D, harrierTex);
+  
   glBegin(GL_QUADS);
-      glTexCoord2f(0.0f, 1.0f); glVertex2f(x - 0.1f, y - 0.1f);
-      glTexCoord2f(1.0f, 1.0f); glVertex2f(x - 0.1f, y + 0.1f);
-      glTexCoord2f(1.0f, 0.0f); glVertex2f(x + 0.1f, y + 0.1f);
-      glTexCoord2f(0.0f, 0.0f); glVertex2f(x + 0.1f, y - 0.1f);
+      glTexCoord2f(0.0f, 0.0f); glVertex2f(x - 0.1f, y - 0.05f);
+      glTexCoord2f(1.0f, 0.0f); glVertex2f(x - 0.1f, y + 0.05f);
+      glTexCoord2f(1.0f, 1.0f); glVertex2f(x + 0.1f, y + 0.05f);
+      glTexCoord2f(0.0f, 1.0f); glVertex2f(x + 0.1f, y - 0.05f);
   glEnd();
-
   glDisable(GL_TEXTURE_2D);
   /*
   glColor3f(0.3514f,0.3514f, 0.3514f); //dark grey
