@@ -4,24 +4,16 @@
 
 #include "..\..\objects\shared.h"
 #include "..\..\gui\gui.h"
-#include "..\..\..\libs\lodepng\lodepng.h"
 #include "harrier.h"
 
 #include "harrierdraw.h"
 
 using namespace std;
 //textures
-GLuint harrierTex;
-GLuint harrierLandedTex;
-GLuint boomTex;
-GLuint shipTex;
 
 
 void InitHarrierDraw(){
-  //harrierTex = LoadTexture("images/harrier.bmp");
-  //harrierLandedTex = LoadTexture("images/harrierlanded.bmp");
-  //boomTex = LoadTexture("images/explode.bmp");
-  //shipTex = LoadTexture("images/Anzac.bmp");
+
 }
 
 void DrawHarrierSets(int window) {
@@ -108,18 +100,6 @@ void DrawHarrierSim(int window) {
   //harrier
   glColor3f(1,1,1);
 
-  glEnable(GL_TEXTURE_2D);
-  
-  harrierTex = LoadTexture("images/harrier.bmp");
-  glBindTexture(GL_TEXTURE_2D, harrierTex);
-  
-  glBegin(GL_QUADS);
-      glTexCoord2f(0.0f, 0.0f); glVertex2f(x - 0.1f, y - 0.05f);
-      glTexCoord2f(1.0f, 0.0f); glVertex2f(x - 0.1f, y + 0.05f);
-      glTexCoord2f(1.0f, 1.0f); glVertex2f(x + 0.1f, y + 0.05f);
-      glTexCoord2f(0.0f, 1.0f); glVertex2f(x + 0.1f, y - 0.05f);
-  glEnd();
-  glDisable(GL_TEXTURE_2D);
   /*
   glColor3f(0.3514f,0.3514f, 0.3514f); //dark grey
   glBegin(GL_POLYGON);

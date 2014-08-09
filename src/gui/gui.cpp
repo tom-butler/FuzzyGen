@@ -4,7 +4,6 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
-#include "..\..\libs\lodepng\lodepng.h"
 
 #include "..\objects\shared.h"
 #include "..\objects\gen.h"
@@ -342,4 +341,8 @@ void DrawRules(float x, float y, int controller, int accumulator) {
     glRasterPos2f(x + 0.4f, y + (0.05f * -i));
     glutBitmapString(GLUT_BITMAP_8_BY_13, (const unsigned char *) text.c_str());
   }
+}
+
+float ConvertToSimScale(float var, float min, float max){
+  return (((var - min) * 2) / (max - min)) - 1.0f;
 }
