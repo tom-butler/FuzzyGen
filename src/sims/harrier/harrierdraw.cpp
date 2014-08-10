@@ -1,7 +1,7 @@
 #include <GL\freeglut.h>
 #include <GL\glut.h>
 #include <vector>
-
+#include <cmath>
 #include "..\..\objects\shared.h"
 #include "..\..\gui\gui.h"
 #include "harrier.h"
@@ -31,6 +31,7 @@ void DrawHarrierSets(int window) {
   DrawRules(-0.5f, 0.95f, controller, 0);
   //draw accumulator
   DrawPlot(-1, -0.999, 1);
+  PrintFloat(-0.9,-0.5,"Rules",cont[controller].output[0].ruleNum);
   DrawAccumulator(-1, -0.999, "Throttle", cont[controller].output[0]);
 
   //X
@@ -44,6 +45,7 @@ void DrawHarrierSets(int window) {
   DrawRules(0.5f, 0.95f, controller, 1);
   //draw accumulator
   DrawPlot(0, -0.999, 1);
+  PrintFloat(0,-0.5,"Rules",cont[controller].output[0].ruleNum);
   DrawAccumulator(0, -0.999, "Vector", cont[controller].output[1]);
 }
 
@@ -56,10 +58,11 @@ void DrawHarrierSim(int window) {
   PrintFloat(0.5, 0.5f,"Generation",generation);
   PrintFloat(0.5, 0.45f,"Controller",controller);
   PrintFloat(0.5, 0.4f,"Mutations",cont[controller].mutations);
-  PrintFloat(0.5, 0.35f,"Active Rules",cont[controller].output[0].active );
-  PrintFloat(0.5, 0.15f, "BEST", BEST);
-  PrintFloat(0.5, 0.1f, "MEAN", MEAN);
-  PrintFloat(0.5, 0.05f, "LOW", LOW);
+  PrintFloat(0.5, 0.35f,"Active Rules",cont[controller].output[0].active );  
+  PrintFloat(0.5, 0.15f, "MAX BEST", MAX_BEST);
+  PrintFloat(0.5, 0.1f, "BEST", BEST);
+  PrintFloat(0.5, 0.05f, "MEAN", MEAN);
+  PrintFloat(0.5, 0.0f, "LOW", LOW);
   PrintFloat(0.5, 0.2f, "Sim Speed", 10 - (speed / 1000));
 
   PrintFloat(0.5, 0.3f,"Fuel",harrier_fuel );
@@ -148,4 +151,18 @@ void DrawHarrierSim(int window) {
     glVertex2f(x - 0.01f, y + 0.01);
     glVertex2f(x + 0.01f, y - 0.01);
   glEnd();
+
+  float throttle = cont[controller].output[0].output / 100;
+  throttle /= 5;
+  float angle = DegToRad(270 - cont[controller].output[1].output);
+
+  float xx = x + throttle * cos(angle);
+  float yy = y + throttle * sin(angle);
+  //thrust
+  glBegin(GL_TRIANGLES);
+    glVertex2f(x - 0.02f, y - 0.03);
+    glVertex2f(xx, yy - 0.03);
+    glVertex2f(x + 0.02f, y - 0.03);
+  glEnd();
+
 }

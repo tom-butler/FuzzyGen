@@ -9,7 +9,6 @@
 
 using namespace std;
 
-float DegToRad(float deg);
 float KnotsToMps(float knots);
 float Apportion(float inLow, float inHigh, float in, float outLow, float outHigh);
 
@@ -32,6 +31,7 @@ int HARRIER_SIM_HEIGHT = 200;
 int HARRIER_SIM_WIDTH = 600;
 const int   WIND_SPEED = 10;
 const int   MAX_WIND_GUST = 20;
+const int   MAX_VECTOR = 5;
 
 //extern
 float harrier_YPos;
@@ -72,7 +72,7 @@ static FuzzyVar harrier_safeDistSet  = {-HARRIER_SIM_WIDTH/2, HARRIER_SIM_WIDTH/
 
 //output
 static Accumulator harrier_throttleAccumulator = {0, 100, 0.0f, 0, 0, 0, 0, 0, 0};
-static Accumulator harrier_vectorAccumulator = {-5, 5, 0.0f, 0, 0, 0, 0, 0, 0};
+static Accumulator harrier_vectorAccumulator = {-MAX_VECTOR, MAX_VECTOR, 0.0f, 0, 0, 0, 0, 0, 0};
 
 void HarrierCreateVars(){
   //sim input vars
@@ -124,9 +124,9 @@ void HarrierInitSim(int controller) {
     harrier_XVel = 46;
     *harrier_YVel = 2;
     harrier_shipSpeed = 22;
-    *harrier_vector = 92;
+    *harrier_vector = 0;
     *harrier_RelativeXVel = 22;
-    *harrier_throttle = 89;
+    //*harrier_throttle = 89;
     harrier_groundEffect = true;
     harrier_safeX = 400;
     harrier_safeY = 16;
@@ -148,7 +148,10 @@ int HarrierNextStep(int controller) {
       *harrier_throttle = 0;
     if(*harrier_throttle > 100)
       *harrier_throttle = 100;
-
+    if(*harrier_vector <= -MAX_VECTOR)
+      *harrier_vector = -MAX_VECTOR;
+    if(*harrier_vector >= MAX_VECTOR)
+      *harrier_vector = MAX_VECTOR;
     //re-calculate harrier status
     harrier_mass = HARRIER_MASS + harrier_fuel;
     *harrier_YVel -= SIM_GRAVITY;
@@ -200,33 +203,40 @@ int HarrierNextStep(int controller) {
     *harrier_height = harrier_YPos;
     *harrier_safeDist = harrier_XPos - harrier_safeX;
 
+    if(*harrier_safeDist <= -HARRIER_SIM_WIDTH/2)
+      *harrier_safeDist = -HARRIER_SIM_WIDTH/2;
+    if(*harrier_safeDist >= HARRIER_SIM_WIDTH/2)
+      *harrier_safeDist = HARRIER_SIM_WIDTH/2;
+
     //check if it has landed
     if(*harrier_height <= 0){
-      return 0; //crashed
+      *harrier_score = 0;
+      return 1; //crashed
     }
-    else if(*harrier_height <= harrier_safeX + 3){
-      if(abs(*harrier_safeDist) < harrier_safeWidth){
+    else if(*harrier_height <= harrier_safeY + 3){
+      if(abs(*harrier_safeDist) <= harrier_safeWidth/2){
         if(*harrier_RelativeXVel <= MAX_LANDING_SPEED_X && *harrier_YVel <= MAX_LANDING_SPEED_Y){
           harrier_landed = true;
           *harrier_score = harrier_fuel;
-          return 1;
+          return 0;
         }
         else{
           harrier_isBoom = true;
           *harrier_score = 0;
-          return 0;
+          return 1;
         }
       }
+    }
+    else{
+      return -1;
     }
     //@TODO: Add some functions to explode if the ship is hit 
 
   }
   else {
-    return 0; //ran out of fuel
+    *harrier_score = 0;
+    return 1; //ran out of fuel
   }
-}
-float DegToRad(float deg){
-  return (deg * 3.14159 / 180.0);
 }
 float KnotsToMps(float knots){
   return knots * 0.514;

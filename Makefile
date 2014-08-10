@@ -9,7 +9,7 @@ CONT_H_DIR = src\objects\controller\h
 CONT_CPP_DIR = src\objects\controller\cpp
 SIM_DIR = src\sims
 
-all: cmd clean
+all: cmd
 
 t: test clean
 
@@ -20,8 +20,8 @@ clean: clean
 clear: clear
 
 #CMD BUILD
-cmd: $(BUILD_DIR)\cmd.o $(BUILD_DIR)\gen.o $(BUILD_DIR)\shared.o $(BUILD_DIR)\controller.o $(BUILD_DIR)\breed.o $(BUILD_DIR)\create.o $(BUILD_DIR)\mutate.o $(BUILD_DIR)\run.o $(BUILD_DIR)\select.o $(BUILD_DIR)\sim.o $(BUILD_DIR)\moon.o
-	g++ -o $(BIN_DIR)\cmd $(BUILD_DIR)\cmd.o $(BUILD_DIR)\gen.o $(BUILD_DIR)\shared.o $(BUILD_DIR)\sim.o $(BUILD_DIR)\moon.o $(BUILD_DIR)\controller.o $(BUILD_DIR)\breed.o $(BUILD_DIR)\create.o $(BUILD_DIR)\mutate.o $(BUILD_DIR)\run.o $(BUILD_DIR)\select.o -m64
+cmd: $(BUILD_DIR)\cmd.o $(BUILD_DIR)\gen.o $(BUILD_DIR)\shared.o $(BUILD_DIR)\controller.o $(BUILD_DIR)\breed.o $(BUILD_DIR)\create.o $(BUILD_DIR)\mutate.o $(BUILD_DIR)\run.o $(BUILD_DIR)\select.o $(BUILD_DIR)\sim.o $(BUILD_DIR)\moon.o $(BUILD_DIR)\harrier.o
+	g++ -o $(BIN_DIR)\cmd $(BUILD_DIR)\cmd.o $(BUILD_DIR)\gen.o $(BUILD_DIR)\shared.o $(BUILD_DIR)\controller.o $(BUILD_DIR)\breed.o $(BUILD_DIR)\create.o $(BUILD_DIR)\mutate.o $(BUILD_DIR)\run.o $(BUILD_DIR)\select.o $(BUILD_DIR)\sim.o $(BUILD_DIR)\moon.o $(BUILD_DIR)\harrier.o -m64
 
 $(BUILD_DIR)\cmd.o: $(CMD_DIR)\cmd.cpp
 	g++ -o $(BUILD_DIR)\cmd.o -c -g $(CMD_DIR)\cmd.cpp -m64

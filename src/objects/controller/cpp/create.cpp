@@ -98,7 +98,7 @@ void CreateRules(int controller, int accumulator) {
     }
     ++var[n];
     for(int v = n; v > 0; --v){
-      if(var[v] = cont[controller].input[v].setNum){
+      if(var[v] == cont[controller].input[v].setNum){
         var[v] = 0;
         ++var[v-1];
       }

@@ -126,4 +126,5 @@ float Lerp(float value, float low, float high);
 float Intersect(float x1, float y1, float x2, float y2, float value);
 void ResetAccumulator(int controller, int accumulator);
 void ForceVarBounds(int controller, int var);
+float DegToRad(float deg);
 #endif

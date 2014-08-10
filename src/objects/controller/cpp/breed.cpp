@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <iostream>
 
 #include "..\..\shared.h"
 #include "..\h\mutate.h"
@@ -18,7 +19,7 @@ void BreedControllers(int parents[]){
     if(ELITISM)
       if(i == BEST_CONT)
         continue;
-
+      
     if(cont[i].score != -2){
 
       //breed sets

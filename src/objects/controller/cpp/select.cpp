@@ -1,3 +1,4 @@
+#include <iostream>
 
 #include "..\..\shared.h"
 #include "..\h\breed.h"
@@ -15,7 +16,7 @@ void SelectControllers() {
   for( int i = 0; i < POP; i++){
     mean += cont[i].score;
     if(low > cont[i].score)
-    low = cont[i].score;
+      low = cont[i].score;
   }
 
   // use mean
@@ -24,8 +25,8 @@ void SelectControllers() {
   else
     mean = 0;
 
-MEAN = mean;
-LOW = low;
+  MEAN = mean;
+  LOW = low;
   //SelectHalf();
   SelectMean(mean);
 }
@@ -54,7 +55,6 @@ void SelectHalf(){
 void SelectMean(float mean){
   int parents[ANCESTOR];
   int c = 0;
-
 //select for breeding
   for(int i = 0; i < POP; i++) {
     if(cont[i].score >= mean){
@@ -66,13 +66,22 @@ void SelectMean(float mean){
     }
   }
 //if not enough are selected
-  while(c < ANCESTOR){
-    random = GetRandInt(0,POP-1);
-    if(cont[random].score != -2){
-      cont[random].score = -2;
-      parents[c] = random;
+  if(c < ANCESTOR -1){
+    int *unmarked = new int[POP - c];
+    int index = 0;
+    for(int i = 0; i < POP; i++){
+      if(cont[i].score != -2){
+        unmarked[index] = i;
+      }
+    }
+    while(c < ANCESTOR){
+      random = GetRandInt(0,POP - c);
+      cont[unmarked[random]].score = -2;
+      parents[c] = unmarked[random];
       c++;
     }
+    delete [] unmarked;
   }
+  std::cout << 2;
   BreedControllers(parents);
 }

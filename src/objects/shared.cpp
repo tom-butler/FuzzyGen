@@ -50,11 +50,11 @@ using namespace std;
 
   //fuzzy
   short int MIN_NUM_SETS = 2;
-  short int MAX_NUM_SETS = 4;
+  short int MAX_NUM_SETS = 3;
   float HEIGHT_LOW = 0.5;
   float HEIGHT_HIGH = 1;
 
-  short int SIM = 2;
+  short int SIM = HARRIER;
 
   //runtime variables ---------------------------
   short int NUM_INPUT = 0;
@@ -224,4 +224,7 @@ void ResetAccumulator(int controller, int accumulator) {
 
   cont[controller].output[accumulator].output = 0.0f;
   cont[controller].output[accumulator].active = 0;
+}
+float DegToRad(float deg){
+  return (deg * 3.14159 / 180.0);
 }

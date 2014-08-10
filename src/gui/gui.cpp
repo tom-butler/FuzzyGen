@@ -19,7 +19,7 @@ bool breed = false;
 int generation = 0;
 int speed = 5000;
 int controller = -1;
-int state = 0;
+int state = 1;
 int result = -1;
 int tick = 0;
 
@@ -109,12 +109,14 @@ void Display() {
     DrawSim();
     if(result == 0){
       PrintFloat(-0.5f, 0.0f, "SUCCESS", cont[controller].score);
-      state = 1;
+      if(tick % speed == 0)
+      	state = 1;
     }
     
     else if(result == 1){
       PrintFloat(-0.5f, 0.0f, "FAILED", cont[controller].score);
-      state = 1;
+      if(tick % speed == 0) 
+      	state = 1;
     }
     
     if(tick % speed == 0) {
@@ -167,21 +169,21 @@ void Display() {
 }
 
 void RunAll(){
-    BEST = 0;
-    for(int c = 0; c < POP; ++c) {
-      InitSimulation(c);
-      int result = -1;
-      while(result == -1) {
-        result = RunSim(c);
-      }
-      if(cont[c].score > MAX_BEST){
-        MAX_BEST = cont[c].score;
-      }
-      if(cont[c].score > BEST){
-        BEST = cont[c].score;
-        BEST_CONT = c;
-      }
+  BEST = 0;
+  for(int c = 0; c < POP; ++c) {
+    InitSimulation(c);
+    int result = -1;
+    while(result == -1) {
+      result = RunSim(c);
     }
+    if(cont[c].score > MAX_BEST){
+      MAX_BEST = cont[c].score;
+    }
+    if(cont[c].score > BEST){
+      BEST = cont[c].score;
+      BEST_CONT = c;
+    }
+  }
 }
 
 //util functions
@@ -326,19 +328,19 @@ void DrawRules(float x, float y, int controller, int accumulator) {
       for(int s = 0; s < cont[controller].output[accumulator].varsNum; s++){
         ss << cont[controller].output[accumulator].rules[i].sets[s] << " ";
       }
-      ss << "THEN " << cont[controller].output[accumulator].rules[i].output;
+      ss << "THEN " << setprecision(2) << cont[controller].output[accumulator].rules[i].output;
       string text(ss.str());
-      glRasterPos2f(x, y + (0.05f * -i));
+      glRasterPos2f(x, y + (0.04f * -i));
       glutBitmapString(GLUT_BITMAP_8_BY_13, (const unsigned char *) text.c_str());
     }
   }
   //draw best
   for(int i = 0; i < cont[BEST_CONT].output[accumulator].ruleNum; i++){
     ostringstream ss;
-    ss << cont[BEST_CONT].output[accumulator].rules[i].output;
+    ss << setprecision(2) << cont[BEST_CONT].output[accumulator].rules[i].output;
     string text(ss.str());
     glColor3f(0.2f, 0.2f, 0.2f);
-    glRasterPos2f(x + 0.4f, y + (0.05f * -i));
+    glRasterPos2f(x + 0.4f, y + (0.04f * -i));
     glutBitmapString(GLUT_BITMAP_8_BY_13, (const unsigned char *) text.c_str());
   }
 }

@@ -11,7 +11,7 @@ void EvaluateOutput(int controller, int accumulator);
 void RunController(int controller) {
   for(int o = 0; o < NUM_OUTPUT; o++){
     ResetAccumulator(controller, o);
-
+    cont[controller].score = 0;
     for(int i = 0; i < cont[controller].output[o].ruleNum; i++) {
       cont[controller].output[o].rules[i].isActive = false;
       float variable = EvaluateRule(controller,o, i);
