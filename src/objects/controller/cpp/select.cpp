@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include <cstring>
 #include "..\..\shared.h"
 #include "..\h\breed.h"
 
@@ -56,7 +56,7 @@ void SelectMean(float mean){
   int parents[ANCESTOR];
   int c = 0;
 //select for breeding
-  for(int i = 0; i < POP; i++) {
+  for(int i = 0; i < POP; ++i) {
     if(cont[i].score >= mean){
       if(c < ANCESTOR){
         cont[i].score = -2;
@@ -67,21 +67,23 @@ void SelectMean(float mean){
   }
 //if not enough are selected
   if(c < ANCESTOR -1){
-    int *unmarked = new int[POP - c];
+    int *unmarked = new int[(POP-1) - c];
+    //int unmarked[(POP-1) - c];
+    memset(unmarked, 0, (POP-1) - c);
     int index = 0;
-    for(int i = 0; i < POP; i++){
+    for(int i = 0; i < POP; ++i){
       if(cont[i].score != -2){
-        unmarked[index] = i;
+        unmarked[index] = i ;
+        index++;
       }
     }
     while(c < ANCESTOR){
-      random = GetRandInt(0,POP - c);
+      random = GetRandInt(0,(POP-1) - c);
       cont[unmarked[random]].score = -2;
       parents[c] = unmarked[random];
       c++;
     }
     delete [] unmarked;
   }
-  std::cout << 2;
   BreedControllers(parents);
 }

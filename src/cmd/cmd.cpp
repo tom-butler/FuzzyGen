@@ -11,10 +11,10 @@ int main(int argc, char *argv[])
 {
 
   if(argc == 1){  //simple run
-    cout << "Initalising System            ";
+    cout << "Initalising System             ";
     InitSystem();
     cout << "OK\n";
-    cout << "Initalising Controllers       ";
+    cout << "Initalising Controllers        ";
     InitControllers();
     cout << "OK\n";
     GALoop();

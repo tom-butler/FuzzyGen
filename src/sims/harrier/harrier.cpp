@@ -33,6 +33,8 @@ const int   WIND_SPEED = 10;
 const int   MAX_WIND_GUST = 20;
 const int   MAX_VECTOR = 5;
 
+
+const float HARRIER_MAX_SCORE = (HARRIER_SIM_WIDTH/10) + TERMINAL_VELOCITY + TERMINAL_VELOCITY + START_FUEL;
 //extern
 float harrier_YPos;
 float harrier_XPos;
@@ -207,22 +209,24 @@ int HarrierNextStep(int controller) {
       *harrier_safeDist = -HARRIER_SIM_WIDTH/2;
     if(*harrier_safeDist >= HARRIER_SIM_WIDTH/2)
       *harrier_safeDist = HARRIER_SIM_WIDTH/2;
-
     //check if it has landed
     if(*harrier_height <= 0){
-      *harrier_score = 0;
-      return 1; //crashed
+          *harrier_score = ((HARRIER_SIM_WIDTH - abs(*harrier_safeDist))/10) + (TERMINAL_VELOCITY - abs((int)*harrier_YVel)) + (TERMINAL_VELOCITY - abs((int)*harrier_RelativeXVel));
+          *harrier_score = (*harrier_score / HARRIER_MAX_SCORE) * 100;
+          return 1; //crashed
     }
     else if(*harrier_height <= harrier_safeY + 3){
       if(abs(*harrier_safeDist) <= harrier_safeWidth/2){
         if(*harrier_RelativeXVel <= MAX_LANDING_SPEED_X && *harrier_YVel <= MAX_LANDING_SPEED_Y){
           harrier_landed = true;
-          *harrier_score = harrier_fuel;
+          *harrier_score = (((HARRIER_SIM_WIDTH - abs(*harrier_safeDist))/10) + (TERMINAL_VELOCITY - abs((int)*harrier_YVel)) + (TERMINAL_VELOCITY - abs((int)*harrier_RelativeXVel)) + harrier_fuel);
+                    *harrier_score = (*harrier_score / HARRIER_MAX_SCORE) * 100;
           return 0;
         }
         else{
           harrier_isBoom = true;
-          *harrier_score = 0;
+          *harrier_score = ((HARRIER_SIM_WIDTH - abs(*harrier_safeDist))/10) + (TERMINAL_VELOCITY - abs((int)*harrier_YVel)) + (TERMINAL_VELOCITY - abs((int)*harrier_RelativeXVel));
+                    *harrier_score = (*harrier_score / HARRIER_MAX_SCORE) * 100;
           return 1;
         }
       }
