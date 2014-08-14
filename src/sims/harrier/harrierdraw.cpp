@@ -1,7 +1,7 @@
 #include <GL\freeglut.h>
-#include <GL\glut.h>
 #include <vector>
 #include <cmath>
+
 #include "..\..\objects\shared.h"
 #include "..\..\gui\gui.h"
 #include "harrier.h"

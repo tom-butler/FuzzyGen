@@ -4,13 +4,13 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include <cmath>
 
 #include "..\objects\shared.h"
 #include "..\objects\gen.h"
 #include "..\objects\controller\controller.h"
 
 #include "gui.h"
-
 using namespace std;
 
 bool bestOnly = false;
@@ -347,4 +347,17 @@ void DrawRules(float x, float y, int controller, int accumulator) {
 
 float ConvertToSimScale(float var, float min, float max){
   return (((var - min) * 2) / (max - min)) - 1.0f;
+}
+void DrawCircle(float x, float y, float radius){
+  glBegin(GL_POLYGON);
+    float cx = x + (float)radius * cos(359 * 3.14159f/180.0f);
+    float cy = y + (float)radius * sin(359 * 3.14159f/180.0f);
+    for(int j = 0; j < 360; j++)
+    {
+      glVertex2f(cx,cy);
+      cx = x + (float)radius * cos(j * 3.14159f/180.0f);
+      cy = y + (float)radius * sin(j * 3.14159f/180.0f);
+      glVertex2f(cx,cy);
+    }
+  glEnd();
 }

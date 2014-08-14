@@ -75,7 +75,7 @@ void CreateSets(int controller, int variable,short int numSets) {
   }
   cont[controller].input[variable].setNum = numSets;
 }
-
+/*
 //initialises all rules for a given output
 void CreateRules(int controller, int accumulator) {
   int varsNum = cont[controller].output[accumulator].varsNum;
@@ -104,4 +104,39 @@ void CreateRules(int controller, int accumulator) {
       }
     }
   }
+}*/
+
+void CreateRules(int controller, int accumulator) {
+  short int * varsNum;
+  varsNum = &cont[controller].output[accumulator].varsNum;
+  int *var = new int[*varsNum];
+
+  for(int i = 0; i < *varsNum; i++) {
+    var[i] = 0;
+  }
+
+  for(int r = 0; r < cont[controller].output[accumulator].ruleNum; ++r){
+    //create the rule
+    Rule rule = {0, GetRandFloat(cont[controller].output[accumulator].low,cont[controller].output[accumulator].high), 0};
+    cont[controller].output[accumulator].rules[r] = rule;
+    cont[controller].output[accumulator].rules[r].sets = new short int[*varsNum];
+    
+    //iterate the sets
+
+    for(int v = *varsNum - 1; v > 0; v--){
+      if(var[v] >= cont[controller].input[cont[controller].output[accumulator].vars[v]].setNum) {
+        var[v] = 0;
+        if(v > 0){
+          var[v - 1]++;
+        }
+      }
+    }
+    //add the sets to the rule
+    for(int v = 0; v < *varsNum; v++){
+      cont[controller].output[accumulator].rules[r].sets[v] = var[v];
+    }
+        var[*varsNum-1]++;
+  }
+
+  delete [] var;
 }

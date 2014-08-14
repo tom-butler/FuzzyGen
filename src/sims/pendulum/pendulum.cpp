@@ -1,5 +1,5 @@
 #include <iostream>
-#include <stdlib.h>
+#include <cmath>
 
 #include "..\..\objects\shared.h"
 #include "..\..\gui\gui.h"
@@ -9,17 +9,30 @@
 using namespace std;
 
 //sim vars
-const float CART_MASS = 0.5;
-const float PENDULUM_MASS = 0.2;
-const float FRICTION = 0.1;
-const float INERTIA = 0.006;
-const float PENDULUM_LENGTH = 0.3
+const float CART_MASS = 10.0;
+const float PENDULUM_MASS = 1.0;
+float ROD_LENGTH = 1.0;
+const float GRAVITY = 9.8f;
+const float LIN_FRICTION = 0.0;
+const float ANG_FRICTION = 1.0;
 
-const float GRAVITY = 9.81f;
+float pendulum_currentForce = 0.0;
+float pendulum_previousForce = 0.0;
+float pendulum_angularPosition = 0.1;
+float pendulum_angularVelocity = 0.0;
+float pendulum_cartPosition = 0.0;
+float pendulum_cartVelocity = 0.0;
+float pendulum_timeStep = 0.05;
+float pendulum_timeTag = 0.0;
+const float INERTIA = 0.006;
+
+
+
 const short int MAX_START_VEL = 3;
 const short int MAX_START_DIST = 20;
+const short int MAX_PENDULUM_ANGLE = 90;
 const short int MAX_THRUST = 5;
-const short int SIM_WIDTH = 1000;
+short int PENDULUM_SIM_WIDTH = 1000;
 static short int TERMINAL_VELOCITY = 10;
 
 float * thrust;
@@ -31,22 +44,22 @@ short int * score;
 float pendulumPos;
 
 //throttle accumulator
-static FuzzyVar pendulumAngle  = {0, 180, 90, 0, 0};
-static FuzzyVar centreDist = {-SIM_WIDTH/2, SIM_WIDTH/2, 0, 0, 0};
-static FuzzyVar cartVelocity = {-TERMINAL_VELOCITY, TERMINAL_VELOCITY, 0, 0, 0};
+static FuzzyVar pendulumAngleSet  = {-MAX_PENDULUM_ANGLE, MAX_PENDULUM_ANGLE, 0.1f, 0, 0};
+static FuzzyVar centreDistSet = {-PENDULUM_SIM_WIDTH/2, PENDULUM_SIM_WIDTH/2, 0, 0, 0};
+static FuzzyVar cartVelocitySet = {-TERMINAL_VELOCITY, TERMINAL_VELOCITY, 0, 0, 0};
 
 //output
 static Accumulator thrustSet = {-MAX_THRUST, MAX_THRUST, 0.0f, 0, 0, 0, 0, 0, 0};
-
+void IntegrateForwardEuler(double step);
+void IntegrateForwardRungeKutta4(double step);
 void PendulumCreateVars(){
   //sim input vars
   NUM_INPUT = 3;
   simInput = new FuzzyVar[NUM_INPUT];
 
-  simInput[0] = pendulumAngle;
-  simInput[1] = centreDist;
-
-  simInput[2] = cartVelocity;
+  simInput[0] = pendulumAngleSet;
+  simInput[1] = centreDistSet;
+  simInput[2] = cartVelocitySet;
 
   //sim output vars
   NUM_OUTPUT = 1;
@@ -63,18 +76,18 @@ void PendulumInitSim(int controller) {
   thrust = &cont[controller].output[0].output;
 
   angle = &cont[controller].input[0].value;
-  velocity = &cont[controller].input[1].value;
-  centreDist = &cont[controller].input[2].value;
+  centreDist = &cont[controller].input[1].value;
+  velocity = &cont[controller].input[2].value;
 
   score = &cont[controller].score;
 
   if(RANDOM_START){
-    *angle = 90 + GetRandInt(-10, 10);
+    *angle = 0 + GetRandInt(-5, 5);
     *velocity = GetRandFloat(-MAX_START_VEL, MAX_START_VEL);
     *centreDist = GetRandFloat(-MAX_START_DIST, MAX_START_DIST);
   }
   else{
-    *angle = 90;
+    *angle = 0;
     *velocity = 0;
     *centreDist = 0;
   }
@@ -83,115 +96,104 @@ void PendulumInitSim(int controller) {
 
 int PendulumNextStep(int controller) {
 
-  if(angle > 0 && angle < 180) {
-    float offset = GetRandFloat(0.0f,1.0f);
-    *velocity -= FRICTION;
-    *velocity += (*thrust) / CART_WEIGHT;
+  if(*angle > -90 && *angle < 90 ) {
+    if(pendulum_timeTag < 1000.0f){
 
-    //ensure it is within bounds
-    if(*velocity < -TERMINAL_VELOCITY)
-      *velocity = -TERMINAL_VELOCITY;
-    if(*velocity > TERMINAL_VELOCITY)
-      *velocity = TERMINAL_VELOCITY;
+      pendulum_currentForce = *thrust * 100;
+      pendulum_angularPosition = DegToRad(*angle);
+      pendulum_cartPosition = *centreDist / 50;
 
-    //move
-    *centreDist += velocity;
-    
+      IntegrateForwardRungeKutta4(pendulum_timeStep);
 
-    *score += SIM_WIDTH - abs(centreDist);
-    return -1
+      *angle = RadToDeg(pendulum_angularPosition);
+      *centreDist = pendulum_cartPosition * 50;
+      *velocity = pendulum_cartVelocity;
+
+      //cap it at the bounds
+      if(*centreDist < -PENDULUM_SIM_WIDTH/2)
+        *centreDist = -PENDULUM_SIM_WIDTH/2;
+      if(*centreDist > PENDULUM_SIM_WIDTH/2)
+        *centreDist = PENDULUM_SIM_WIDTH/2;
+      if(*angle < -MAX_PENDULUM_ANGLE)
+        *angle = -MAX_PENDULUM_ANGLE;
+      if(*angle > MAX_PENDULUM_ANGLE)
+        *angle = MAX_PENDULUM_ANGLE;
+
+      //move 
+
+      *score += PENDULUM_SIM_WIDTH/2 - abs(*centreDist);
+      return -1;
+    }
+    else {
+      return 0;
+    }
   }
   else {
-    return 0;
+    return 1;
   }
 }
+void IntegrateForwardEuler(double step)
+{
+  double m=PENDULUM_MASS, M=CART_MASS, l=ROD_LENGTH, f_lin=LIN_FRICTION, f_ang=ANG_FRICTION, g=GRAVITY, h=step;
+  double z1=0.0, z2=0.0, z3=0.0, z4=0.0;
 
+  // Integration using Forward Euler.
+  z1 = pendulum_angularPosition + h*pendulum_angularVelocity;
+  z2 = pendulum_angularVelocity + h*(pendulum_previousForce*cos(pendulum_angularPosition) - (M+m)*g*sin(pendulum_angularPosition) + m*l*cos(pendulum_angularPosition)*sin(pendulum_angularPosition)*sqr(pendulum_angularVelocity) + f_lin*cos(pendulum_angularPosition)*pendulum_cartVelocity + (M+m)*f_ang/m*pendulum_angularVelocity)/(m*l*sqr(cos(pendulum_angularPosition)) - (M+m)*l);
+  z3 = pendulum_cartPosition + h*pendulum_cartVelocity;
+  z4 = pendulum_cartVelocity + h*(pendulum_previousForce + m*l*sin(pendulum_angularPosition)*sqr(pendulum_angularVelocity) - m*g*cos(pendulum_angularPosition)*sin(pendulum_angularPosition) + cos(pendulum_angularPosition)*f_ang*pendulum_angularVelocity)/(M + m - m*sqr(cos(pendulum_angularPosition)));
+
+  pendulum_angularPosition = z1;
+  pendulum_angularVelocity = z2;
+  pendulum_cartPosition = z3;
+  pendulum_cartVelocity = z4;
+  pendulum_previousForce = pendulum_currentForce;
+  pendulum_timeTag += pendulum_timeStep;
+}
+
+void IntegrateForwardRungeKutta4(double step)
+{
+  double K1=0.0f, K2=0.0f, K3=0.0f, K4=0.0f;
+  double L1=0.0f, L2=0.0f, L3=0.0f, L4=0.0f;
+  double M1=0.0f, M2=0.0f, M3=0.0f, M4=0.0f;
+  double N1=0.0f, N2=0.0f, N3=0.0f, N4=0.0f;
+  double m=PENDULUM_MASS, M=CART_MASS, l=ROD_LENGTH, f_lin=LIN_FRICTION, f_ang=ANG_FRICTION, g=GRAVITY, h=step;
+  double z1=0.0, z2=0.0, z3=0.0, z4=0.0;
+
+  // Integration using Forward Runge-Kutta.
+  K1 = pendulum_angularVelocity;
+  L1 = (pendulum_previousForce*cos(pendulum_angularPosition) - (M+m)*g*sin(pendulum_angularPosition) + m*l*cos(pendulum_angularPosition)*sin(pendulum_angularPosition)*sqr(pendulum_angularVelocity) + f_lin*cos(pendulum_angularPosition)*pendulum_cartVelocity + (M+m)*f_ang/m*pendulum_angularVelocity)/(m*l*sqr(cos(pendulum_angularPosition)) - (M+m)*l);
+  M1 = pendulum_cartVelocity;
+  N1 = (pendulum_previousForce + m*l*sin(pendulum_angularPosition)*sqr(pendulum_angularVelocity) - m*g*cos(pendulum_angularPosition)*sin(pendulum_angularPosition) + cos(pendulum_angularPosition)*f_ang*pendulum_angularVelocity)/(M+m - m*sqr(cos(pendulum_angularPosition)));
+    
+  K2 = pendulum_angularVelocity + h/2.0*L1;
+  L2 = ((pendulum_previousForce+pendulum_currentForce)/2.0*cos(pendulum_angularPosition+h/2.0*K1) - (M+m)*g*sin(pendulum_angularPosition+h/2.0*K1) + m*l*cos(pendulum_angularPosition+h/2.0*K1)*sin(pendulum_angularPosition+h/2.0*K1)*sqr(pendulum_angularVelocity+h/2.0*L1) + f_lin*cos(pendulum_angularPosition+h/2.0*K1)*(pendulum_cartVelocity+h/2.0*N1) + (M+m)*f_ang/m*(pendulum_angularVelocity+h/2.0*L1))/(m*l*sqr(cos(pendulum_angularPosition+h/2.0*K1)) - (M+m)*l);
+  M2 = pendulum_cartVelocity + h/2.0*N1;
+  N2 = ((pendulum_previousForce+pendulum_currentForce)/2.0 + m*l*sin(pendulum_angularPosition+h/2.0*K1)*sqr(pendulum_angularVelocity+h/2.0*L1) - m*g*cos(pendulum_angularPosition+h/2.0*K1)*sin(pendulum_angularPosition+h/2.0*K1) + cos(pendulum_angularPosition+h/2.0*K1)*f_ang*(pendulum_angularVelocity+h/2.0*L1))/(M+m - m*sqr(cos(pendulum_angularPosition+h/2.0*K1)));
+    
+  K3 = pendulum_angularVelocity + h/2.0*L2;
+  L3 = ((pendulum_previousForce+pendulum_currentForce)/2.0*cos(pendulum_angularPosition+h/2.0*K2) - (M+m)*g*sin(pendulum_angularPosition+h/2.0*K2) + m*l*cos(pendulum_angularPosition+h/2.0*K2)*sin(pendulum_angularPosition+h/2.0*K2)*sqr(pendulum_angularVelocity+h/2.0*L2) + f_lin*cos(pendulum_angularPosition+h/2.0*K2)*(pendulum_cartVelocity+h/2.0*N2) + (M+m)*f_ang/m*(pendulum_angularVelocity+h/2.0*L2))/(m*l*sqr(cos(pendulum_angularPosition+h/2.0*K2)) - (M+m)*l);
+  M3 = pendulum_cartVelocity + h/2.0*N2;
+  N3 = ((pendulum_previousForce+pendulum_currentForce)/2.0 + m*l*sin(pendulum_angularPosition+h/2.0*K2)*sqr(pendulum_angularVelocity+h/2.0*L2) - m*g*cos(pendulum_angularPosition+h/2.0*K2)*sin(pendulum_angularPosition+h/2.0*K2) + cos(pendulum_angularPosition+h/2.0*K2)*f_ang*(pendulum_angularVelocity+h/2.0*L2))/(M+m - m*sqr(cos(pendulum_angularPosition+h/2.0*K2)));
+    
+  K4 = pendulum_angularVelocity + h*L3;
+  L4 = (pendulum_previousForce *cos(pendulum_angularPosition+h*K3) - (M+m)*g*sin(pendulum_angularPosition+h*K3) + m*l*cos(pendulum_angularPosition+h*K3)*sin(pendulum_angularPosition+h*K3)*sqr(pendulum_angularVelocity+h*L3) + f_lin*cos(pendulum_angularPosition+h*K3)*(pendulum_cartVelocity+h*N3) + (M+m)*f_ang/m*(pendulum_angularVelocity+h*L3))/(m*l*sqr(cos(pendulum_angularPosition+h*K3)) - (M+m)*l);
+  M4 = pendulum_cartVelocity + h*N3;
+  N4 = (pendulum_previousForce + m*l*sin(pendulum_angularPosition+h*K3)*sqr(pendulum_angularVelocity+h*L3) - m*g*cos(pendulum_angularPosition+h*K3)*sin(pendulum_angularPosition+h*K3) + cos(pendulum_angularPosition+h*K3)*f_ang*(pendulum_angularVelocity+h*L3))/(M+m - m*sqr(cos(pendulum_angularPosition+h*K3)));
+
+  z1 = pendulum_angularPosition + h*(1.0/6.0*K1 + 2.0/6.0*K2 + 2.0/6.0*K3 + 1.0/6.0*K4);
+  z2 = pendulum_angularVelocity + h*(1.0/6.0*L1 + 2.0/6.0*L2 + 2.0/6.0*L3 + 1.0/6.0*L4);
+  z3 = pendulum_cartPosition    + h*(1.0/6.0*M1 + 2.0/6.0*M2 + 2.0/6.0*M3 + 1.0/6.0*M4);
+  z4 = pendulum_cartVelocity    + h*(1.0/6.0*N1 + 2.0/6.0*N2 + 2.0/6.0*N3 + 1.0/6.0*N4);
+
+  pendulum_angularPosition = z1;
+  pendulum_angularVelocity = z2;
+  pendulum_cartPosition = z3;
+  pendulum_cartVelocity = z4;
+  pendulum_previousForce = pendulum_currentForce;
+  pendulum_timeTag += pendulum_timeStep;
+}
 //manually created controller to prove the system works
 void PendulumControlController(int controller) {
 
-  /*
-  //height
-
-  //landing
-  cont[controller].input[0].sets[0].height = 1;
-  cont[controller].input[0].sets[0].centreX = 0;
-  cont[controller].input[0].sets[0].leftBase = 0;
-  cont[controller].input[0].sets[0].rightBase = 50;
-  cont[controller].input[0].sets[0].leftTop = 0;
-  cont[controller].input[0].sets[0].rightTop = 25;
-
-  //low
-  cont[controller].input[0].sets[1].height = 1;
-  cont[controller].input[0].sets[1].centreX = 60;
-  cont[controller].input[0].sets[1].leftBase = 50;
-  cont[controller].input[0].sets[1].rightBase = 45;
-  cont[controller].input[0].sets[1].leftTop = 10;
-  cont[controller].input[0].sets[1].rightTop = 10;
-
-  //high
-  cont[controller].input[0].sets[2].height = 1;
-  cont[controller].input[0].sets[2].centreX = 100;
-  cont[controller].input[0].sets[2].leftBase = 60;
-  cont[controller].input[0].sets[2].rightBase = 900;
-  cont[controller].input[0].sets[2].leftTop = 10;
-  cont[controller].input[0].sets[2].rightTop = 200;
-
-  //velocity
-
-  //up
-  cont[controller].input[1].sets[0].height = 1;
-  cont[controller].input[1].sets[0].centreX = -30;
-  cont[controller].input[1].sets[0].leftBase = 0;
-  cont[controller].input[1].sets[0].rightBase = 28;
-  cont[controller].input[1].sets[0].leftTop = 0;
-  cont[controller].input[1].sets[0].rightTop = 15;
-
-  //slow
-  cont[controller].input[1].sets[1].height = 1;
-  cont[controller].input[1].sets[1].centreX = 0;
-  cont[controller].input[1].sets[1].leftBase = 10;
-  cont[controller].input[1].sets[1].rightBase = 10;
-  cont[controller].input[1].sets[1].leftTop = 5;
-  cont[controller].input[1].sets[1].rightTop = 5;
-
-  //fast
-  cont[controller].input[1].sets[2].height = 1;
-  cont[controller].input[1].sets[2].centreX = 30;
-  cont[controller].input[1].sets[2].leftBase = 28;
-  cont[controller].input[1].sets[2].rightBase = 0;
-  cont[controller].input[1].sets[2].leftTop = 10;
-  cont[controller].input[1].sets[2].rightTop = 0;
-
-  //rules
-  //if height landing and vel up
-   Rule r0 = {0,0,"AND",1,0, 2.0f, false};
-  //if height landing and vel slow
-   Rule r1 = {0,0,"AND",1,1, 8.0f, false};
-  //if height landing and vel fast
-   Rule r2 = {0,0,"AND",1,2, 9.0f, false};
-
-  //if height low and vel up
-   Rule r3 = {0,1,"AND",1,0, 1.0f, false};
-  //if height low and vel slow
-   Rule r4 = {0,1,"AND",1,1, 5.0f, false};
-  //if height low and vel fast
-   Rule r5 = {0,1,"AND",1,2, 7.0f, false};
-
-  //if height high and vel up
-   Rule r6 = {0,2,"AND",1,0, 1.0f, false};
-  //if height high and vel slow
-   Rule r7 = {0,2,"AND",1,1, 5.0f, false};
-  //if height high and vel fast
-   Rule r8 = {0,2,"AND",1,2, 6.0f,false};
-
-  cont[controller].rules[0] = r0;
-  cont[controller].rules[1] = r1;
-  cont[controller].rules[2] = r2;
-  cont[controller].rules[3] = r3;
-  cont[controller].rules[4] = r4;
-  cont[controller].rules[5] = r5;
-  cont[controller].rules[6] = r6;
-  cont[controller].rules[7] = r7;
-  cont[controller].rules[8] = r8;
-*/
 }

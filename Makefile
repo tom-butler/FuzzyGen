@@ -20,8 +20,8 @@ clean: clean
 clear: clear
 
 #CMD BUILD
-cmd: $(BUILD_DIR)\cmd.o $(BUILD_DIR)\gen.o $(BUILD_DIR)\shared.o $(BUILD_DIR)\controller.o $(BUILD_DIR)\breed.o $(BUILD_DIR)\create.o $(BUILD_DIR)\mutate.o $(BUILD_DIR)\run.o $(BUILD_DIR)\select.o $(BUILD_DIR)\sim.o $(BUILD_DIR)\moon.o $(BUILD_DIR)\harrier.o
-	g++ -o $(BIN_DIR)\cmd $(BUILD_DIR)\cmd.o $(BUILD_DIR)\gen.o $(BUILD_DIR)\shared.o $(BUILD_DIR)\controller.o $(BUILD_DIR)\breed.o $(BUILD_DIR)\create.o $(BUILD_DIR)\mutate.o $(BUILD_DIR)\run.o $(BUILD_DIR)\select.o $(BUILD_DIR)\sim.o $(BUILD_DIR)\moon.o $(BUILD_DIR)\harrier.o -m64
+cmd: $(BUILD_DIR)\cmd.o $(BUILD_DIR)\gen.o $(BUILD_DIR)\shared.o $(BUILD_DIR)\controller.o $(BUILD_DIR)\breed.o $(BUILD_DIR)\create.o $(BUILD_DIR)\mutate.o $(BUILD_DIR)\run.o $(BUILD_DIR)\select.o $(BUILD_DIR)\sim.o $(BUILD_DIR)\moon.o $(BUILD_DIR)\harrier.o $(BUILD_DIR)\pendulum.o
+	g++ -o $(BIN_DIR)\cmd $(BUILD_DIR)\cmd.o $(BUILD_DIR)\gen.o $(BUILD_DIR)\shared.o $(BUILD_DIR)\controller.o $(BUILD_DIR)\breed.o $(BUILD_DIR)\create.o $(BUILD_DIR)\mutate.o $(BUILD_DIR)\run.o $(BUILD_DIR)\select.o $(BUILD_DIR)\sim.o $(BUILD_DIR)\moon.o $(BUILD_DIR)\harrier.o $(BUILD_DIR)\pendulum.o -m64
 
 $(BUILD_DIR)\cmd.o: $(CMD_DIR)\cmd.cpp
 	g++ -o $(BUILD_DIR)\cmd.o -c -g $(CMD_DIR)\cmd.cpp -m64
@@ -34,8 +34,8 @@ $(BUILD_DIR)\test.o: $(CMD_DIR)\test.cpp
 	g++ -o $(BIN_DIR)\test.o -c -g $(CMD_DIR)\test.cpp -m64
 
 #GRAPHICAL USER INTERFACE
-gui: $(BUILD_DIR)\gui.o $(BUILD_DIR)\simgui.o $(BUILD_DIR)\gen.o $(BUILD_DIR)\shared.o $(BUILD_DIR)\controller.o $(BUILD_DIR)\breed.o $(BUILD_DIR)\create.o $(BUILD_DIR)\mutate.o $(BUILD_DIR)\run.o $(BUILD_DIR)\select.o $(BUILD_DIR)\sim.o $(BUILD_DIR)\moon.o $(BUILD_DIR)\moondraw.o $(BUILD_DIR)\harrier.o $(BUILD_DIR)\harrierdraw.o
-	g++ -o $(BIN_DIR)\gui $(BUILD_DIR)\gui.o $(BUILD_DIR)\simgui.o $(BUILD_DIR)\gen.o $(BUILD_DIR)\shared.o $(BUILD_DIR)\controller.o $(BUILD_DIR)\breed.o $(BUILD_DIR)\create.o $(BUILD_DIR)\mutate.o $(BUILD_DIR)\run.o $(BUILD_DIR)\select.o $(BUILD_DIR)\sim.o $(BUILD_DIR)\moon.o $(BUILD_DIR)\moondraw.o $(BUILD_DIR)\harrier.o $(BUILD_DIR)\harrierdraw.o -m64 -L"C:\Program Files\mingw-w64\x86_64-4.9.0-posix-sjlj-rt_v3-rev2\mingw64\lib\x64" -lfreeglut -lopengl32 -Wl,--subsystem,windows
+gui: $(BUILD_DIR)\gui.o $(BUILD_DIR)\simgui.o $(BUILD_DIR)\gen.o $(BUILD_DIR)\shared.o $(BUILD_DIR)\controller.o $(BUILD_DIR)\breed.o $(BUILD_DIR)\create.o $(BUILD_DIR)\mutate.o $(BUILD_DIR)\run.o $(BUILD_DIR)\select.o $(BUILD_DIR)\sim.o $(BUILD_DIR)\moon.o $(BUILD_DIR)\moondraw.o $(BUILD_DIR)\harrier.o $(BUILD_DIR)\harrierdraw.o $(BUILD_DIR)\pendulum.o $(BUILD_DIR)\pendulumdraw.o
+	g++ -o $(BIN_DIR)\gui $(BUILD_DIR)\gui.o $(BUILD_DIR)\simgui.o $(BUILD_DIR)\gen.o $(BUILD_DIR)\shared.o $(BUILD_DIR)\controller.o $(BUILD_DIR)\breed.o $(BUILD_DIR)\create.o $(BUILD_DIR)\mutate.o $(BUILD_DIR)\run.o $(BUILD_DIR)\select.o $(BUILD_DIR)\sim.o $(BUILD_DIR)\moon.o $(BUILD_DIR)\moondraw.o $(BUILD_DIR)\harrier.o $(BUILD_DIR)\harrierdraw.o $(BUILD_DIR)\pendulum.o $(BUILD_DIR)\pendulumdraw.o -m64 -L"C:\Program Files\mingw-w64\x86_64-4.9.0-posix-sjlj-rt_v3-rev2\mingw64\lib\x64" -lfreeglut -lopengl32 -Wl,--subsystem,windows
 
 $(BUILD_DIR)\gui.o: $(GUI_DIR)\gui.cpp $(GUI_DIR)\gui.h
 	g++ -o $(BUILD_DIR)\gui.o -c $(GUI_DIR)\gui.cpp -m64 -D FREEGLUT_STATIC -I"C:\Program Files\mingw-w64\x86_64-4.9.0-posix-sjlj-rt_v3-rev2\mingw64\include"
@@ -80,7 +80,7 @@ $(BUILD_DIR)\moondraw.o: $(SIM_DIR)\moon\moondraw.cpp $(SIM_DIR)\moon\moondraw.h
 	g++ -o $(BUILD_DIR)\moondraw.o -c $(SIM_DIR)\moon\moondraw.cpp -m64 -D FREEGLUT_STATIC -I"C:\Program Files\mingw-w64\x86_64-4.9.0-posix-sjlj-rt_v3-rev2\mingw64\include"
 
 $(BUILD_DIR)\pendulum.o: $(SIM_DIR)\pendulum\pendulum.cpp $(SIM_DIR)\pendulum\pendulum.h
-	g++ -o $(BUILD_DIR)\pendulum\pendulum.o -c -g $(SIM_DIR)\pendulum\pendulum.cpp -m64
+	g++ -o $(BUILD_DIR)\pendulum.o -c -g $(SIM_DIR)\pendulum\pendulum.cpp -m64
 
 $(BUILD_DIR)\pendulumdraw.o: $(SIM_DIR)\pendulum\pendulumdraw.cpp $(SIM_DIR)\pendulum\pendulumdraw.h
 	g++ -o $(BUILD_DIR)\pendulumdraw.o -c $(SIM_DIR)\pendulum\pendulumdraw.cpp -m64 -D FREEGLUT_STATIC -I"C:\Program Files\mingw-w64\x86_64-4.9.0-posix-sjlj-rt_v3-rev2\mingw64\include"

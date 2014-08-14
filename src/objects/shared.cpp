@@ -54,7 +54,7 @@ using namespace std;
   float HEIGHT_LOW = 0.5;
   float HEIGHT_HIGH = 1;
 
-  short int SIM = HARRIER;
+  short int SIM = PENDULUM;
 
   //runtime variables ---------------------------
   short int NUM_INPUT = 0;
@@ -227,4 +227,13 @@ void ResetAccumulator(int controller, int accumulator) {
 }
 float DegToRad(float deg){
   return (deg * 3.14159 / 180.0);
+}
+
+float RadToDeg(float rad){
+  return (rad * 180.0 / 3.14159);
+}
+
+double sqr(double value)
+{
+  return value*value;
 }

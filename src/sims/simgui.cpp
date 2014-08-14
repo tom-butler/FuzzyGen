@@ -4,6 +4,7 @@
 //sims
 #include "harrier\harrierdraw.h"
 #include "moon\moondraw.h"
+#include "pendulum\pendulumdraw.h"
 
 
 void DrawMoonSets(int window);
@@ -23,6 +24,8 @@ void DrawSim() {
       InitMoonDraw();
     else if(SIM == HARRIER)
       InitHarrierDraw();
+    else if(SIM == PENDULUM)
+      InitPendulumDraw();
   }
   if(SIM == MOONLANDER){
     DrawMoonSets(sets);
@@ -31,5 +34,9 @@ void DrawSim() {
   else if(SIM == HARRIER){
     DrawHarrierSets(sets);
     DrawHarrierSim(sim);
+  }
+  else if(SIM == PENDULUM){
+    DrawPendulumSets(sets);
+    DrawPendulumSim(sim);
   }
 }

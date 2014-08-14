@@ -97,7 +97,7 @@ extern float HEIGHT_HIGH;
 //sims
 extern short int SIM;
 const short int MOONLANDER = 0;
-const short int PENDULUMCART = 1;
+const short int PENDULUM = 1;
 const short int HARRIER = 2;
 
 //runtime --------------------------------
@@ -127,4 +127,6 @@ float Intersect(float x1, float y1, float x2, float y2, float value);
 void ResetAccumulator(int controller, int accumulator);
 void ForceVarBounds(int controller, int var);
 float DegToRad(float deg);
+float RadToDeg(float rad);
+double sqr(double value);
 #endif
