@@ -123,7 +123,7 @@ int PendulumNextStep(int controller) {
       ForceBounds(*velocity, -TERMINAL_VELOCITY, TERMINAL_VELOCITY);
 
       //move 
-      pendulum_score += PENDULUM_SIM_WIDTH/2 - abs(*centreDist);
+      pendulum_score += (PENDULUM_SIM_WIDTH/2 - abs(*centreDist)) /100;
       return -1;
     }
     else {

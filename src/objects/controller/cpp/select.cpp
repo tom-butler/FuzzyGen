@@ -9,7 +9,6 @@ void SelectHalf();
 void SelectMean(float mean);
 
 void SelectControllers() {
-
   //get some stats on this gen
   float mean = 0;
   int low = 1000;
@@ -68,7 +67,7 @@ void SelectMean(float mean){
   }
 //if not enough are selected
   if(c < ANCESTOR -1){
-    int *unmarked = new int[(POP-1) - c];
+    int unmarked[(POP-1) - c];
     //int unmarked[(POP-1) - c];
     memset(unmarked, 0, (POP-1) - c);
     int index = 0;
@@ -84,7 +83,7 @@ void SelectMean(float mean){
       parents[c] = unmarked[random];
       c++;
     }
-    delete [] unmarked;
+    //delete [] unmarked;
   }
   BreedControllers(parents);
 

@@ -13,7 +13,6 @@ void BreedSets(int id1, int id2);
 void BreedRules(int id1, int id2);
 
 void BreedControllers(int parents[]){
-
   int c = 0;
   for(int i = 0; i < POP; i++) {
     //preserve best
