@@ -13,27 +13,28 @@ void BreedSets(int id1, int id2);
 void BreedRules(int id1, int id2);
 
 void BreedControllers(int parents[]){
+
   int c = 0;
   for(int i = 0; i < POP; i++) {
     //preserve best
     if(ELITISM)
       if(i == BEST_CONT)
         continue;
-      
     if(cont[i].score != -2){
 
       //breed sets
       BreedVars(i, parents[c]);
       BreedSets(i, parents[c]);
       BreedRules(i,parents[c]);
-      c++;
-
+      if(i % 2 == 0)
+          c++;
       //ParentMutation(i,parents[b]);
       float mut = GetRandFloat(0.0f, 1.0f);
       if(mut <= MUT_CHANCE)
         MutateControllers(i, GetRandInt(0,NUM_INPUT -1));
     }
   }
+
 }
 void BreedVars(int id1, int id2){
   random = GetRandInt(0, NUM_INPUT-1);
@@ -46,12 +47,20 @@ void BreedVars(int id1, int id2){
   //regen any rules in accumulator that uses the random var
   for(int a = 0; a < NUM_OUTPUT; ++a){
     for(int v = 0; v < cont[id1].output[a].varsNum; ++v){
+
       if(cont[id1].output[a].vars[v] == random){
+        //clean the existing rules
+        for(int i = 0; i < cont[id1].output[a].ruleNum; i++){
+          if(cont[id1].output[a].rules[i].sets)
+              delete [] cont[id1].output[a].rules[i].sets;
+        }
+
+        delete [] cont[id1].output[a].rules;
         cont[id1].output[a].ruleNum = 1;
+        //regen new rules
         for(int p = 0; p < cont[id1].output[a].varsNum; p++){
           cont[id1].output[a].ruleNum *= cont[id1].input[cont[id1].output[a].vars[p]].setNum;
         }
-        delete [] cont[id1].output[a].rules;
         cont[id1].output[a].rules = new  Rule[cont[id1].output[a].ruleNum];
         CreateRules(id1, a);
       }

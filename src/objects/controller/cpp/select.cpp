@@ -9,6 +9,7 @@ void SelectHalf();
 void SelectMean(float mean);
 
 void SelectControllers() {
+
   //get some stats on this gen
   float mean = 0;
   int low = 1000;
@@ -85,6 +86,6 @@ void SelectMean(float mean){
     }
     delete [] unmarked;
   }
-
   BreedControllers(parents);
+
 }

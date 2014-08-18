@@ -62,7 +62,7 @@ using namespace std;
   bool GUI = false;
   short int ANCESTOR = POP/2;
   short int MAX_BEST = 0;
-  short int BEST = 0;
+  short int BEST = 0; 
   short int BEST_CONT = 0;
   float MEAN = 0.0f;
   int LOW = 0;
@@ -236,4 +236,11 @@ float RadToDeg(float rad){
 double sqr(double value)
 {
   return value*value;
+}
+
+void ForceBounds(float &var, float min, float max) {
+  if(var < min)
+    var = min;
+  if(var > max)
+    var = max;
 }

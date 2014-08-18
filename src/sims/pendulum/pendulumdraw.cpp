@@ -52,7 +52,7 @@ void DrawPendulumSim(int window) {
   PrintFloat(0.5, 0.15f,"MEAN"         , MEAN);
   PrintFloat(0.5, 0.1f ,"LOW"          , LOW);
 
-  PrintFloat(0.5, 0.05f ,"Score"       , cont[controller].score);
+  PrintFloat(0.5, 0.05f ,"Score"       , pendulum_score);
   PrintFloat(0.5, 0.0f  ,"Angle"       , cont[controller].input[0].value );
   PrintFloat(0.5, -0.05f,"Centre Dist" , cont[controller].input[1].value);
   PrintFloat(0.5, -0.1f,"Cart Velocity", cont[controller].input[2].value);
@@ -75,7 +75,7 @@ void DrawPendulumSim(int window) {
   glEnd();
 
   //cart
-  float x = ConvertToSimScale(cont[controller].input[1].value, -PENDULUM_SIM_WIDTH/2, PENDULUM_SIM_WIDTH/2) ;
+  float x = cont[controller].input[1].value;//ConvertToSimScale(cont[controller].input[1].value, -1, 1) ;
   glColor3f(0.0f,0.0f,1.0f);
   glBegin(GL_POLYGON);
     glVertex2f(x - 0.1,-0.9);

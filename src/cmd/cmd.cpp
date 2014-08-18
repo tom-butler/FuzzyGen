@@ -68,6 +68,7 @@ void GALoop() {
         BEST = cont[c].score;
         BEST_CONT = c;
       }
+      
     }
     cout << "OK\n";
     if(g < GENERATIONS-1){

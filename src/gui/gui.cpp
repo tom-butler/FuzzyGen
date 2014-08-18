@@ -318,21 +318,19 @@ void PrintFloat(float x, float y, string name, float value) {
 void DrawRules(float x, float y, int controller, int accumulator) {
   //draw current
   for(int i = 0; i < cont[controller].output[accumulator].ruleNum; i++) {
-    if(cont[controller].output[accumulator].rules[i].output != 0){
-      if(cont[controller].output[accumulator].rules[i].isActive)
-        glColor3f(1.0f, 1.0f, 0.0f);
-      else
-        glColor3f(1.0f, 0.0f, 0.0f);
-      ostringstream ss;
-      ss << "IF ";
-      for(int s = 0; s < cont[controller].output[accumulator].varsNum; s++){
-        ss << cont[controller].output[accumulator].rules[i].sets[s] << " ";
-      }
-      ss << "THEN " << setprecision(2) << cont[controller].output[accumulator].rules[i].output;
-      string text(ss.str());
-      glRasterPos2f(x, y + (0.04f * -i));
-      glutBitmapString(GLUT_BITMAP_8_BY_13, (const unsigned char *) text.c_str());
+    if(cont[controller].output[accumulator].rules[i].isActive)
+      glColor3f(1.0f, 1.0f, 0.0f);
+    else
+      glColor3f(1.0f, 0.0f, 0.0f);
+    ostringstream ss;
+    ss << "IF ";
+    for(int s = 0; s < cont[controller].output[accumulator].varsNum; s++){
+      ss << cont[controller].output[accumulator].rules[i].sets[s] << " ";
     }
+    ss << "THEN " << setprecision(2) << cont[controller].output[accumulator].rules[i].output;
+    string text(ss.str());
+    glRasterPos2f(x, y + (0.04f * -i));
+    glutBitmapString(GLUT_BITMAP_8_BY_13, (const unsigned char *) text.c_str());
   }
   //draw best
   for(int i = 0; i < cont[BEST_CONT].output[accumulator].ruleNum; i++){

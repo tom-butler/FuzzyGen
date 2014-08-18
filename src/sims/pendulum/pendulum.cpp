@@ -15,6 +15,7 @@ float ROD_LENGTH = 1.0;
 const float GRAVITY = 9.8f;
 const float LIN_FRICTION = 0.0;
 const float ANG_FRICTION = 1.0;
+const float INERTIA = 0.006;
 
 float pendulum_currentForce = 0.0;
 float pendulum_previousForce = 0.0;
@@ -22,18 +23,17 @@ float pendulum_angularPosition = 0.1;
 float pendulum_angularVelocity = 0.0;
 float pendulum_cartPosition = 0.0;
 float pendulum_cartVelocity = 0.0;
-float pendulum_timeStep = 0.05;
+float pendulum_timeStep = 0.1;
 float pendulum_timeTag = 0.0;
-const float INERTIA = 0.006;
 
 
-
-const short int MAX_START_VEL = 3;
-const short int MAX_START_DIST = 20;
+const float MAX_START_VEL = 0.3;
+const float MAX_START_DIST = 0.5f;
+const short int MIN_PENDULUM_ANGLE = -90;
 const short int MAX_PENDULUM_ANGLE = 90;
-const short int MAX_THRUST = 5;
+const short int MAX_THRUST = 10;
 short int PENDULUM_SIM_WIDTH = 1000;
-static short int TERMINAL_VELOCITY = 10;
+static short int TERMINAL_VELOCITY = 100;
 
 float * thrust;
 float * angle;
@@ -41,10 +41,12 @@ float * centreDist;
 float * velocity;
 short int * score;
 
+short int pendulum_score;
+
 float pendulumPos;
 
 //throttle accumulator
-static FuzzyVar pendulumAngleSet  = {-MAX_PENDULUM_ANGLE, MAX_PENDULUM_ANGLE, 0.1f, 0, 0};
+static FuzzyVar pendulumAngleSet  = {MIN_PENDULUM_ANGLE, MAX_PENDULUM_ANGLE, 0.1f, 0, 0};
 static FuzzyVar centreDistSet = {-PENDULUM_SIM_WIDTH/2, PENDULUM_SIM_WIDTH/2, 0, 0, 0};
 static FuzzyVar cartVelocitySet = {-TERMINAL_VELOCITY, TERMINAL_VELOCITY, 0, 0, 0};
 
@@ -68,67 +70,69 @@ void PendulumCreateVars(){
   simOutput[0].vars = new short int[3];
   simOutput[0].vars[0] = 0;
   simOutput[0].vars[1] = 1;
-  simOutput[0].vars[1] = 2;
+  simOutput[0].vars[2] = 2;
   simOutput[0].varsNum = 3;
 }
 
 void PendulumInitSim(int controller) {
-  thrust = &cont[controller].output[0].output;
+  thrust = &cont[controller].output[0].output ;
 
   angle = &cont[controller].input[0].value;
   centreDist = &cont[controller].input[1].value;
   velocity = &cont[controller].input[2].value;
 
   score = &cont[controller].score;
-
+  pendulum_currentForce = 0;
+  pendulum_previousForce = 0;
+  pendulum_cartVelocity = 0;
+  pendulum_angularPosition = 0;
+  pendulum_angularVelocity = 0;
+  pendulum_cartPosition = 0;
+  pendulum_timeTag = 0;
   if(RANDOM_START){
-    *angle = 0 + GetRandInt(-5, 5);
+    *angle = 90 + GetRandInt(-MAX_THRUST, MAX_THRUST);
     *velocity = GetRandFloat(-MAX_START_VEL, MAX_START_VEL);
-    *centreDist = GetRandFloat(-MAX_START_DIST, MAX_START_DIST);
+    *centreDist = 0;//GetRandFloat(-MAX_START_DIST, MAX_START_DIST);
   }
   else{
-    *angle = 0;
+    *angle = 0;// + GetRandInt(-5, 5);
     *velocity = 0;
     *centreDist = 0;
   }
-  *score = 0;
+  pendulum_score = 0;
+
+      pendulum_angularPosition = DegToRad(*angle);
+      pendulum_cartPosition = *centreDist ;
 }
 
 int PendulumNextStep(int controller) {
-
   if(*angle > -90 && *angle < 90 ) {
-    if(pendulum_timeTag < 1000.0f){
+    if(pendulum_timeTag < 10){
 
-      pendulum_currentForce = *thrust * 100;
-      pendulum_angularPosition = DegToRad(*angle);
-      pendulum_cartPosition = *centreDist / 50;
+      pendulum_currentForce = *thrust;
+      IntegrateForwardEuler(pendulum_timeStep);
 
-      IntegrateForwardRungeKutta4(pendulum_timeStep);
-
+      //pendulum_angularPosition += DegToRad(GetRandFloat(-1,1));
       *angle = RadToDeg(pendulum_angularPosition);
-      *centreDist = pendulum_cartPosition * 50;
-      *velocity = pendulum_cartVelocity;
+      *centreDist = pendulum_cartPosition;
+      *velocity = pendulum_cartVelocity ;
 
       //cap it at the bounds
-      if(*centreDist < -PENDULUM_SIM_WIDTH/2)
-        *centreDist = -PENDULUM_SIM_WIDTH/2;
-      if(*centreDist > PENDULUM_SIM_WIDTH/2)
-        *centreDist = PENDULUM_SIM_WIDTH/2;
-      if(*angle < -MAX_PENDULUM_ANGLE)
-        *angle = -MAX_PENDULUM_ANGLE;
-      if(*angle > MAX_PENDULUM_ANGLE)
-        *angle = MAX_PENDULUM_ANGLE;
+      ForceBounds(*angle,MIN_PENDULUM_ANGLE,MAX_PENDULUM_ANGLE);
+      ForceBounds(*centreDist, -1, 1);
+      ForceBounds(*velocity, -TERMINAL_VELOCITY, TERMINAL_VELOCITY);
 
       //move 
-
-      *score += PENDULUM_SIM_WIDTH/2 - abs(*centreDist);
+      pendulum_score += PENDULUM_SIM_WIDTH/2 - abs(*centreDist);
       return -1;
     }
     else {
+      *score = pendulum_score;
       return 0;
     }
   }
   else {
+    *score = pendulum_score;
     return 1;
   }
 }
