@@ -1,5 +1,5 @@
-#ifndef MOON_H
-#define MOON_H
+#ifndef FUZZYGEN_SIMS_MOON_H
+#define FUZZYGEN_SIMS_MOON_H
 
 void MoonCreateVars();
 void MoonInitSim(int controller);

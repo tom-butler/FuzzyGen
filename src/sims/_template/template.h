@@ -1,5 +1,5 @@
-#ifndef TEMPLATE_H
-#define TEMPLATE_H
+#ifndef FUZZYGEN_SIMS_TEMPLATE_H
+#define FUZZYGEN_SIMS_TEMPLATE_H
 
 void TemplateCreateVars();
 void TemplateInitSim(int controller);

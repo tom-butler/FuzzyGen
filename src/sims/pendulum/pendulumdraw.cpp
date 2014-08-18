@@ -1,7 +1,7 @@
 #include <GL\freeglut.h>
 #include <cmath>
 
-#include "..\..\objects\shared.h"
+#include "..\..\shared\shared.h"
 #include "..\..\gui\gui.h"
 #include "pendulum.h"
 

@@ -1,5 +1,5 @@
 #include "template.h"
-#include "..\objects\shared.h"
+#include "..\shared\shared.h"
 using namespace std;
 
 //sim runtime vars

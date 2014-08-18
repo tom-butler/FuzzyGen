@@ -6,9 +6,9 @@
 #include <sstream>
 #include <cmath>
 
-#include "..\objects\shared.h"
-#include "..\objects\gen.h"
-#include "..\objects\controller\controller.h"
+#include "..\shared\shared.h"
+#include "..\shared\gen.h"
+#include "..\shared\controller\controller.h"
 
 #include "gui.h"
 using namespace std;

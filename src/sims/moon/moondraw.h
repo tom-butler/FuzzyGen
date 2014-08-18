@@ -1,5 +1,5 @@
-#ifndef SIM_MOON_DRAW_H
-#define SIM_MOON_DRAW_H
+#ifndef FUZZYGEN_SIMS_MOON_DRAW_H
+#define FUZZYGEN_SIMS_MOON_DRAW_H
 
 void InitMoonDraw();
 void DrawMoonSets(int window);

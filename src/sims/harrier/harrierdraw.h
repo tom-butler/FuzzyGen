@@ -1,5 +1,5 @@
-#ifndef SIM_HARRIER_DRAW_H
-#define SIM_HARRIER_DRAW_H
+#ifndef FUZZYGEN_SIMS_HARRIER_DRAW_H
+#define FUZZYGEN_SIMS_HARRIER_DRAW_H
 
 void InitHarrierDraw();
 void DrawHarrierSets(int window);

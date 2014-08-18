@@ -2,11 +2,11 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../objects/shared.h"
-#include "../objects/controller.h"
-#include "../objects/controller.cpp"
-#include "../objects/gen.h"
-#include "../objects/gen.cpp"
+#include "../shared/shared.h"
+#include "../shared/controller.h"
+#include "../shared/controller.cpp"
+#include "../shared/gen.h"
+#include "../shared/gen.cpp"
 #include "../sims/moon.h"
 #include "../sims/moon.cpp"
 

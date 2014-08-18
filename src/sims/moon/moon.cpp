@@ -1,7 +1,7 @@
 #include <iostream>
 #include <stdlib.h>
 
-#include "..\..\objects\shared.h"
+#include "..\..\shared\shared.h"
 #include "..\..\gui\gui.h"
 
 #include "moon.h"

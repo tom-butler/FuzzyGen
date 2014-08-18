@@ -1,7 +1,7 @@
 #ifndef GUI_H
 #define GUI_H
 
-#include "..\objects\shared.h"
+#include "..\shared\shared.h"
 #include <string>
 #include <vector>
 

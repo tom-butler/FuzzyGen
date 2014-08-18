@@ -1,5 +1,5 @@
-#ifndef SIM_PENDULUM_H
-#define SIM_PENDULUM_H
+#ifndef FUZZYGEN_SIMS_PENDULUM_H
+#define FUZZYGEN_SIMS_PENDULUM_H
 
 void PendulumCreateVars();
 void PendulumInitSim(int controller);

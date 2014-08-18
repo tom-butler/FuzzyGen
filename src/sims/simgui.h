@@ -1,5 +1,5 @@
-#ifndef SIM_GUI_H
-#define SIM_GUI_H
+#ifndef FUZZYGEN_SIMS_SIM_GUI_H
+#define FUZZYGEN_SIMS_SIM_GUI_H
 
 void DrawSim();
 #endif

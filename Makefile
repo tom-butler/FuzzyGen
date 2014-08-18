@@ -2,11 +2,11 @@ BIN_DIR = bin
 BUILD_DIR = build
 CMD_DIR = src\cmd
 GUI_DIR = src\gui
-OBJ_DIR = src\objects
+OBJ_DIR = src\shared
 LIB_DIR = libs
-CONT_DIR = src\objects\controller
-CONT_H_DIR = src\objects\controller\h
-CONT_CPP_DIR = src\objects\controller\cpp
+CONT_DIR = src\shared\controller
+CONT_H_DIR = src\shared\controller\h
+CONT_CPP_DIR = src\shared\controller\cpp
 SIM_DIR = src\sims
 
 all: cmd

@@ -1,8 +1,8 @@
 #include <iostream>
 #include <stdlib.h>
 
-#include "..\objects\shared.h"
-#include "..\objects\gen.h"
+#include "..\shared\shared.h"
+#include "..\shared\gen.h"
 
 using namespace std;
 

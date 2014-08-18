@@ -1,5 +1,5 @@
-#ifndef SIM_HARRIER_H
-#define SIM_HARRIER_H
+#ifndef FUZZYGEN_SIMS_HARRIER_H
+#define FUZZYGEN_SIMS_HARRIER_H
 
 void HarrierCreateVars();
 void HarrierInitSim(int controller);

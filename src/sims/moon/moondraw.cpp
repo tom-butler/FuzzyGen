@@ -1,6 +1,6 @@
 #include <GL\freeglut.h>
 
-#include "..\..\objects\shared.h"
+#include "..\..\shared\shared.h"
 #include "..\..\gui\gui.h"
 #include "moon.h"
 

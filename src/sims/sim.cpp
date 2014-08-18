@@ -1,5 +1,5 @@
 #include "sim.h"
-#include "..\objects\shared.h"
+#include "..\shared\shared.h"
 //simulations
 #include "moon\moon.h"
 #include "harrier\harrier.h"

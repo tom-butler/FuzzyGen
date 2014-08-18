@@ -1,5 +1,5 @@
-#ifndef SIM_H
-#define SIM_H
+#ifndef FUZZYGEN_SIMS_SIM_H
+#define FUZZYGEN_SIMS_SIM_H
 
 void SimCreateSim();
 void SimInitSim(int controller);
