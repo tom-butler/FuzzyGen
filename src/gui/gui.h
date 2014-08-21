@@ -1,9 +1,11 @@
 #ifndef GUI_H
 #define GUI_H
 
-#include "..\shared\shared.h"
 #include <string>
 #include <vector>
+
+//Forward Declarations
+struct FuzzyVar, Accumulator;
 
 typedef unsigned int  GLuint;
 
