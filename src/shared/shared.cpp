@@ -54,7 +54,7 @@ using namespace std;
   float HEIGHT_LOW = 0.5;
   float HEIGHT_HIGH = 1;
 
-  short int SIM = PENDULUM;
+  short int SIM = MOONLANDER;
 
   //runtime variables ---------------------------
   short int NUM_INPUT = 0;

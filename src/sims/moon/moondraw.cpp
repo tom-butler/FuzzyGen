@@ -61,7 +61,7 @@ void DrawMoonSim(int window) {
   //DRAW SIM
   float y = cont[controller].input[0].value - cont[controller].input[0].low;
   y /= cont[controller].input[0].high;
-  float x = moon_landerX - 500;
+  float x = moon_lander_x_pos - 500;
   x /= 1000;
 
   float throttle = cont[controller].output[0].output;
@@ -155,7 +155,7 @@ void DrawMoonSim(int window) {
 
   //draw landing zone
   glBegin(GL_LINES);
-    glVertex2f((moon_safeX - 500) / 1000, -1);
-    glVertex2f((moon_safeX - 500) / 1000, -0.9);
+    glVertex2f((moon_safe_x_pos - 500) / 1000, -1);
+    glVertex2f((moon_safe_x_pos - 500) / 1000, -0.9);
   glEnd();
 }
