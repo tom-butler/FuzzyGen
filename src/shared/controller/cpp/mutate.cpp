@@ -1,7 +1,9 @@
+#include "..\h\mutate.h"
+
 #include <iostream>
+
 #include "..\..\shared.h"
 
-#include "..\h\mutate.h"
 
 void MutateCol(int controller, int var);
 void MutateSet(int controller, int var, int setID);

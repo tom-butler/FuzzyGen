@@ -1,9 +1,9 @@
+#include "..\h\select.h"
+
 #include <iostream>
 #include <cstring>
 #include "..\..\shared.h"
 #include "..\h\breed.h"
-
-#include "..\h\select.h"
 
 void SelectHalf();
 void SelectMean(float mean);

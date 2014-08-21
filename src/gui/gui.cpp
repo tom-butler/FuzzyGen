@@ -1,16 +1,17 @@
-#include <GL\freeglut.h>
+#include "gui.h"
+
+#include <cmath>
 #include <stdio.h>
 #include <string>
 #include <iostream>
 #include <iomanip>
 #include <sstream>
-#include <cmath>
+#include <GL\freeglut.h>
 
 #include "..\shared\shared.h"
 #include "..\shared\gen.h"
 #include "..\shared\controller\controller.h"
 
-#include "gui.h"
 using namespace std;
 
 bool bestOnly = false;

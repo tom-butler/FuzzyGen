@@ -1,11 +1,11 @@
+#include "pendulumdraw.h"
+
 #include <GL\freeglut.h>
 #include <cmath>
 
 #include "..\..\shared\shared.h"
 #include "..\..\gui\gui.h"
 #include "pendulum.h"
-
-#include "pendulumdraw.h"
 
 using namespace std;
 

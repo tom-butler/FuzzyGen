@@ -1,7 +1,7 @@
+#include "..\h\run.h"
 
 #include "..\..\shared.h"
 
-#include "..\h\run.h"
 
 float EvaluateRule(int controller, int accumulator, int rule); 
 float EvaluateSet(int controller, int inputVar, int setID, int variable);

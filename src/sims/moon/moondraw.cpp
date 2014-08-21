@@ -1,10 +1,11 @@
+#include "moondraw.h"
+
 #include <GL\freeglut.h>
 
 #include "..\..\shared\shared.h"
 #include "..\..\gui\gui.h"
 #include "moon.h"
 
-#include "moondraw.h"
 
 void InitMoonDraw(){
   //do init stuff

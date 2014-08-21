@@ -1,8 +1,10 @@
+#include "..\h\create.h"
+
 #include <algorithm>
 #include <iostream>
+
 #include "..\..\shared.h"
 
-#include "..\h\create.h"
 
 using namespace std;
 

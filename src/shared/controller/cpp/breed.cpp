@@ -1,3 +1,5 @@
+#include "..\h\breed.h"
+
 #include <algorithm>
 #include <iostream>
 
@@ -5,9 +7,8 @@
 #include "..\h\mutate.h"
 #include "..\h\create.h"
 
-#include "..\h\breed.h"
-
 using namespace std;
+
 void BreedVars(int id1, int id2);
 void BreedSets(int id1, int id2);
 void BreedRules(int id1, int id2);

@@ -1,11 +1,11 @@
-#include <iostream>
-#include <stdlib.h>
+#include "harrier.h"
+
 #include <cmath>
+#include <stdlib.h>
+#include <iostream>
 
 #include "..\..\shared\shared.h"
 #include "..\..\gui\gui.h"
-
-#include "harrier.h"
 
 using namespace std;
 

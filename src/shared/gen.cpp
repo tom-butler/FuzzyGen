@@ -1,15 +1,16 @@
+#include "gen.h"
+
+#include <ctime>
 #include <stdio.h>
-#include <iomanip>
 #include <sstream>
+#include <iomanip>
 #include <iostream>
 #include <fstream>
-#include <ctime>
+
 
 #include "controller\controller.h"
 #include "shared.h"
 #include "..\sims\sim.h"
-
-#include "gen.h"
 
 using namespace std;
 

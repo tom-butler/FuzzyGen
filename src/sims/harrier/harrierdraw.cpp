@@ -1,12 +1,13 @@
+#include "harrierdraw.h"
+
+#include <cmath>
 #include <GL\freeglut.h>
 #include <vector>
-#include <cmath>
 
 #include "..\..\shared\shared.h"
 #include "..\..\gui\gui.h"
 #include "harrier.h"
 
-#include "harrierdraw.h"
 
 using namespace std;
 //textures

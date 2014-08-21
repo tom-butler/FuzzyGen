@@ -1,10 +1,10 @@
+#include "templatedraw.h"
+
 #include <GL\freeglut.h>
 
 #include "..\..\shared\shared.h"
 #include "..\..\gui\gui.h"
-
 #include "template.h"
-#include "templatedraw.h"
 
 void InitTemplateDraw(){
   //do init stuff

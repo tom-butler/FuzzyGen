@@ -1,16 +1,16 @@
-#include <iostream>
-#include <GetOpt.h>
-#include <stdlib.h>
-#include <cstdlib>
+#include "shared.h"
+
 #include <cmath>
 #include <ctime>
-#include <sstream>
+#include <cstdlib>
 #include <cstring>
+#include <iostream>
+#include <sstream>
 #include <fstream>
+#include <GetOpt.h>
+#include <stdlib.h>
 
 #include "..\sims\sim.h"
-
-#include "shared.h"
 
 using namespace std;
   //define the standard options ----------------

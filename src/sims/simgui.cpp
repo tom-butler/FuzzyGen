@@ -1,7 +1,6 @@
 #include <GL\freeglut.h>
 
-#include "..\objects\shared.h"
-//sims
+#include "..\shared\shared.h"
 #include "harrier\harrierdraw.h"
 #include "moon\moondraw.h"
 #include "pendulum\pendulumdraw.h"

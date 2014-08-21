@@ -5,7 +5,7 @@
 #include <vector>
 
 //Forward Declarations
-struct FuzzyVar, Accumulator;
+#include "..\shared\shared.h"
 
 typedef unsigned int  GLuint;
 

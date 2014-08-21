@@ -1,10 +1,11 @@
-#include <iostream>
+#include "moon.h"
+
 #include <stdlib.h>
+#include <iostream>
 
 #include "..\..\shared\shared.h"
 #include "..\..\gui\gui.h"
 
-#include "moon.h"
 
 using namespace std;
 
