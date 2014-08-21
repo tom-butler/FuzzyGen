@@ -10,54 +10,53 @@
 using namespace std;
 
 //sim vars
-const short int MAX_START_VEL = 3;
-const short int MAX_THRUST = 100;
-const short int MAX_FUEL = 8845;
-const short int LANDER_WEIGHT = 5655;
-const short int SIM_HEIGHT = 5000;
-const short int SIM_WIDTH = 1000;
-const short int SAFE_WIDTH = 200;
-const float GRAVITY = 1.633f;
-const float Y_CRASH_SPEED = 3.05f;
-const float X_CRASH_SPEED = 1.22f;
+const short int kMaxStartVel = 3;
+const short int kMaxThrust = 100;
+const short int kMaxFuel = 8845;
+const short int kLanderWeight = 5655;
+const short int kSimHeight = 5000;
+const short int kSimWidth = 1000;
+const short int kSafeWidth = 200;
+const float kGravity = 1.633f;
+const float kYCrashSpeed = 3.05f;
+const float kXCrashSpeed = 1.22f;
+const short int kTerminalVelocity = 100;
 
 //relative
-static short int SAFE_X = 100 + GetRandInt(0, 260);
-static float MAX_FUEL_BURN = MAX_FUEL / 15 / 60.0; //maximum fuel to be burnt in one sec (tic)
-static short int START_HEIGHT = SIM_HEIGHT - (SIM_HEIGHT * 0.1); //10 % down
-static float START_FUEL = MAX_FUEL * 0.2; //70 % of fuel burnt on entry
-static short int TERMINAL_VELOCITY = 100;
+static short int kSafeX = 100 + GetRandInt(0, 260);
+static float kMaxFuel_BURN = kMaxFuel / 15 / 60.0; //maximum fuel to be burnt in one sec (tic)
+static short int kSafeHeight = kSimHeight - (kSimHeight * 0.1); //10 % down
+static float kStartFuel = kMaxFuel * 0.2; //70 % of fuel burnt on entry
 
-
-const float MAX_SCORE = (SIM_HEIGHT)/ 10 + SIM_WIDTH / 10 + (TERMINAL_VELOCITY - -TERMINAL_VELOCITY)  + TERMINAL_VELOCITY + START_FUEL;
+const float kMaxScore = (kSimHeight)/ 10 + kSimWidth / 10 + (kTerminalVelocity - -kTerminalVelocity)  + kTerminalVelocity + kStartFuel;
 
 //sim runtime vars
-float moon_landerMass;
+float moon_lander_mass;
 float moon_fuel;
-float moon_landerX;
-float moon_safeX;
+float moon_lander_x_pos;
+float moon_safe_x_pos;
 
 float * moon_throttle;
-float * moon_sideThrust;
+float * moon_side_thrust_amount;
 float * moon_height;
-float * moon_YVelocity;
-float * moon_XVelocity;
-float * moon_safeDist;
+float * moon_y_velocity;
+float * moon_x_velocity;
+float * moon_safe_distance;
 short int * moon_score;
 
 
 //throttle accumulator
-static FuzzyVar moon_heightSet  = {0, SIM_HEIGHT, START_HEIGHT, 0, 0};
-static FuzzyVar moon_YVelocitySet = {-TERMINAL_VELOCITY, TERMINAL_VELOCITY, MAX_START_VEL, 0, 0};
+static FuzzyVar moon_heightSet  = {0, kSimHeight, kSafeHeight, 0, 0};
+static FuzzyVar moon_y_velocitySet = {-kTerminalVelocity, kTerminalVelocity, kMaxStartVel, 0, 0};
 
 //x thrust accumulator
-static FuzzyVar moon_XVelocitySet = {-TERMINAL_VELOCITY, TERMINAL_VELOCITY, 0, 0, 0};
-static FuzzyVar moon_safeDistSet = {-SIM_WIDTH, SIM_WIDTH, 0, 0, 0};
+static FuzzyVar moon_x_velocitySet = {-kTerminalVelocity, kTerminalVelocity, 0, 0, 0};
+static FuzzyVar moon_safe_distanceSet = {-kSimWidth, kSimWidth, 0, 0, 0};
 
 
 //output
-static Accumulator moon_sideThrustSet = {-5, 5, 0.0f, 0, 0, 0, 0, 0, 0};
-static Accumulator moon_thrustSet = {0, MAX_THRUST, 0.0f, 0, 0, 0, 0, 0, 0};
+static Accumulator moon_side_thrust_amountSet = {-5, 5, 0.0f, 0, 0, 0, 0, 0, 0};
+static Accumulator moon_thrustSet = {0, kMaxThrust, 0.0f, 0, 0, 0, 0, 0, 0};
 
 void MoonCreateVars(){
   //sim input vars
@@ -65,10 +64,10 @@ void MoonCreateVars(){
   simInput = new FuzzyVar[NUM_INPUT];
 
   simInput[0] = moon_heightSet;
-  simInput[1] = moon_YVelocitySet;
+  simInput[1] = moon_y_velocitySet;
 
-  simInput[2] = moon_XVelocitySet;
-  simInput[3] = moon_safeDistSet;
+  simInput[2] = moon_x_velocitySet;
+  simInput[3] = moon_safe_distanceSet;
 
   //sim output vars
   NUM_OUTPUT = 2;
@@ -80,7 +79,7 @@ void MoonCreateVars(){
   simOutput[0].vars[1] = 1;
   simOutput[0].varsNum = 2;
 
-  simOutput[1] = moon_sideThrustSet;
+  simOutput[1] = moon_side_thrust_amountSet;
   simOutput[1].vars = new short int[2];
   simOutput[1].vars[0] = 2;
   simOutput[1].vars[1] = 3;
@@ -89,32 +88,32 @@ void MoonCreateVars(){
 
 void MoonInitSim(int controller) {
   moon_throttle = &cont[controller].output[0].output;
-  moon_sideThrust = &cont[controller].output[1].output;
+  moon_side_thrust_amount = &cont[controller].output[1].output;
 
   moon_height = &cont[controller].input[0].value;
-  moon_YVelocity = &cont[controller].input[1].value;
-  moon_XVelocity = &cont[controller].input[2].value;
-  moon_safeDist = &cont[controller].input[3].value;
+  moon_y_velocity = &cont[controller].input[1].value;
+  moon_x_velocity = &cont[controller].input[2].value;
+  moon_safe_distance = &cont[controller].input[3].value;
   moon_score = &cont[controller].score;
 
 
-  moon_landerMass = LANDER_WEIGHT + START_FUEL;
+  moon_lander_mass = kLanderWeight + kStartFuel;
   if(RANDOM_START){
-    *moon_height = START_HEIGHT + GetRandInt(0, 250);
-    *moon_YVelocity = GetRandFloat(-MAX_START_VEL, MAX_START_VEL);
-    *moon_XVelocity = GetRandFloat(-MAX_START_VEL, MAX_START_VEL);
-    moon_safeX = 250 + GetRandInt(0, 250);
-    moon_landerX = 100 + GetRandInt(0, 150);
+    *moon_height = kSafeHeight + GetRandInt(0, 250);
+    *moon_y_velocity = GetRandFloat(-kMaxStartVel, kMaxStartVel);
+    *moon_x_velocity = GetRandFloat(-kMaxStartVel, kMaxStartVel);
+    moon_safe_x_pos = 250 + GetRandInt(0, 250);
+    moon_lander_x_pos = 100 + GetRandInt(0, 150);
   }
   else{
-    *moon_height = START_HEIGHT + 250;
-    *moon_YVelocity = 0;
-    *moon_XVelocity = 0;
-    moon_safeX = 500;
-    moon_landerX = 200;
+    *moon_height = kSafeHeight + 250;
+    *moon_y_velocity = 0;
+    *moon_x_velocity = 0;
+    moon_safe_x_pos = 500;
+    moon_lander_x_pos = 200;
   }
-  moon_fuel = START_FUEL;
-  *moon_safeDist = moon_safeX - moon_landerX;
+  moon_fuel = kStartFuel;
+  *moon_safe_distance = moon_safe_x_pos - moon_lander_x_pos;
 }
 
 int MoonNextStep(int controller) {
@@ -127,57 +126,57 @@ int MoonNextStep(int controller) {
       *moon_throttle = 0;
     }
     //calculate velocity
-    moon_fuel -= MAX_FUEL_BURN * (*moon_throttle / 100);
-    moon_fuel -= MAX_FUEL_BURN * (abs(*moon_sideThrust) /10);
-    moon_landerMass = LANDER_WEIGHT + moon_fuel;
-    *moon_YVelocity += GRAVITY;
-    *moon_YVelocity -= (*moon_throttle * 440) / moon_landerMass;
-    *moon_XVelocity += (*moon_sideThrust * 100) / moon_landerMass;
+    moon_fuel -= kMaxFuel_BURN * (*moon_throttle / 100);
+    moon_fuel -= kMaxFuel_BURN * (abs(*moon_side_thrust_amount) /10);
+    moon_lander_mass = kLanderWeight + moon_fuel;
+    *moon_y_velocity += kGravity;
+    *moon_y_velocity -= (*moon_throttle * 440) / moon_lander_mass;
+    *moon_x_velocity += (*moon_side_thrust_amount * 100) / moon_lander_mass;
 
     //ensure it is within bounds
-    if(*moon_YVelocity < -TERMINAL_VELOCITY)
-      *moon_YVelocity = -TERMINAL_VELOCITY;
-    if(*moon_YVelocity > TERMINAL_VELOCITY)
-      *moon_YVelocity = TERMINAL_VELOCITY;
+    if(*moon_y_velocity < -kTerminalVelocity)
+      *moon_y_velocity = -kTerminalVelocity;
+    if(*moon_y_velocity > kTerminalVelocity)
+      *moon_y_velocity = kTerminalVelocity;
 
-    if(*moon_XVelocity < -TERMINAL_VELOCITY)
-      *moon_XVelocity = -TERMINAL_VELOCITY;
-    if(*moon_XVelocity > TERMINAL_VELOCITY)
-      *moon_XVelocity = TERMINAL_VELOCITY;
+    if(*moon_x_velocity < -kTerminalVelocity)
+      *moon_x_velocity = -kTerminalVelocity;
+    if(*moon_x_velocity > kTerminalVelocity)
+      *moon_x_velocity = kTerminalVelocity;
     if(moon_fuel < 0)
       moon_fuel = 0.0f;
 
     //move
-    *moon_height -= *moon_YVelocity;
-    moon_landerX += *moon_XVelocity;
+    *moon_height -= *moon_y_velocity;
+    moon_lander_x_pos += *moon_x_velocity;
 
-    *moon_safeDist = moon_safeX - moon_landerX;
+    *moon_safe_distance = moon_safe_x_pos - moon_lander_x_pos;
     
-    if(*moon_safeDist > SIM_WIDTH)
-      *moon_safeDist = SIM_WIDTH;
-    if(*moon_safeDist < -SIM_WIDTH)
-      *moon_safeDist = -SIM_WIDTH;
+    if(*moon_safe_distance > kSimWidth)
+      *moon_safe_distance = kSimWidth;
+    if(*moon_safe_distance < -kSimWidth)
+      *moon_safe_distance = -kSimWidth;
 
     //check the height
     if(*moon_height < 0.0f)
       *moon_height = 0.0f;
-    if(*moon_height > SIM_HEIGHT)
-      *moon_height = SIM_HEIGHT;
+    if(*moon_height > kSimHeight)
+      *moon_height = kSimHeight;
 
     //score
-    else if(*moon_height <= 0.0f && *moon_YVelocity < Y_CRASH_SPEED && abs(*moon_XVelocity) < X_CRASH_SPEED) { //safe
-      *moon_score = (SIM_HEIGHT - *moon_height)/ 10 + (SIM_WIDTH - abs(*moon_safeDist)) / 10 + (TERMINAL_VELOCITY - *moon_YVelocity) + (TERMINAL_VELOCITY - abs(*moon_XVelocity)) + moon_fuel;
-      *moon_score = (*moon_score / MAX_SCORE) * 100;
+    else if(*moon_height <= 0.0f && *moon_y_velocity < kYCrashSpeed && abs(*moon_x_velocity) < kXCrashSpeed) { //safe
+      *moon_score = (kSimHeight - *moon_height)/ 10 + (kSimWidth - abs(*moon_safe_distance)) / 10 + (kTerminalVelocity - *moon_y_velocity) + (kTerminalVelocity - abs(*moon_x_velocity)) + moon_fuel;
+      *moon_score = (*moon_score / kMaxScore) * 100;
       return 0; //fail
     }
     else if(*moon_height <= 0.0f) { //crashed
-      *moon_score = (SIM_HEIGHT - *moon_height)/ 10 + (SIM_WIDTH - abs(*moon_safeDist)) / 10 + (TERMINAL_VELOCITY - *moon_YVelocity) + (TERMINAL_VELOCITY - abs(*moon_XVelocity));
-      *moon_score = (*moon_score / MAX_SCORE) * 100;
+      *moon_score = (kSimHeight - *moon_height)/ 10 + (kSimWidth - abs(*moon_safe_distance)) / 10 + (kTerminalVelocity - *moon_y_velocity) + (kTerminalVelocity - abs(*moon_x_velocity));
+      *moon_score = (*moon_score / kMaxScore) * 100;
       return 1; //semi-fail
     }
     if(moon_fuel == 0.0f) { //if it ran out of fuel
-      *moon_score = (SIM_HEIGHT - *moon_height) / 10 + (SIM_WIDTH - abs(*moon_safeDist)) / 10;
-      *moon_score = (*moon_score / MAX_SCORE) * 100;
+      *moon_score = (kSimHeight - *moon_height) / 10 + (kSimWidth - abs(*moon_safe_distance)) / 10;
+      *moon_score = (*moon_score / kMaxScore) * 100;
       return 1; //fail
     }
     else {

@@ -7,7 +7,7 @@ int MoonNextStep(int controller);
 void DrawMoonSim();
 void MoonControlController(int controller);
 extern float moon_fuel;
-extern float moon_landerX;
-extern float moon_landerMass;
-extern float moon_safeX;
+extern float moon_lander_x_pos;
+extern float moon_lander_mass;
+extern float moon_safe_x_pos;
 #endif
