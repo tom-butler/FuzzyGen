@@ -15,29 +15,29 @@ void CreateControllers(int num_controllers, FuzzyVar input[], Accumulator output
 
  for(int i = 0; i < num_controllers;i++) {
     //create input sets
-    cont[i].input = new FuzzyVar[NUM_INPUT];
-    copy(input,input+NUM_INPUT, cont[i].input);
-    for(int j = 0; j < NUM_INPUT; j++)
+    cont[i].input = new FuzzyVar[kNumInput];
+    copy(input,input + kNumInput, cont[i].input);
+    for(int j = 0; j < kNumInput; j++)
     {
-      cont[i].input[j].sets = new Set[MAX_NUM_SETS];
-      if(MUT_SET_NUM){
-        CreateSets(i, j, GetRandInt(MIN_NUM_SETS, MAX_NUM_SETS));
+      cont[i].input[j].sets = new Set[kNumSetsMax];
+      if(kSetNumberMutation){
+        CreateSets(i, j, GetRandInt(kNumSetsMin, kNumSetsMax));
       }
       else{
-        CreateSets(i, j ,MIN_NUM_SETS);
+        CreateSets(i, j ,kNumSetsMin);
       }
     }
     //create accumulators
-    cont[i].output = new Accumulator[NUM_OUTPUT];
-    copy(output,output+NUM_OUTPUT, cont[i].output);
-    for(int o = 0; o < NUM_OUTPUT; o++){
-      cont[i].output[o].ruleNum = 1;
-      for(int p = 0; p < cont[i].output[o].varsNum; p++){
-        cont[i].output[o].ruleNum *= cont[i].input[cont[i].output[o].vars[p]].setNum;
+    cont[i].output = new Accumulator[kNumOutput];
+    copy(output,output + kNumOutput, cont[i].output);
+    for(int o = 0; o < kNumOutput; o++){
+      cont[i].output[o].num_rules = 1;
+      for(int p = 0; p < cont[i].output[o].num_vars; p++){
+        cont[i].output[o].num_rules *= cont[i].input[cont[i].output[o].vars[p]].num_sets;
       }
-      cont[i].output[o].value = new float[cont[i].output[o].ruleNum];
-      cont[i].output[o].scale = new float[cont[i].output[o].ruleNum];
-      cont[i].output[o].rules = new  Rule[cont[i].output[o].ruleNum];
+      cont[i].output[o].value = new float[cont[i].output[o].num_rules];
+      cont[i].output[o].scale = new float[cont[i].output[o].num_rules];
+      cont[i].output[o].rules = new  Rule[cont[i].output[o].num_rules];
       CreateRules(i, o);
     }
   }
@@ -53,10 +53,10 @@ void CreateSets(int controller, int variable,short int numSets) {
   short int centre = start;
   for(int j = 0; j < numSets; j++) {
 
-  short int lbase = (0.7 * space) + GetRandInt(0.0f, (end - start)* VARIANCE);
-  short int rbase = 0.7 * space + GetRandInt(0.0f, (end - start)* VARIANCE);
-  short int ltop = 0.3 * space + GetRandInt(0.0f, (end - start)* VARIANCE);
-  short int rtop = 0.3 * space + GetRandInt(0.0f, (end - start)* VARIANCE);
+  short int lbase = (0.7 * space) + GetRandInt(0.0f, (end - start)* kVariance);
+  short int rbase = 0.7 * space + GetRandInt(0.0f, (end - start)* kVariance);
+  short int ltop = 0.3 * space + GetRandInt(0.0f, (end - start)* kVariance);
+  short int rtop = 0.3 * space + GetRandInt(0.0f, (end - start)* kVariance);
 
     //check set variables for compliance
     if(centre - ltop < start) {
@@ -69,33 +69,33 @@ void CreateSets(int controller, int variable,short int numSets) {
     }
 
     //build the set
-    Set s = {GetRandFloat(HEIGHT_LOW, HEIGHT_HIGH), centre, lbase, rbase, ltop, rtop};
+    Set s = {GetRandFloat(kSetHeightMin, kSetHeightMax), centre, lbase, rbase, ltop, rtop};
 
       cont[controller].input[variable].sets[j] = s;
     //increment the centre for next set
     centre += space;
   }
-  cont[controller].input[variable].setNum = numSets;
+  cont[controller].input[variable].num_sets = numSets;
 }
 
 void CreateRules(int controller, int accumulator) {
-  short int * varsNum;
-  varsNum = &cont[controller].output[accumulator].varsNum;
-  int *var = new int[*varsNum];
+  short int * num_vars;
+  num_vars = &cont[controller].output[accumulator].num_vars;
+  int *var = new int[*num_vars];
 
-  for(int i = 0; i < *varsNum; i++) {
+  for(int i = 0; i < *num_vars; i++) {
     var[i] = 0;
   }
 
-  for(int r = 0; r < cont[controller].output[accumulator].ruleNum; ++r){
+  for(int r = 0; r < cont[controller].output[accumulator].num_rules; ++r){
     //create the rule
     Rule rule = {0, GetRandFloat(cont[controller].output[accumulator].low,cont[controller].output[accumulator].high), 0};
     cont[controller].output[accumulator].rules[r] = rule;
-    cont[controller].output[accumulator].rules[r].sets = new short int[*varsNum];
+    cont[controller].output[accumulator].rules[r].sets = new short int[*num_vars];
     
     //iterate the sets
-    for(int v = *varsNum - 1; v > 0; v--){
-      if(var[v] >= cont[controller].input[cont[controller].output[accumulator].vars[v]].setNum) {
+    for(int v = *num_vars - 1; v > 0; v--){
+      if(var[v] >= cont[controller].input[cont[controller].output[accumulator].vars[v]].num_sets) {
         var[v] = 0;
         if(v > 0){
           var[v - 1]++;
@@ -104,11 +104,11 @@ void CreateRules(int controller, int accumulator) {
     }
 
     //add the sets to the rule
-    for(int v = 0; v < *varsNum; v++){
+    for(int v = 0; v < *num_vars; v++){
       cont[controller].output[accumulator].rules[r].sets[v] = var[v];
     }
 
-    var[*varsNum-1]++;
+    var[*num_vars - 1]++;
   }
 
   delete [] var;

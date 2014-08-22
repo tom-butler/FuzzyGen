@@ -13,97 +13,97 @@ float KnotsToMps(float knots);
 float Apportion(float inLow, float inHigh, float in, float outLow, float outHigh);
 
 //harrier
-const float   MIN_FUEL_BURN = 0.1f;
-const float   MAX_FUEL_BURN = 0.5f;
-const int   MAX_FORCE = 106000; //(newtons)
-const float MAX_LANDING_SPEED_Y = 3.4f;
-const float MAX_LANDING_SPEED_X = 3.4f;
-const int   TERMINAL_VELOCITY = 100;
-const int   START_FUEL = 80;
+const float   kFuelBurnMin = 0.1f;
+const float   kFuelBurnMax = 0.5f;
+const int   kForceMax = 106000; //(newtons)
+const float kLandingSpeedYMax = 3.4f;
+const float kLandingSpeedXMax = 3.4f;
+const int   kTerminalVelocity = 100;
+const int   kStartFuel = 80;
 
-const int   HARRIER_MASS = 5655 + 3500; //mass + missles
-const float HARRIER_FRICTION = 0.013f;
-const int   GROUND_EFFECT_HEIGHT = 16;
+const int   kHarrierMass = 5655 + 3500; //mass + missles
+const float kHarrierFriction = 0.013f;
+const int   kGroundEffectHeight = 16;
 
 //environment
-const float SIM_GRAVITY = 9.8f;
-int HARRIER_SIM_HEIGHT = 200;
-int HARRIER_SIM_WIDTH = 600;
-const int   WIND_SPEED = 10;
-const int   MAX_WIND_GUST = 20;
-const int   MAX_VECTOR = 5;
+const float kGravity = 9.8f;
+int kHarrierSimHeight = 200;
+int kHarrierSimWidth = 600;
+const int   kWindSpeed = 10;
+const int   kWindGustMax = 20;
+const int   kVectorMax = 5;
 
 
-const float HARRIER_MAX_SCORE = (HARRIER_SIM_WIDTH/10) + TERMINAL_VELOCITY + TERMINAL_VELOCITY + START_FUEL;
+const float kHarrierScoreMax = (kHarrierSimWidth/10) + kTerminalVelocity + kTerminalVelocity + kStartFuel;
 //extern
-float harrier_YPos;
-float harrier_XPos;
+float harrier_y_position;
+float harrier_x_position;
 float harrier_fuel;
 float harrier_mass;
-float harrier_safeX;
-float harrier_safeY;
-float harrier_safeWidth;
+float harrier_safe_x_position;
+float harrier_safe_y_position;
+float harrier_safe_width;
 
 float harrier_force;
-float harrier_XVel;
+float harrier_x_velocity;
 
 //simStatus
-bool harrier_isBoom;
+bool harrier_is_boom;
 bool harrier_landed;
-bool harrier_groundEffect;
+bool harrier_ground_effect;
 
 //ship
 
-float harrier_shipSpeed;
+float harrier_ship_speed;
 
 //controller variables
 float * harrier_height;
-float * harrier_YVel;
-float * harrier_RelativeXVel;
-float * harrier_safeDist;
+float * harrier_y_velocity;
+float * harrier_relative_x_velocity;
+float * harrier_safe_distance;
 
 float * harrier_throttle;
 float * harrier_vector;
 
 short int * harrier_score;
 
-static FuzzyVar harrier_heightSet = {0, HARRIER_SIM_HEIGHT, HARRIER_SIM_HEIGHT, 0, 0};
-static FuzzyVar harrier_YVelocitySet  = {-TERMINAL_VELOCITY, TERMINAL_VELOCITY, 0, 0, 0};
-static FuzzyVar harrier_XVelocitySet = {-TERMINAL_VELOCITY, TERMINAL_VELOCITY, 0, 0, 0};
-static FuzzyVar harrier_safeDistSet  = {-HARRIER_SIM_WIDTH/2, HARRIER_SIM_WIDTH/2, 0, 0, 0};
+static FuzzyVar harrier_height_set = {0, kHarrierSimHeight, kHarrierSimHeight, 0, 0};
+static FuzzyVar harrier_y_velocity_set  = {-kTerminalVelocity, kTerminalVelocity, 0, 0, 0};
+static FuzzyVar harrier_x_velocity_set = {-kTerminalVelocity, kTerminalVelocity, 0, 0, 0};
+static FuzzyVar harrier_safe_distance_set  = {-kHarrierSimWidth/2, kHarrierSimWidth/2, 0, 0, 0};
 
 //output
-static Accumulator harrier_throttleAccumulator = {0, 100, 0.0f, 0, 0, 0, 0, 0, 0};
-static Accumulator harrier_vectorAccumulator = {-MAX_VECTOR, MAX_VECTOR, 0.0f, 0, 0, 0, 0, 0, 0};
+static Accumulator harrier_throttle_accumulator = {0, 100, 0.0f, 0, 0, 0, 0, 0, 0};
+static Accumulator harrier_vector_accumulator = {-kVectorMax, kVectorMax, 0.0f, 0, 0, 0, 0, 0, 0};
 
 void HarrierCreateVars(){
   //sim input vars
-  NUM_INPUT = 4;
-  simInput = new FuzzyVar[NUM_INPUT];
+  kNumInput = 4;
+  simInput = new FuzzyVar[kNumInput];
 
-  simInput[0] = harrier_heightSet;
-  simInput[1] = harrier_YVelocitySet;
-  simInput[2] = harrier_XVelocitySet;
-  simInput[3] = harrier_safeDistSet;
+  simInput[0] = harrier_height_set;
+  simInput[1] = harrier_y_velocity_set;
+  simInput[2] = harrier_x_velocity_set;
+  simInput[3] = harrier_safe_distance_set;
 
   //sim output vars
-  NUM_OUTPUT = 2;
-  simOutput = new Accumulator[NUM_OUTPUT];
-  simOutput[0] = harrier_throttleAccumulator;
+  kNumOutput = 2;
+  simOutput = new Accumulator[kNumOutput];
+  simOutput[0] = harrier_throttle_accumulator;
   simOutput[0].vars = new short int[4];
   simOutput[0].vars[0] = 0;
   simOutput[0].vars[1] = 1;
   simOutput[0].vars[2] = 2;
   simOutput[0].vars[3] = 3;
-  simOutput[0].varsNum = 4;
+  simOutput[0].num_vars = 4;
 
-  simOutput[1] = harrier_vectorAccumulator;
+  simOutput[1] = harrier_vector_accumulator;
   simOutput[1].vars = new short int[4];
   simOutput[1].vars[0] = 0;
   simOutput[1].vars[1] = 1;
   simOutput[1].vars[2] = 2;
   simOutput[1].vars[3] = 3;
-  simOutput[1].varsNum = 4;
+  simOutput[1].num_vars = 4;
 }
 
 void HarrierInitSim(int controller) {
@@ -111,35 +111,35 @@ void HarrierInitSim(int controller) {
   harrier_vector = &cont[controller].output[1].output;
 
   harrier_height = &cont[controller].input[0].value;
-  harrier_YVel = &cont[controller].input[1].value;
-  harrier_RelativeXVel = &cont[controller].input[2].value;
-  harrier_safeDist = &cont[controller].input[3].value;
+  harrier_y_velocity = &cont[controller].input[1].value;
+  harrier_relative_x_velocity = &cont[controller].input[2].value;
+  harrier_safe_distance = &cont[controller].input[3].value;
 
   harrier_score = &cont[controller].score;
 
-  if(RANDOM_START){
+  if(kRandomStart){
     //random pos
   }
   else{
-    harrier_XPos = 15;
-    harrier_YPos = 170;
-    harrier_XVel = 46;
-    *harrier_YVel = 2;
-    harrier_shipSpeed = 22;
+    harrier_x_position = 15;
+    harrier_y_position = 170;
+    harrier_x_velocity = 46;
+    *harrier_y_velocity = 2;
+    harrier_ship_speed = 22;
     *harrier_vector = 0;
-    *harrier_RelativeXVel = 22;
+    *harrier_relative_x_velocity = 22;
     //*harrier_throttle = 89;
-    harrier_groundEffect = true;
-    harrier_safeX = 400;
-    harrier_safeY = 16;
-    harrier_safeWidth = 20;
+    harrier_ground_effect = true;
+    harrier_safe_x_position = 400;
+    harrier_safe_y_position = 16;
+    harrier_safe_width = 20;
   }
   harrier_force = 0.0f;
-  harrier_fuel = START_FUEL;
-  harrier_mass = HARRIER_MASS + harrier_fuel;
-  harrier_isBoom = false;
+  harrier_fuel = kStartFuel;
+  harrier_mass = kHarrierMass + harrier_fuel;
+  harrier_is_boom = false;
   harrier_landed = false;
-  *harrier_safeDist = harrier_safeX - harrier_XPos;
+  *harrier_safe_distance = harrier_safe_x_position - harrier_x_position;
 }
 
 int HarrierNextStep(int controller) {
@@ -150,83 +150,83 @@ int HarrierNextStep(int controller) {
       *harrier_throttle = 0;
     if(*harrier_throttle > 100)
       *harrier_throttle = 100;
-    if(*harrier_vector <= -MAX_VECTOR)
-      *harrier_vector = -MAX_VECTOR;
-    if(*harrier_vector >= MAX_VECTOR)
-      *harrier_vector = MAX_VECTOR;
+    if(*harrier_vector <= -kVectorMax)
+      *harrier_vector = -kVectorMax;
+    if(*harrier_vector >= kVectorMax)
+      *harrier_vector = kVectorMax;
     //re-calculate harrier status
-    harrier_mass = HARRIER_MASS + harrier_fuel;
-    *harrier_YVel -= SIM_GRAVITY;
+    harrier_mass = kHarrierMass + harrier_fuel;
+    *harrier_y_velocity -= kGravity;
 
     //burn fuel
-    float harrier_tFuel = (MAX_FUEL_BURN - MIN_FUEL_BURN) * (*harrier_throttle /100) + MIN_FUEL_BURN;
+    float harrier_tFuel = (kFuelBurnMax - kFuelBurnMin) * (*harrier_throttle /100) + kFuelBurnMin;
     harrier_fuel -= harrier_tFuel;
     if(harrier_fuel < 0)
       harrier_fuel = 0;
 
 
     //adjust the velocity by thrust
-    harrier_force = *harrier_throttle * MAX_FORCE / 100 * 0.95; //0.95 allows for 5% cold air bleed 
+    harrier_force = *harrier_throttle * kForceMax / 100 * 0.95; //0.95 allows for 5% cold air bleed 
     if(harrier_fuel == 0)
       harrier_force = 0;
 
     float harrier_angle = DegToRad(270 - *harrier_vector);
-    float harrier_xx = harrier_XPos + harrier_force * cos(harrier_angle);
-    float harrier_yy = harrier_YPos + harrier_force * sin(harrier_angle);
+    float harrier_xx = harrier_x_position + harrier_force * cos(harrier_angle);
+    float harrier_yy = harrier_y_position + harrier_force * sin(harrier_angle);
 
     harrier_xx *= -1;
     harrier_yy *= -1;
 
-    harrier_XVel += harrier_xx / harrier_mass;
-    *harrier_YVel += harrier_yy / harrier_mass;
+    harrier_x_velocity += harrier_xx / harrier_mass;
+    *harrier_y_velocity += harrier_yy / harrier_mass;
 
     //adjust velocity by ground effect
-    if(harrier_groundEffect && harrier_YPos <= GROUND_EFFECT_HEIGHT + harrier_safeY){
-      *harrier_YVel -= Apportion(harrier_safeY, GROUND_EFFECT_HEIGHT + harrier_safeY,harrier_YPos, 0, 0.5);
+    if(harrier_ground_effect && harrier_y_position <= kGroundEffectHeight + harrier_safe_y_position){
+      *harrier_y_velocity -= Apportion(harrier_safe_y_position, kGroundEffectHeight + harrier_safe_y_position,harrier_y_position, 0, 0.5);
     }
     
     //adjust velocity by base wind
-    harrier_XVel -= KnotsToMps(WIND_SPEED) * HARRIER_FRICTION;
+    harrier_x_velocity -= KnotsToMps(kWindSpeed) * kHarrierFriction;
 
     //adjust for wind gusts
     //@TODO make gusts last a random number of ticks
-    float harrier_gust = GetRandFloat(0, KnotsToMps(MAX_WIND_GUST));
-    harrier_XVel -= harrier_gust * HARRIER_FRICTION;
+    float harrier_gust = GetRandFloat(0, KnotsToMps(kWindGustMax));
+    harrier_x_velocity -= harrier_gust * kHarrierFriction;
 
     //adjust for ship speed
-    harrier_XPos -= KnotsToMps(harrier_shipSpeed);
-    *harrier_RelativeXVel = harrier_XVel - KnotsToMps(harrier_shipSpeed);
+    harrier_x_position -= KnotsToMps(harrier_ship_speed);
+    *harrier_relative_x_velocity = harrier_x_velocity - KnotsToMps(harrier_ship_speed);
 
     //adjust pos
-    harrier_XPos += harrier_XVel;
-    harrier_YPos += *harrier_YVel;
+    harrier_x_position += harrier_x_velocity;
+    harrier_y_position += *harrier_y_velocity;
 
     //re-calculate system status
-    *harrier_height = harrier_YPos;
-    *harrier_safeDist = harrier_XPos - harrier_safeX;
+    *harrier_height = harrier_y_position;
+    *harrier_safe_distance = harrier_x_position - harrier_safe_x_position;
 
-    if(*harrier_safeDist <= -HARRIER_SIM_WIDTH/2)
-      *harrier_safeDist = -HARRIER_SIM_WIDTH/2;
-    if(*harrier_safeDist >= HARRIER_SIM_WIDTH/2)
-      *harrier_safeDist = HARRIER_SIM_WIDTH/2;
+    if(*harrier_safe_distance <= -kHarrierSimWidth/2)
+      *harrier_safe_distance = -kHarrierSimWidth/2;
+    if(*harrier_safe_distance >= kHarrierSimWidth/2)
+      *harrier_safe_distance = kHarrierSimWidth/2;
     //check if it has landed
     if(*harrier_height <= 0){
-          *harrier_score = ((HARRIER_SIM_WIDTH - abs(*harrier_safeDist))/10) + (TERMINAL_VELOCITY - abs((int)*harrier_YVel)) + (TERMINAL_VELOCITY - abs((int)*harrier_RelativeXVel));
-          *harrier_score = (*harrier_score / HARRIER_MAX_SCORE) * 100;
+          *harrier_score = ((kHarrierSimWidth - abs(*harrier_safe_distance))/10) + (kTerminalVelocity - abs((int)*harrier_y_velocity)) + (kTerminalVelocity - abs((int)*harrier_relative_x_velocity));
+          *harrier_score = (*harrier_score / kHarrierScoreMax) * 100;
           return 1; //crashed
     }
-    else if(*harrier_height <= harrier_safeY + 3){
-      if(abs(*harrier_safeDist) <= harrier_safeWidth/2){
-        if(*harrier_RelativeXVel <= MAX_LANDING_SPEED_X && *harrier_YVel <= MAX_LANDING_SPEED_Y){
+    else if(*harrier_height <= harrier_safe_y_position + 3){
+      if(abs(*harrier_safe_distance) <= harrier_safe_width/2){
+        if(*harrier_relative_x_velocity <= kLandingSpeedXMax && *harrier_y_velocity <= kLandingSpeedYMax){
           harrier_landed = true;
-          *harrier_score = (((HARRIER_SIM_WIDTH - abs(*harrier_safeDist))/10) + (TERMINAL_VELOCITY - abs((int)*harrier_YVel)) + (TERMINAL_VELOCITY - abs((int)*harrier_RelativeXVel)) + harrier_fuel);
-                    *harrier_score = (*harrier_score / HARRIER_MAX_SCORE) * 100;
+          *harrier_score = (((kHarrierSimWidth - abs(*harrier_safe_distance))/10) + (kTerminalVelocity - abs((int)*harrier_y_velocity)) + (kTerminalVelocity - abs((int)*harrier_relative_x_velocity)) + harrier_fuel);
+                    *harrier_score = (*harrier_score / kHarrierScoreMax) * 100;
           return 0;
         }
         else{
-          harrier_isBoom = true;
-          *harrier_score = ((HARRIER_SIM_WIDTH - abs(*harrier_safeDist))/10) + (TERMINAL_VELOCITY - abs((int)*harrier_YVel)) + (TERMINAL_VELOCITY - abs((int)*harrier_RelativeXVel));
-                    *harrier_score = (*harrier_score / HARRIER_MAX_SCORE) * 100;
+          harrier_is_boom = true;
+          *harrier_score = ((kHarrierSimWidth - abs(*harrier_safe_distance))/10) + (kTerminalVelocity - abs((int)*harrier_y_velocity)) + (kTerminalVelocity - abs((int)*harrier_relative_x_velocity));
+                    *harrier_score = (*harrier_score / kHarrierScoreMax) * 100;
           return 1;
         }
       }
@@ -245,11 +245,11 @@ int HarrierNextStep(int controller) {
 float KnotsToMps(float knots){
   return knots * 0.514;
 }
-float Apportion(float inLow, float inHigh, float in, float outLow, float outHigh){
-  if(inHigh - inLow == 0)
+float Apportion(float in_low, float in_high, float in, float out_low, float out_high){
+  if(in_high - in_low == 0)
     return 0;
-  float value = (in - inLow) / (inHigh - inLow);
-  return Lerp(1 - value, outLow, outHigh);
+  float value = (in - in_low) / (in_high - in_low);
+  return Lerp(1 - value, out_low, out_high);
 }
 //manually created controller to prove the system works
 void HarrierControlController(int controller) {

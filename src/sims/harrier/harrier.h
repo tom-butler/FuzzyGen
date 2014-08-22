@@ -6,17 +6,17 @@ void HarrierInitSim(int controller);
 int HarrierNextStep(int controller);
 void HarrierControlController(int controller);
 
-extern float harrier_YPos;
-extern float harrier_XPos;
+extern float harrier_y_position;
+extern float harrier_x_position;
 extern float harrier_fuel;
 //extern float RelativeXVel;
 extern float harrier_mass;
 
-extern float harrier_safeX;
-extern float harrier_safeY;
-extern float harrier_safeWidth;
+extern float harrier_safe_x_position;
+extern float harrier_safe_y_position;
+extern float harrier_safe_width;
 
-extern int HARRIER_SIM_WIDTH;
-extern int HARRIER_SIM_HEIGHT;
+extern int kHarrierSimWidth;
+extern int kHarrierSimHeight;
 
 #endif

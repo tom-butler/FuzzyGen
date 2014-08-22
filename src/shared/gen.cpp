@@ -15,8 +15,8 @@
 using namespace std;
 
 void InitControllers() {
-  Create(POP, simInput, simOutput);
-  if(INCLUDE_CONTROL)
+  Create(kNumPop, simInput, simOutput);
+  if(kIncludeControl)
     SimControlController(0);
 }
 
@@ -35,7 +35,7 @@ void Breed() {
 
 void UpdateLog(int g){
   ostringstream ss;
-  ss << g << "," << MAX_BEST << "," << BEST << "," << MEAN << "," << LOW << "\n";
+  ss << g << "," << BEST_SCORE << "," << BEST_GEN << "," << MEAN_GEN << "," << LOW_GEN << "\n";
   string text(ss.str());
   LOG[g] = text;
 }
@@ -49,7 +49,7 @@ void WriteLog(){
     ss << "logs/gen/gen" << now << ".csv";
     output.open(ss.str().c_str());
     output << "Generation,Best Max,Gen Best,Mean,Low\n";
-    for(int i = 0; i < GENERATIONS; i++){
+    for(int i = 0; i < kNumGenerations; i++){
       output << LOG[i];
     }
     output.close();
@@ -59,10 +59,10 @@ void WriteLog(){
     ss << "logs/controller/cont" << now << ".csv";
     output.open(ss.str().c_str());
     output << "Controller,Score,Mutations,Rule Number\n";
-    for(int controller = 0; controller < POP; controller++) {
+    for(int controller = 0; controller < kNumPop; controller++) {
       output << controller << ",";
       output << cont[controller].score << ",";
-      output << cont[controller].mutations << "\n";
+      output << cont[controller].num_mutations << "\n";
     }
     output.close();
     ss.str("");
@@ -72,7 +72,7 @@ void WriteLog(){
     ss << "logs/input/input" << now << ".csv";
     output.open(ss.str().c_str());
     output << "Input,Low,High\n";
-    for(int i = 0; i < NUM_INPUT; i++){
+    for(int i = 0; i < kNumInput; i++){
       output << i << ",";
       output << cont[0].input[i].low << ",";
       output << cont[0].input[i].high << "\n";
@@ -85,18 +85,18 @@ void WriteLog(){
     ss << "logs/set/set" << now << ".csv";
     output.open(ss.str().c_str());
     output << "Controller,Input,Set,Height,CentreX,Left Base,Right Base,Left Top,Right Top\n";
-    for(int controller = 0; controller < POP; controller++) {
-      for(int i = 0; i < NUM_INPUT; i++) {
-        for(int s = 0; s < cont[controller].input[i].setNum; s++) {
+    for(int controller = 0; controller < kNumPop; controller++) {
+      for(int i = 0; i < kNumInput; i++) {
+        for(int s = 0; s < cont[controller].input[i].num_sets; s++) {
           output << controller << ",";
           output << i << ",";
           output << s << ",";
           output << cont[controller].input[i].sets[s].height << ",";
-          output << cont[controller].input[i].sets[s].centreX << ",";
-          output << cont[controller].input[i].sets[s].leftBase << ",";
-          output << cont[controller].input[i].sets[s].rightBase << ",";
-          output << cont[controller].input[i].sets[s].leftTop << ",";
-          output << cont[controller].input[i].sets[s].rightTop << "\n";
+          output << cont[controller].input[i].sets[s].centre_x << ",";
+          output << cont[controller].input[i].sets[s].left_base << ",";
+          output << cont[controller].input[i].sets[s].right_base << ",";
+          output << cont[controller].input[i].sets[s].left_top << ",";
+          output << cont[controller].input[i].sets[s].right_top << "\n";
         }
       }
     }
@@ -129,20 +129,19 @@ void WriteLog(){
     ss << "logs/var/var" << now << ".csv";
     output.open(ss.str().c_str());
     //genetic
-    output << "POP," << POP << "\n";
-    output << "GENERATIONS," << GENERATIONS << "\n";
-    output << "ANCESTOR," << ANCESTOR << "\n";
-    output << "VARIANCE," << VARIANCE << "\n";
-    output << "MUT_CHANCE," << MUT_CHANCE << "\n";
-    output << "BEST," << BEST << "\n";
-    output << "BEST_CONT," << BEST_CONT << "\n";
-    output << "INCLUDE_CONTROL," << INCLUDE_CONTROL << "\n";
-    output << "MEAN," << MEAN << "\n";
-    output << "LOW," << LOW << "\n";
-    output << "LOGGING," << LOGGING << "\n";
+    output << "POP," << kNumPop << "\n";
+    output << "GENERATIONS," << kNumGenerations << "\n";
+    output << "ANCESTOR," << kNumAncestor << "\n";
+    output << "VARIANCE," << kVariance << "\n";
+    output << "MUT_CHANCE," << kMutationChance << "\n";
+    output << "BEST," << BEST_GEN << "\n";
+    output << "BEST_CONT," << BEST_GEN_CONTROLLER << "\n";
+    output << "INCLUDE_CONTROL," << kIncludeControl << "\n";
+    output << "MEAN," << MEAN_GEN << "\n";
+    output << "LOW," << LOW_GEN << "\n";
 
     //fuzzy
-    output << "NUM_INPUT," << NUM_INPUT << "\n";
+    output << "NUM_INPUT," << kNumInput << "\n";
 
     output.close();
     ss.str("");

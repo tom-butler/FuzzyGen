@@ -18,20 +18,20 @@ void DrawPendulumSets(int window) {
   glClear(GL_COLOR_BUFFER_BIT);
   
   //Y
-  DrawBestCollection(-1,0.5, 0.5f, "Angle", cont[BEST_CONT].input[0]);
+  DrawBestCollection(-1,0.5, 0.5f, "Angle", cont[BEST_GEN_CONTROLLER].input[0]);
   DrawCollection(-1,0.5, 0.5f, "Angle", cont[controller].input[0]);
   DrawPlot(-1, 0.5, 0.5f);
-  DrawBestCollection(-1,0, 0.5f, "Centre Distance", cont[BEST_CONT].input[1]);
+  DrawBestCollection(-1,0, 0.5f, "Centre Distance", cont[BEST_GEN_CONTROLLER].input[1]);
   DrawCollection(-1,0, 0.5f, "Centre Distance", cont[controller].input[1]);
   DrawPlot(-1, 0, 0.5f);
-  DrawBestCollection(-1,-0.5, 0.5f, "Cart Velocity", cont[BEST_CONT].input[2]);
+  DrawBestCollection(-1,-0.5, 0.5f, "Cart Velocity", cont[BEST_GEN_CONTROLLER].input[2]);
   DrawCollection(-1,-0.5, 0.5f, "Cart Velocity", cont[controller].input[2]);
   DrawPlot(-1, -0.5, 0.5f);
   //rules
   DrawRules(-0.5f, 0.95f, controller, 0);
   //draw accumulator
   DrawPlot(-1, -0.999, 1);
-  PrintFloat(-0.3,-0.99,"Rules",cont[controller].output[0].ruleNum);
+  PrintFloat(-0.3,-0.99,"Rules",cont[controller].output[0].num_rules);
   DrawAccumulator(-1, -0.999, "Force", cont[controller].output[0]);
 
 }
@@ -44,13 +44,13 @@ void DrawPendulumSim(int window) {
   glColor3f(1.0f,0.0f,0.0f);
   PrintFloat(0.5, 0.5f ,"Generation"   , generation);
   PrintFloat(0.5, 0.45f,"Controller"   , controller);
-  PrintFloat(0.5, 0.4f ,"Mutations"    , cont[controller].mutations);
-  PrintFloat(0.5, 0.35f,"Active Rules" , cont[controller].output[0].active );  
+  PrintFloat(0.5, 0.4f ,"Mutations"    , cont[controller].num_mutations);
+  PrintFloat(0.5, 0.35f,"Active Rules" , cont[controller].output[0].num_active );  
   PrintFloat(0.5, 0.3f ,"Sim Speed"    , 10 - (speed / 1000));
-  PrintFloat(0.5, 0.25f,"MAX BEST"     , MAX_BEST);
-  PrintFloat(0.5, 0.2f ,"BEST"         , BEST);
-  PrintFloat(0.5, 0.15f,"MEAN"         , MEAN);
-  PrintFloat(0.5, 0.1f ,"LOW"          , LOW);
+  PrintFloat(0.5, 0.25f,"MAX BEST"     , BEST_SCORE);
+  PrintFloat(0.5, 0.2f ,"BEST"         , BEST_GEN_SCORE);
+  PrintFloat(0.5, 0.15f,"MEAN"         , MEAN_GEN);
+  PrintFloat(0.5, 0.1f ,"LOW"          , LOW_GEN);
 
   PrintFloat(0.5, 0.05f ,"Score"       , pendulum_score);
   PrintFloat(0.5, 0.0f  ,"Angle"       , cont[controller].input[0].value );
@@ -89,10 +89,10 @@ void DrawPendulumSim(int window) {
   DrawCircle(x + 0.08, -0.9, 0.05);
 
   //pendulum
-  float rodLength = ROD_LENGTH / 5;
+  float rod_length = kRodLength / 5;
   float angle = DegToRad(90 - cont[controller].input[0].value);
-  float xx = x + rodLength * cos(angle);
-  float yy = -0.8 + rodLength * sin(angle);
+  float xx = x + rod_length * cos(angle);
+  float yy = -0.8 + rod_length * sin(angle);
   //thrust
   glBegin(GL_LINES);
     glVertex2f(x, -0.8);

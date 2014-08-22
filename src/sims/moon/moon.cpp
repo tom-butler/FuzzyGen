@@ -60,8 +60,8 @@ static Accumulator moon_thrustSet = {0, kMaxThrust, 0.0f, 0, 0, 0, 0, 0, 0};
 
 void MoonCreateVars(){
   //sim input vars
-  NUM_INPUT = 4;
-  simInput = new FuzzyVar[NUM_INPUT];
+  kNumInput = 4;
+  simInput = new FuzzyVar[kNumInput];
 
   simInput[0] = moon_heightSet;
   simInput[1] = moon_y_velocitySet;
@@ -69,20 +69,20 @@ void MoonCreateVars(){
   simInput[3] = moon_safe_distanceSet;
 
   //sim output vars
-  NUM_OUTPUT = 2;
-  simOutput = new Accumulator[NUM_OUTPUT];
+  kNumOutput = 2;
+  simOutput = new Accumulator[kNumOutput];
   //thrust accumulator
   simOutput[0] = moon_thrustSet;
   simOutput[0].vars = new short int[2];
   simOutput[0].vars[0] = 0;
   simOutput[0].vars[1] = 1;
-  simOutput[0].varsNum = 2;
+  simOutput[0].num_vars = 2;
   //side thrust accumulator
   simOutput[1] = moon_side_thrust_amount_set;
   simOutput[1].vars = new short int[2];
   simOutput[1].vars[0] = 2;
   simOutput[1].vars[1] = 3;
-  simOutput[1].varsNum = 2;
+  simOutput[1].num_vars = 2;
 }
 
 void MoonInitSim(int controller) {
@@ -96,7 +96,7 @@ void MoonInitSim(int controller) {
   moon_score = &cont[controller].score;
 
   //define sim variables
-  if(RANDOM_START){
+  if(kRandomStart){
     *moon_height = kSafeHeight + GetRandInt(0, 250);
     *moon_y_velocity = GetRandFloat(-kMaxStartVel, kMaxStartVel);
     *moon_x_velocity = GetRandFloat(-kMaxStartVel, kMaxStartVel);

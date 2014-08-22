@@ -19,22 +19,22 @@ void DrawSim() {
     sim = glutGetWindow();
     sets = glutCreateWindow("Sets");
     isInit = true;
-    if(SIM == MOONLANDER)
+    if(kSim == kMoonLanderSim)
       InitMoonDraw();
-    else if(SIM == HARRIER)
+    else if(kSim == kHarrierSim)
       InitHarrierDraw();
-    else if(SIM == PENDULUM)
+    else if(kSim == kPendulumCartSim)
       InitPendulumDraw();
   }
-  if(SIM == MOONLANDER){
+  if(kSim == kMoonLanderSim){
     DrawMoonSets(sets);
     DrawMoonSim(sim);
   }
-  else if(SIM == HARRIER){
+  else if(kSim == kHarrierSim){
     DrawHarrierSets(sets);
     DrawHarrierSim(sim);
   }
-  else if(SIM == PENDULUM){
+  else if(kSim == kPendulumCartSim){
     DrawPendulumSets(sets);
     DrawPendulumSim(sim);
   }

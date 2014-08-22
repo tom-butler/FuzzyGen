@@ -16,57 +16,59 @@ using namespace std;
   //define the standard options ----------------
 
   //genetic
-  short int POP = 1000;
-  short int GENERATIONS = 1000;
-  bool INCLUDE_CONTROL = false;
-  bool LOGGING = true;
-  bool RANDOM_START = false;
-  bool ELITISM = false;
+  short int kNumPop               = 1000;
+  short int kNumGenerations       = 1000;
+  bool kIncludeControl            = false;
+  bool kLogging                   = true;
+  bool kRandomStart               = false;
+  bool kElitism                   = false;
 
-  bool FORCE_RELATIONAL = false;
-  float FORCE_OVERLAP = 0.3f; //0 for none
-  bool FORCE_COVERAGE = true;
+  bool kForceSetRelationship      = false;
+  float kForceSetOverlap          = 0.3f; //0 for none
+  bool kForceSetCoverage          = true;
 
   //mutation
-  float MUT_CHANCE = 0.4f;
-  float VARIANCE = 0.10f;
+  float kMutationChance           = 0.4f;
+  float kVariance                 = 0.10f;
 
-  bool MUT_COL_INITIAL = true;
-  bool MUT_COL_GROW = true;
-  bool MUT_COL_SLIDE = true;
-  bool MUT_COL_ADD = true;
+  bool kCollectionInitialMutaion  = true;
+  bool kCollectionGrowMutation    = true;
+  bool kCollectionSlideMutation   = true;
+  bool kCollectionAddMutation     = true;
 
-  bool MUT_SET_INITIAL = true;
-  bool MUT_SET_NUM = true;
-  bool MUT_SET_GROW_TOP = true;
-  bool MUT_SET_GROW_BOT = true;
-  bool MUT_SET_SLIDE = true;
-  bool MUT_SET_SLIDE_TOP = true;
-  bool MUT_SET_SLIDE_BOT = true;
-  bool MUT_SET_ADD = true;
+  bool kSetInitialMutation        = true;
+  bool kSetNumberMutation         = true;
+  bool kSetGrowTopMutation        = true;
+  bool kSetGrowBottomMutation     = true;
+  bool kSetSlideMutation          = true;
+  bool kSetSlideTopMutation       = true;
+  bool kSetSlideBottomMutation    = true;
+  bool kSetAddMutation            = true;
 
-  bool MUT_RULE_RAND = true;
-  bool MUT_RULE_ADDALL = true;
+  bool kRuleRandomMutation        = true;
+  bool kRuleAddAllMutation        = true;
 
   //fuzzy
-  short int MIN_NUM_SETS = 2;
-  short int MAX_NUM_SETS = 3;
-  float HEIGHT_LOW = 0.5;
-  float HEIGHT_HIGH = 1;
+  short int kNumSetsMin           = 2;
+  short int kNumSetsMax           = 3;
+  float     kSetHeightMin         = 0.5;
+  float     kSetHeightMax         = 1;
 
-  short int SIM = MOONLANDER;
+  short int kSim                  = kMoonLanderSim;
 
   //runtime variables ---------------------------
-  short int NUM_INPUT = 0;
-  short int NUM_OUTPUT = 0;
-  bool GUI = false;
-  short int ANCESTOR = POP/2;
-  short int MAX_BEST = 0;
-  short int BEST = 0; 
-  short int BEST_CONT = 0;
-  float MEAN = 0.0f;
-  int LOW = 0;
-  int random = 0;
+  short int kNumInput             = 0;
+  short int kNumOutput            = 0;
+  short int kNumAncestor          = kNumPop / 2;
+
+  short int BEST_SCORE            = 0;
+  short int BEST_GEN              = 0;
+  short int BEST_GEN_SCORE        = 0;
+  short int BEST_GEN_CONTROLLER   = 0;
+  float     MEAN_GEN              = 0.0f;
+  int       LOW_GEN               = 0;
+
+  int random                      = 0;
 
   string *LOG;
   FuzzyVar  *simInput;
@@ -80,9 +82,9 @@ void InitSystem() {
 
   SimCreateSim();
   //init system variables
-  cont = new Controller[POP];
-  if(LOGGING)
-    LOG = new string[GENERATIONS];
+  cont = new Controller[kNumPop];
+  if(kLogging)
+    LOG = new string[kNumGenerations];
 }
 int InitTest(int test) {
   ifstream file;
@@ -98,30 +100,30 @@ int InitTest(int test) {
     string key = strtok((char *) line.c_str(),",");
     string value = strtok(NULL,",");
     if(key == "POP")
-      POP = atoi(value.c_str());
+      kNumPop = atoi(value.c_str());
     else if(key == "PARENTS")
-      ANCESTOR = POP * atof(value.c_str());
+      kNumAncestor = kNumPop * atof(value.c_str());
     else if(key == "GENERATIONS")
-      GENERATIONS = atoi(value.c_str());
+      kNumGenerations = atoi(value.c_str());
     else if(key == "VARIANCE")
-      VARIANCE = atof(value.c_str());
+      kVariance = atof(value.c_str());
     else if(key == "MUT_CHANCE")
-      MUT_CHANCE = atof(value.c_str());
+      kMutationChance = atof(value.c_str());
     else if(key == "INCLUDE_CONTROL")
-      INCLUDE_CONTROL = atoi(value.c_str());
+      kIncludeControl = atoi(value.c_str());
     else if(key == "LOGGING")
-      LOGGING = atoi(value.c_str());
+      kLogging = atoi(value.c_str());
     else if(key == "NUM_INPUT")
-      NUM_INPUT = atoi(value.c_str());
+      kNumInput = atoi(value.c_str());
     else if(key == "SIM")
-      SIM = atoi(value.c_str());
+      kSim = atoi(value.c_str());
   }
   file.close();
   return 0;
 }
 
 //get a random integer between two low and high
-short int GetRandInt(short int low, short int high){
+short int GetRandInt(short int low, short int high) {
   return (rand() % ((high + 1) - low)) + low;
 }
 
@@ -140,36 +142,36 @@ float Intersect(float x1, float y1, float x2, float y2, float value) {
   return Lerp(v, y1, y2);
 }
 
-void ForceVarBounds(int controller, int var){
+void ForceVarBounds(int controller, int var) {
   Set last;
-  for(int i = 0; i < cont[controller].input[var].setNum; ++i){
+  for(int i = 0; i < cont[controller].input[var].num_sets; ++i){
     Set set = cont[controller].input[var].sets[i];
 
-    if(FORCE_COVERAGE){
-      if(i == 0 && set.centreX - set.leftTop != cont[controller].input[var].low){
-        set.leftTop = set.centreX - cont[controller].input[var].low;
-        set.leftBase = set.leftTop;
+    if(kForceSetCoverage){
+      if(i == 0 && set.centre_x - set.left_top != cont[controller].input[var].low){
+        set.left_top = set.centre_x - cont[controller].input[var].low;
+        set.left_base = set.left_top;
       }
-      if(i == cont[controller].input[var].setNum -1 && set.centreX + set.rightTop != cont[controller].input[var].high){
-        set.rightTop = cont[controller].input[var].high -  set.centreX;
-        set.rightBase = set.rightTop;
+      if(i == cont[controller].input[var].num_sets -1 && set.centre_x + set.right_top != cont[controller].input[var].high){
+        set.right_top = cont[controller].input[var].high -  set.centre_x;
+        set.right_base = set.right_top;
       }
     }
 
     //check overlap
-    if(FORCE_OVERLAP > 0.0f){
+    if(kForceSetOverlap > 0.0f){
       if(i == 0)
         last = set;
       else{
         //if the sets overlap less that FORCE_OVERLAP stretch them out
-        if((last.centreX + last.rightBase - set.centreX - set.leftBase < (last.rightBase) * FORCE_OVERLAP) ||
-           (last.centreX + last.rightBase - set.centreX - set.leftBase < (set.leftBase) * FORCE_OVERLAP)){
+        if((last.centre_x + last.right_base - set.centre_x - set.left_base < (last.right_base) * kForceSetOverlap) ||
+           (last.centre_x + last.right_base - set.centre_x - set.left_base < (set.left_base) * kForceSetOverlap)){
           //find the centre of the two sets
-          float centre = last.centreX + ((set.centreX - last.centreX)/2);
-          float overlap1 = (last.rightBase) * FORCE_OVERLAP;
-          float overlap2 = (set.leftBase) * FORCE_OVERLAP;
-          last.rightBase = centre - last.centreX + overlap1;
-          set.leftBase = set.centreX - centre + overlap2;
+          float centre = last.centre_x + ((set.centre_x - last.centre_x)/2);
+          float overlap1 = (last.right_base) * kForceSetOverlap;
+          float overlap2 = (set.left_base) * kForceSetOverlap;
+          last.right_base = centre - last.centre_x + overlap1;
+          set.left_base = set.centre_x - centre + overlap2;
           cont[controller].input[var].sets[i-1] = last;
         }
         last = set;
@@ -177,35 +179,35 @@ void ForceVarBounds(int controller, int var){
     }
 
     //ensure they are in bounds
-    if(set.centreX < cont[controller].input[var].low)
-      set.centreX = cont[controller].input[var].low;
-    if(set.centreX > cont[controller].input[var].high)
-      set.centreX = cont[controller].input[var].high;
+    if(set.centre_x < cont[controller].input[var].low)
+      set.centre_x = cont[controller].input[var].low;
+    if(set.centre_x > cont[controller].input[var].high)
+      set.centre_x = cont[controller].input[var].high;
 
-    if(set.centreX - set.leftTop < cont[controller].input[var].low)
-      set.leftTop = set.centreX - cont[controller].input[var].low;
-    if(set.centreX + set.rightTop > cont[controller].input[var].high)
-      set.rightTop = cont[controller].input[var].high - set.centreX;
+    if(set.centre_x - set.left_top < cont[controller].input[var].low)
+      set.left_top = set.centre_x - cont[controller].input[var].low;
+    if(set.centre_x + set.right_top > cont[controller].input[var].high)
+      set.right_top = cont[controller].input[var].high - set.centre_x;
 
     //force set formation
-    if(set.leftTop > set.leftBase)
-      set.leftBase = set.leftTop;
-    if(set.rightTop > set.rightBase)
-      set.rightBase = set.rightTop;
+    if(set.left_top > set.left_base)
+      set.left_base = set.left_top;
+    if(set.right_top > set.right_base)
+      set.right_base = set.right_top;
 
-    if(set.centreX - set.leftBase < cont[controller].input[var].low)
-      set.leftBase = set.centreX - cont[controller].input[var].low;
-    if(set.centreX + set.rightBase > cont[controller].input[var].high)
-      set.rightBase = cont[controller].input[var].high - set.centreX;
+    if(set.centre_x - set.left_base < cont[controller].input[var].low)
+      set.left_base = set.centre_x - cont[controller].input[var].low;
+    if(set.centre_x + set.right_base > cont[controller].input[var].high)
+      set.right_base = cont[controller].input[var].high - set.centre_x;
 
-    if(set.leftTop < 0)
-      set.leftTop = 0;
-    if(set.rightTop < 0)
-      set.rightTop = 0;
-    if(set.leftBase < 0)
-      set.leftBase = 0;
-    if(set.rightBase < 0)
-      set.rightBase = 0;
+    if(set.left_top < 0)
+      set.left_top = 0;
+    if(set.right_top < 0)
+      set.right_top = 0;
+    if(set.left_base < 0)
+      set.left_base = 0;
+    if(set.right_base < 0)
+      set.right_base = 0;
 
 
     //check relational compliance
@@ -219,22 +221,21 @@ void ResetAccumulator(int controller, int accumulator) {
   delete[] cont[controller].output[accumulator].value;
   delete[] cont[controller].output[accumulator].scale;
 
-  cont[controller].output[accumulator].value = new float[cont[controller].output[accumulator].ruleNum];
-  cont[controller].output[accumulator].scale = new float[cont[controller].output[accumulator].ruleNum];
+  cont[controller].output[accumulator].value = new float[cont[controller].output[accumulator].num_rules];
+  cont[controller].output[accumulator].scale = new float[cont[controller].output[accumulator].num_rules];
 
   cont[controller].output[accumulator].output = 0.0f;
-  cont[controller].output[accumulator].active = 0;
+  cont[controller].output[accumulator].num_active = 0;
 }
-float DegToRad(float deg){
+float DegToRad(float deg) {
   return (deg * 3.14159 / 180.0);
 }
 
-float RadToDeg(float rad){
+float RadToDeg(float rad) {
   return (rad * 180.0 / 3.14159);
 }
 
-double sqr(double value)
-{
+double sqr(double value) {
   return value*value;
 }
 

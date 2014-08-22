@@ -52,38 +52,38 @@ int main(int argc, char *argv[])
 }
 
 void GALoop() {
-  for (int g = 0; g < GENERATIONS; g++) {
-    BEST = 0;
+  for (int g = 0; g < kNumGenerations; g++) {
+    BEST_GEN_SCORE = 0;
     cout << "Running Sim                    ";
-    for(int c = 0; c < POP; ++c) {
+    for(int c = 0; c < kNumPop; ++c) {
       InitSimulation(c);
       int result = -1;
       while(result == -1) {
         result = RunSim(c);
       }
-      if(cont[c].score > MAX_BEST){
-        MAX_BEST = cont[c].score;
+      if(cont[c].score > BEST_SCORE){
+        BEST_SCORE = cont[c].score;
       }
-      if(cont[c].score > BEST){
-        BEST = cont[c].score;
-        BEST_CONT = c;
+      if(cont[c].score > BEST_GEN_SCORE){
+        BEST_GEN_SCORE = cont[c].score;
+        BEST_GEN_CONTROLLER = c;
       }
       
     }
     cout << "OK\n";
-    if(g < GENERATIONS-1){
+    if(g < kNumGenerations - 1){
       cout << "Breeding Controllers           ";
       Breed();
       cout << "OK\n";
     }
-    cout << "GEN " << g << " MAX BEST " << MAX_BEST << " BEST " << BEST << " MEAN " << MEAN << " LOW " << LOW << "\n";
+    cout << "GEN " << g << " MAX BEST " << BEST_SCORE << " BEST " << BEST_GEN_SCORE << " MEAN " << MEAN_GEN << " LOW " << LOW_GEN << "\n";
     //log data
-    if(LOGGING){
+    if(kLogging){
       UpdateLog(g);
     }
   }
   //save the log to file
-  if(LOGGING){
+  if(kLogging){
     cout << "SAVING LOGS                    ";
     WriteLog();
     cout  << "OK\n";

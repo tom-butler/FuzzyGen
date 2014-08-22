@@ -6,37 +6,37 @@
 #include "pendulum\pendulum.h"
 
 void SimCreateSim(){
-  if(SIM == MOONLANDER)
+  if(kSim == kMoonLanderSim)
     MoonCreateVars();
-  else if(SIM == HARRIER)
+  else if(kSim == kHarrierSim)
     HarrierCreateVars();
-  else if(SIM == PENDULUM)
+  else if(kSim == kPendulumCartSim)
     PendulumCreateVars();
 }
 
 void SimInitSim(int controller) {
-  if(SIM == MOONLANDER)
+  if(kSim == kMoonLanderSim)
     MoonInitSim(controller);
-  else if(SIM == HARRIER)
+  else if(kSim == kHarrierSim)
     HarrierInitSim(controller);
-  else if(SIM == PENDULUM)
+  else if(kSim == kPendulumCartSim)
     PendulumInitSim(controller);
 }
 
 int SimNextStep(int controller) {
-  if(SIM == MOONLANDER)
+  if(kSim == kMoonLanderSim)
     return MoonNextStep(controller);
-  else if(SIM == HARRIER)
+  else if(kSim == kHarrierSim)
     return HarrierNextStep(controller);
-  else if(SIM == PENDULUM)
+  else if(kSim == kPendulumCartSim)
     return PendulumNextStep(controller);
 }
 
 void SimControlController(int controller) {
-  if(SIM == MOONLANDER)
+  if(kSim == kMoonLanderSim)
     MoonControlController(controller);
-  else if(SIM == HARRIER)
+  else if(kSim == kHarrierSim)
     HarrierControlController(controller);
-  else if(SIM == PENDULUM)
+  else if(kSim == kPendulumCartSim)
     PendulumControlController(controller);
 }

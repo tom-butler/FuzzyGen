@@ -22,31 +22,31 @@ void DrawHarrierSets(int window) {
   glClear(GL_COLOR_BUFFER_BIT);
   
   //Y
-  DrawBestCollection(-1,0, 0.5f, "Height", cont[BEST_CONT].input[0]);
+  DrawBestCollection(-1,0, 0.5f, "Height", cont[BEST_GEN_CONTROLLER].input[0]);
   DrawCollection(-1,0, 0.5f, "Height", cont[controller].input[0]);
   DrawPlot(-1, 0, 0.5f);
-  DrawBestCollection(-1,0.5f, 0.5f, "Y Velocity", cont[BEST_CONT].input[1]);
+  DrawBestCollection(-1,0.5f, 0.5f, "Y Velocity", cont[BEST_GEN_CONTROLLER].input[1]);
   DrawCollection(-1,0.5f, 0.5f, "Y Velocity", cont[controller].input[1]);
   DrawPlot(-1, 0.5f, 0.5f);
   //rules
   DrawRules(-0.5f, 0.95f, controller, 0);
   //draw accumulator
   DrawPlot(-1, -0.999, 1);
-  PrintFloat(-0.9,-0.5,"Rules",cont[controller].output[0].ruleNum);
+  PrintFloat(-0.9,-0.5,"Rules",cont[controller].output[0].num_rules);
   DrawAccumulator(-1, -0.999, "Throttle", cont[controller].output[0]);
 
   //X
-  DrawBestCollection(0,0, 0.5f, "X Velocity", cont[BEST_CONT].input[2]);
+  DrawBestCollection(0,0, 0.5f, "X Velocity", cont[BEST_GEN_CONTROLLER].input[2]);
   DrawCollection(0,0, 0.5f, "X Velocity", cont[controller].input[2]);
   DrawPlot(0, 0, 0.5f);
-  DrawBestCollection(0,0.5f, 0.5f, "SafeDist", cont[BEST_CONT].input[3]);
+  DrawBestCollection(0,0.5f, 0.5f, "SafeDist", cont[BEST_GEN_CONTROLLER].input[3]);
   DrawCollection(0,0.5f, 0.5f, "SafeDist", cont[controller].input[3]);
   DrawPlot(0, 0.5f, 0.5f);
   //rules
   DrawRules(0.5f, 0.95f, controller, 1);
   //draw accumulator
   DrawPlot(0, -0.999, 1);
-  PrintFloat(0,-0.5,"Rules",cont[controller].output[0].ruleNum);
+  PrintFloat(0,-0.5,"Rules",cont[controller].output[0].num_rules);
   DrawAccumulator(0, -0.999, "Vector", cont[controller].output[1]);
 }
 
@@ -58,12 +58,12 @@ void DrawHarrierSim(int window) {
   glColor3f(1.0f,0.0f,0.0f);
   PrintFloat(0.5, 0.5f,"Generation",generation);
   PrintFloat(0.5, 0.45f,"Controller",controller);
-  PrintFloat(0.5, 0.4f,"Mutations",cont[controller].mutations);
-  PrintFloat(0.5, 0.35f,"Active Rules",cont[controller].output[0].active );  
-  PrintFloat(0.5, 0.15f, "MAX BEST", MAX_BEST);
-  PrintFloat(0.5, 0.1f, "BEST", BEST);
-  PrintFloat(0.5, 0.05f, "MEAN", MEAN);
-  PrintFloat(0.5, 0.0f, "LOW", LOW);
+  PrintFloat(0.5, 0.4f,"Mutations",cont[controller].num_mutations);
+  PrintFloat(0.5, 0.35f,"Active Rules",cont[controller].output[0].num_active );  
+  PrintFloat(0.5, 0.15f, "MAX BEST", BEST_SCORE);
+  PrintFloat(0.5, 0.1f, "BEST", BEST_GEN_SCORE);
+  PrintFloat(0.5, 0.05f, "MEAN", MEAN_GEN);
+  PrintFloat(0.5, 0.0f, "LOW", LOW_GEN);
   PrintFloat(0.5, 0.2f, "Sim Speed", 10 - (speed / 1000));
 
   PrintFloat(0.5, 0.3f,"Fuel",harrier_fuel );
@@ -80,27 +80,27 @@ void DrawHarrierSim(int window) {
 
   //ship
 
-  float DrawSafeX = ConvertToSimScale(harrier_safeX, 0, HARRIER_SIM_WIDTH);
-  float DrawSafeY = ConvertToSimScale(harrier_safeY, 0, HARRIER_SIM_HEIGHT);
-  float DrawSafeWidth = ConvertToSimScale(harrier_safeWidth, 0, HARRIER_SIM_WIDTH);
+  float draw_safe_x_position = ConvertToSimScale(harrier_safe_x_position, 0, kHarrierSimWidth);
+  float draw_safe_y_position = ConvertToSimScale(harrier_safe_y_position, 0, kHarrierSimHeight);
+  float draw_safe_width = ConvertToSimScale(harrier_safe_width, 0, kHarrierSimWidth);
 
   //ship
   glColor3f(0.3514f,0.3514f, 0.3514f); //dark grey
   glBegin(GL_POLYGON);
-    glVertex2f(DrawSafeX - DrawSafeWidth/2      , -1);
-    glVertex2f(DrawSafeX - DrawSafeWidth/2 *1.01, DrawSafeY);
-    glVertex2f(DrawSafeX + DrawSafeWidth/2, DrawSafeY);
-    glVertex2f(DrawSafeX + DrawSafeWidth/2 *0.01, -1);
+    glVertex2f(draw_safe_x_position - draw_safe_width/2      , -1);
+    glVertex2f(draw_safe_x_position - draw_safe_width/2 *1.01, draw_safe_y_position);
+    glVertex2f(draw_safe_x_position + draw_safe_width/2, draw_safe_y_position);
+    glVertex2f(draw_safe_x_position + draw_safe_width/2 *0.01, -1);
   glEnd();
   //landing
   glColor3f(1.0f,1.0f,0); //red
   glBegin(GL_LINES);
-    glVertex2f(DrawSafeX - DrawSafeWidth/2, DrawSafeY);
-    glVertex2f(DrawSafeX + DrawSafeWidth/2, DrawSafeY);
+    glVertex2f(draw_safe_x_position - draw_safe_width/2, draw_safe_y_position);
+    glVertex2f(draw_safe_x_position + draw_safe_width/2, draw_safe_y_position);
   glEnd();
 
-  float x = ConvertToSimScale(harrier_XPos, 0, HARRIER_SIM_WIDTH);
-  float y = ConvertToSimScale(harrier_YPos, 0, HARRIER_SIM_HEIGHT);
+  float x = ConvertToSimScale(harrier_x_position, 0, kHarrierSimWidth);
+  float y = ConvertToSimScale(harrier_y_position, 0, kHarrierSimHeight);
 
   //harrier
   glColor3f(1,1,1);

@@ -7,17 +7,17 @@
 typedef struct {
   short int *sets;
   float output;
-  bool isActive;
+  bool is_active;
 } Rule;
 
 //set
 typedef struct {
   float height;
-  float centreX;
-  float leftBase;
-  float rightBase;
-  float leftTop;
-  float rightTop;
+  float centre_x;
+  float left_base;
+  float right_base;
+  float left_top;
+  float right_top;
 } Set;
 
 //var
@@ -26,26 +26,26 @@ typedef struct {
   short int high;
   float value;
   Set *sets;
-  short int setNum;
+  short int num_sets;
 } FuzzyVar;
 
 typedef struct {
   short int low;
   short int high;
   float output;
-  short int active;
+  short int num_active;
   float *value;
   float *scale;
   Rule *rules;
-  short int ruleNum;
+  short int num_rules;
   short int *vars;
-  short int varsNum;
+  short int num_vars;
 } Accumulator;
 
 //Controller
 typedef struct {
   short int score;
-  short int mutations;
+  short int num_mutations;
   FuzzyVar *input;
   Accumulator *output;
 } Controller;
@@ -55,60 +55,62 @@ typedef struct {
 //options-------------------------------------------
 
 //genetic
-extern short int POP;
-extern short int GENERATIONS;
-extern bool INCLUDE_CONTROL;
-extern bool LOGGING;
-extern bool RANDOM_START;
-extern bool ELITISM;
+extern short int  kNumPop;
+extern short int  kNumGenerations;
+extern short int  kNumAncestor;
+extern bool       kIncludeControl;
+extern bool       kLogging;
+extern bool       kRandomStart;
+extern bool       kElitism;
 
-extern bool FORCE_RELATIONAL;
-extern float FORCE_OVERLAP;
-extern bool FORCE_COVERAGE;
+extern bool kForceSetRelationship;
+extern float kForceSetOverlap;
+extern bool kForceSetCoverage;
+
 //Mutations
-extern float MUT_CHANCE;
-extern float VARIANCE;
+extern float      kMutationChance;
+extern float      kVariance;
 
-extern bool MUT_COL_INITIAL;
-extern bool MUT_COL_GROW;
-extern bool MUT_COL_SLIDE;
-extern bool MUT_COL_ADD;
+extern bool       kCollectionInitialMutaion;
+extern bool       kCollectionGrowMutation;
+extern bool       kCollectionSlideMutation;
+extern bool       kCollectionAddMutation;
 
-extern bool MUT_SET_INITIAL;
-extern bool MUT_SET_NUM;
-extern bool MUT_SET_GROW_TOP;
-extern bool MUT_SET_GROW_BOT;
-extern bool MUT_SET_SLIDE;
-extern bool MUT_SET_SLIDE_TOP;
-extern bool MUT_SET_SLIDE_BOT;
-extern bool MUT_SET_ADD;
+extern bool       kSetInitialMutation;
+extern bool       kSetNumberMutation;
+extern bool       kSetGrowTopMutation;
+extern bool       kSetGrowBottomMutation;
+extern bool       kSetSlideMutation;
+extern bool       kSetSlideTopMutation;
+extern bool       kSetSlideBottomMutation;
+//extern bool       kSetAddMutation;
 
-extern bool MUT_RULE_RAND;
-extern bool MUT_RULE_ADDALL;
+extern bool       kRuleRandomMutation;
+extern bool       kRuleAddAllMutation;
 
 //fuzzy
-extern short int NUM_INPUT;
-extern short int NUM_OUTPUT;
-extern short int MIN_NUM_SETS;
-extern short int MAX_NUM_SETS;
-extern float HEIGHT_LOW;
-extern float HEIGHT_HIGH;
+extern short int  kNumInput;
+extern short int  kNumOutput;
+extern short int  kNumSetsMin;
+extern short int  kNumSetsMax;
+extern float      kSetHeightMin;
+extern float      kSetHeightMax;
 
 //sims
-extern short int SIM;
-const short int MOONLANDER = 0;
-const short int PENDULUM = 1;
-const short int HARRIER = 2;
+extern short int  kSim;
+const short int   kMoonLanderSim = 0;
+const short int   kPendulumCartSim = 1;
+const short int   kHarrierSim = 2;
 
 //runtime --------------------------------
-extern bool GUI;
-extern short int ANCESTOR;
-extern short int MAX_BEST;
-extern short int BEST;
-extern short int BEST_CONT;
-extern float MEAN;
-extern int LOW;
-extern int random;
+extern short int  BEST_SCORE;
+extern short int  BEST_GEN;
+extern short int  BEST_GEN_SCORE;
+extern short int  BEST_GEN_CONTROLLER;
+extern float      MEAN_GEN;
+extern int        LOW_GEN;
+
+extern int        random;
 
 extern std::string *LOG;
 extern FuzzyVar *simInput;

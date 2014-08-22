@@ -13,7 +13,7 @@ void SelectControllers() {
   float mean = 0;
   int low = 1000;
   //get mean
-  for( int i = 0; i < POP; i++){
+  for( int i = 0; i < kNumPop; i++){
     mean += cont[i].score;
     if(low > cont[i].score)
       low = cont[i].score;
@@ -21,26 +21,26 @@ void SelectControllers() {
 
   // use mean
   if(mean > 0)
-    mean /= POP;
+    mean /= kNumPop;
   else
     mean = 0;
 
-  MEAN = mean;
-  LOW = low;
+  MEAN_GEN = mean;
+  LOW_GEN = low;
   //SelectHalf();
   SelectMean(mean);
 }
 void SelectHalf(){
 //select highest half
 
-  int parents[ANCESTOR];
+  int parents[kNumAncestor];
   int c = 0;
 
   //get parents
-  for(int i = 0; i < ANCESTOR; i++){
+  for(int i = 0; i < kNumAncestor; i++){
     int max = 0;
     int highest = 0;
-    for(int j = 0; j < POP; j++){
+    for(int j = 0; j < kNumPop; j++){
       if(cont[j].score >= max)
         highest = j;
     }
@@ -53,12 +53,12 @@ void SelectHalf(){
 }
 
 void SelectMean(float mean){
-  int parents[ANCESTOR];
+  int parents[kNumAncestor];
   int c = 0;
 //select for breeding
-  for(int i = 0; i < POP; ++i) {
+  for(int i = 0; i < kNumPop; ++i) {
     if(cont[i].score >= mean){
-      if(c < ANCESTOR){
+      if(c < kNumAncestor){
         cont[i].score = -2;
         parents[c] = i;
         c++;
@@ -66,19 +66,19 @@ void SelectMean(float mean){
     }
   }
 //if not enough are selected
-  if(c < ANCESTOR -1){
-    int unmarked[(POP-1) - c];
-    //int unmarked[(POP-1) - c];
-    memset(unmarked, 0, (POP-1) - c);
+  if(c < kNumAncestor - 1){
+    int unmarked[(kNumPop-1) - c];
+    //int unmarked[(kNumPop-1) - c];
+    memset(unmarked, 0, (kNumPop-1) - c);
     int index = 0;
-    for(int i = 0; i < POP; ++i){
+    for(int i = 0; i < kNumPop; ++i){
       if(cont[i].score != -2){
         unmarked[index] = i ;
         index++;
       }
     }
-    while(c < ANCESTOR){
-      random = GetRandInt(0,(POP-1) - c);
+    while(c < kNumAncestor){
+      random = GetRandInt(0,(kNumPop-1) - c);
       cont[unmarked[random]].score = -2;
       parents[c] = unmarked[random];
       c++;
