@@ -55,28 +55,38 @@ void GALoop() {
   for (int g = 0; g < kNumGenerations; g++) {
     BEST_GEN_SCORE = 0;
     cout << "Running Sim                    ";
+
     for(int c = 0; c < kNumPop; ++c) {
-      InitSimulation(c);
-      int result = -1;
-      while(result == -1) {
-        result = RunSim(c);
+      //if we have random tests run several times
+      int score = 0;
+      for(int t = 0; t < kRandomStartTests; t++) {
+        InitSimulation(c);
+        int result = -1;
+        while(result == -1) {
+          result = RunSim(c);
+        }
+        score += cont[c].score;
       }
-      if(cont[c].score > BEST_SCORE){
-        BEST_SCORE = cont[c].score;
-      }
-      if(cont[c].score > BEST_GEN_SCORE){
-        BEST_GEN_SCORE = cont[c].score;
-        BEST_GEN_CONTROLLER = c;
-      }
-      
+
+        if(kRandomStart) //average random start scores
+          cont[c].score = score / kRandomStartTests;
+
+        if(cont[c].score > BEST_SCORE)
+          BEST_SCORE = cont[c].score;
+
+        if(cont[c].score > BEST_GEN_SCORE) {
+          BEST_GEN_SCORE = cont[c].score;
+          BEST_GEN_CONTROLLER = c;
+        }
     }
+    
     cout << "OK\n";
     if(g < kNumGenerations - 1){
       cout << "Breeding Controllers           ";
       Breed();
       cout << "OK\n";
     }
-    cout << "GEN " << g << " MAX BEST " << BEST_SCORE << " BEST " << BEST_GEN_SCORE << " MEAN " << MEAN_GEN << " LOW " << LOW_GEN << "\n";
+    cout << "GEN " << g << " MAX BEST " << BEST_SCORE << " BEST " << BEST_GEN_SCORE << " AVG " << AVG_GEN << " LOW " << LOW_GEN << "\n";
     //log data
     if(kLogging){
       UpdateLog(g);

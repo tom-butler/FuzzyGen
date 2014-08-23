@@ -9,5 +9,5 @@ extern float pendulum_cart_position;
 extern float pendulum_angular_position;
 extern float kRodLength;
 extern short int kPendulumSimWidth;
-extern short int pendulum_score;
+extern float pendulum_score;
 #endif

@@ -33,7 +33,9 @@ const float kMaxStartDistance = 0.5f;
 const short int kPendulumAngleMin = -90;
 const short int kPendulumAngleMax = 90;
 const short int kThrustMax = 10;
-short int kPendulumSimWidth = 1000;
+const float kTimeMax = 10.0f;
+const short int kPendulumMaxScore = (kTimeMax / pendulum_time_step) * (kPendulumSimWidth/2);
+short int kPendulumSimWidth = 2;
 static short int kTerminalVelocity = 100;
 
 float * thrust;
@@ -42,7 +44,7 @@ float * centre_dist;
 float * velocity;
 short int * score;
 
-short int pendulum_score;
+float pendulum_score;
 
 float pendulum_pos;
 
@@ -91,7 +93,7 @@ void PendulumInitSim(int controller) {
   pendulum_cart_position = 0;
   pendulum_time_tag = 0;
   if(kRandomStart){
-    *angle = 90 + GetRandInt(-kThrustMax, kThrustMax);
+    *angle = 0 + GetRandInt(-kThrustMax, kThrustMax);
     *velocity = GetRandFloat(-kMaxStartVelocity, kMaxStartVelocity);
     *centre_dist = 0;//GetRandFloat(-kMaxStartDistance, kMaxStartDistance);
   }
@@ -100,15 +102,14 @@ void PendulumInitSim(int controller) {
     *velocity = 0;
     *centre_dist = 0;
   }
-  pendulum_score = 0;
-
-      pendulum_angular_position = DegToRad(*angle);
-      pendulum_cart_position = *centre_dist ;
+  pendulum_score = 0.0f;
+  pendulum_angular_position = DegToRad(*angle);
+  pendulum_cart_position = *centre_dist ;
 }
 
 int PendulumNextStep(int controller) {
   if(*angle > -90 && *angle < 90 ) {
-    if(pendulum_time_tag < 10){
+    if(pendulum_time_tag < kTimeMax){
 
       pendulum_current_force = *thrust;
       IntegrateForwardEuler(pendulum_time_step);
@@ -120,20 +121,20 @@ int PendulumNextStep(int controller) {
 
       //cap it at the bounds
       ForceBounds(*angle,kPendulumAngleMin,kPendulumAngleMax);
-      ForceBounds(*centre_dist, -1, 1);
+      ForceBounds(*centre_dist, -kPendulumSimWidth/2, kPendulumSimWidth/2);
       ForceBounds(*velocity, -kTerminalVelocity, kTerminalVelocity);
 
       //move 
-      pendulum_score += (kPendulumSimWidth/2 - abs(*centre_dist)) /100;
+      pendulum_score += (kPendulumSimWidth/2 - abs(*centre_dist));
       return -1;
     }
     else {
-      *score = pendulum_score;
+      *score = pendulum_score;//(pendulum_score / kPendulumMaxScore) * 100;
       return 0;
     }
   }
   else {
-    *score = pendulum_score;
+    *score = pendulum_score;//(pendulum_score / kPendulumMaxScore) * 100;
     return 1;
   }
 }

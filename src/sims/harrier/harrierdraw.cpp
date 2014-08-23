@@ -62,7 +62,7 @@ void DrawHarrierSim(int window) {
   PrintFloat(0.5, 0.35f,"Active Rules",cont[controller].output[0].num_active );  
   PrintFloat(0.5, 0.15f, "MAX BEST", BEST_SCORE);
   PrintFloat(0.5, 0.1f, "BEST", BEST_GEN_SCORE);
-  PrintFloat(0.5, 0.05f, "MEAN", MEAN_GEN);
+  PrintFloat(0.5, 0.05f, "Average", AVG_GEN);
   PrintFloat(0.5, 0.0f, "LOW", LOW_GEN);
   PrintFloat(0.5, 0.2f, "Sim Speed", 10 - (speed / 1000));
 

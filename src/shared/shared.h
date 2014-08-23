@@ -61,6 +61,7 @@ extern short int  kNumAncestor;
 extern bool       kIncludeControl;
 extern bool       kLogging;
 extern bool       kRandomStart;
+extern short int  kRandomStartTests;
 extern bool       kElitism;
 
 extern bool kForceSetRelationship;
@@ -102,12 +103,18 @@ const short int   kMoonLanderSim = 0;
 const short int   kPendulumCartSim = 1;
 const short int   kHarrierSim = 2;
 
+//selection method
+extern short int kSelect;
+const short int kSelectHalf = 0;
+const short int kSelectAvg = 1;
+const short int kSelectMean = 2;
+
 //runtime --------------------------------
 extern short int  BEST_SCORE;
 extern short int  BEST_GEN;
 extern short int  BEST_GEN_SCORE;
 extern short int  BEST_GEN_CONTROLLER;
-extern float      MEAN_GEN;
+extern float      AVG_GEN;
 extern int        LOW_GEN;
 
 extern int        random;

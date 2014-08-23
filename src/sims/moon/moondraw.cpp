@@ -55,7 +55,7 @@ void DrawMoonSim(int window) {
   PrintFloat(0.5, 0.25f,"Thrust", cont[controller].output[0].output);
   PrintFloat(0.5, 0.2f, "Sim Speed", 10 - (speed / 1000));
   PrintFloat(0.5, 0.15f, "BEST", BEST_GEN_SCORE);
-  PrintFloat(0.5, 0.1f, "MEAN", MEAN_GEN);
+  PrintFloat(0.5, 0.1f, "Average", AVG_GEN);
   PrintFloat(0.5, 0.05f, "LOW", LOW_GEN);
 
   //DRAW SIM

@@ -6,33 +6,39 @@
 #include "..\h\breed.h"
 
 void SelectHalf();
-void SelectMean(float mean);
+void SelectAvg(float avg);
 
 void SelectControllers() {
   //get some stats on this gen
-  float mean = 0;
+  float avg = 0;
   int low = 1000;
-  //get mean
+  
+  //get average
   for( int i = 0; i < kNumPop; i++){
-    mean += cont[i].score;
+    avg += cont[i].score;
     if(low > cont[i].score)
       low = cont[i].score;
   }
 
-  // use mean
-  if(mean > 0)
-    mean /= kNumPop;
+  // use avg
+  if(avg > 0)
+    avg /= kNumPop;
   else
-    mean = 0;
+    avg = 0;
 
-  MEAN_GEN = mean;
+  AVG_GEN = avg;
   LOW_GEN = low;
-  //SelectHalf();
-  SelectMean(mean);
-}
-void SelectHalf(){
-//select highest half
 
+  if(kSelect == kSelectHalf)
+    SelectHalf();
+  else if(kSelect == kSelectAvg)
+    SelectAvg(avg);
+  else if(kSelect == kSelectAvg)
+    SelectAvg(avg);
+}
+
+//selects the highest scoring half
+void SelectHalf(){
   int parents[kNumAncestor];
   int c = 0;
 
@@ -52,12 +58,13 @@ void SelectHalf(){
   BreedControllers(parents);
 }
 
-void SelectMean(float mean){
+//select
+void SelectAvg(float avg){
   int parents[kNumAncestor];
   int c = 0;
 //select for breeding
   for(int i = 0; i < kNumPop; ++i) {
-    if(cont[i].score >= mean){
+    if(cont[i].score >= avg){
       if(c < kNumAncestor){
         cont[i].score = -2;
         parents[c] = i;

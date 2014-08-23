@@ -35,7 +35,7 @@ void Breed() {
 
 void UpdateLog(int g){
   ostringstream ss;
-  ss << g << "," << BEST_SCORE << "," << BEST_GEN << "," << MEAN_GEN << "," << LOW_GEN << "\n";
+  ss << g << "," << BEST_SCORE << "," << BEST_GEN << "," << AVG_GEN << "," << LOW_GEN << "\n";
   string text(ss.str());
   LOG[g] = text;
 }
@@ -137,7 +137,7 @@ void WriteLog(){
     output << "BEST," << BEST_GEN << "\n";
     output << "BEST_CONT," << BEST_GEN_CONTROLLER << "\n";
     output << "INCLUDE_CONTROL," << kIncludeControl << "\n";
-    output << "MEAN," << MEAN_GEN << "\n";
+    output << "MEAN," << AVG_GEN << "\n";
     output << "LOW," << LOW_GEN << "\n";
 
     //fuzzy

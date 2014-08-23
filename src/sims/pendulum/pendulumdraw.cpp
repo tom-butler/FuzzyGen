@@ -49,7 +49,7 @@ void DrawPendulumSim(int window) {
   PrintFloat(0.5, 0.3f ,"Sim Speed"    , 10 - (speed / 1000));
   PrintFloat(0.5, 0.25f,"MAX BEST"     , BEST_SCORE);
   PrintFloat(0.5, 0.2f ,"BEST"         , BEST_GEN_SCORE);
-  PrintFloat(0.5, 0.15f,"MEAN"         , MEAN_GEN);
+  PrintFloat(0.5, 0.15f,"Average"         , AVG_GEN);
   PrintFloat(0.5, 0.1f ,"LOW"          , LOW_GEN);
 
   PrintFloat(0.5, 0.05f ,"Score"       , pendulum_score);

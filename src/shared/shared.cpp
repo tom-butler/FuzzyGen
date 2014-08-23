@@ -16,11 +16,12 @@ using namespace std;
   //define the standard options ----------------
 
   //genetic
-  short int kNumPop               = 1000;
+  short int kNumPop               = 200;
   short int kNumGenerations       = 1000;
   bool kIncludeControl            = false;
   bool kLogging                   = true;
-  bool kRandomStart               = false;
+  bool kRandomStart               = true;
+  short int kRandomStartTests     = 3;
   bool kElitism                   = false;
 
   bool kForceSetRelationship      = false;
@@ -54,7 +55,8 @@ using namespace std;
   float     kSetHeightMin         = 0.5;
   float     kSetHeightMax         = 1;
 
-  short int kSim                  = kMoonLanderSim;
+  short int kSim                  = kPendulumCartSim;
+  short int kSelect               = kSelectAvg;
 
   //runtime variables ---------------------------
   short int kNumInput             = 0;
@@ -65,7 +67,7 @@ using namespace std;
   short int BEST_GEN              = 0;
   short int BEST_GEN_SCORE        = 0;
   short int BEST_GEN_CONTROLLER   = 0;
-  float     MEAN_GEN              = 0.0f;
+  float     AVG_GEN               = 0.0f;
   int       LOW_GEN               = 0;
 
   int random                      = 0;
@@ -85,6 +87,8 @@ void InitSystem() {
   cont = new Controller[kNumPop];
   if(kLogging)
     LOG = new string[kNumGenerations];
+  if(!kRandomStart)
+    kRandomStartTests = 0;
 }
 int InitTest(int test) {
   ifstream file;

@@ -24,6 +24,8 @@ int state = 1;
 int result = -1;
 int tick = 0;
 
+int multi_run_score = 0;
+int run = kRandomStartTests;
 void ProcessNormalKeys(unsigned char key, int x, int y);
 void ProcessSpecialKeys(int key, int x, int y);
 void Display(void);
@@ -151,11 +153,21 @@ void Display() {
       }
     }
     else{
-      if(controller < kNumPop - 1){
+      if(kRandomStart && run < kRandomStartTests) {
+        multi_run_score += cont[controller].score;
+        InitSimulation(controller);
+        result = -1;
+        state = 2;
+        run++;
+      }
+      else if(controller < kNumPop - 1){
+        if(kRandomStart)
+          cont[controller].score = multi_run_score / kRandomStartTests;
         controller++;
         InitSimulation(controller);
         result = -1;
         state = 2;
+        run = 0;
       }
       else{
         state = 4;//breed
@@ -169,16 +181,23 @@ void Display() {
 }
 
 void RunAll(){
-  BEST_SCORE = 0;
+  BEST_GEN_SCORE = 0;
   for(int c = 0; c < kNumPop; ++c) {
-    InitSimulation(c);
-    int result = -1;
-    while(result == -1) {
-      result = RunSim(c);
+    int score = 0;
+    for(int t = 0; t < kRandomStartTests; t++) {
+      InitSimulation(c);
+      int result = -1;
+      while(result == -1) {
+        result = RunSim(c);
+      }
+      score += cont[c].score;
     }
-    if(cont[c].score > BEST_SCORE){
+    if(kRandomStart) //average random start scores
+      cont[c].score = score / kRandomStartTests;
+
+    if(cont[c].score > BEST_SCORE)
       BEST_SCORE = cont[c].score;
-    }
+
     if(cont[c].score > BEST_GEN_SCORE){
       BEST_GEN_SCORE = cont[c].score;
       BEST_GEN_CONTROLLER = c;
