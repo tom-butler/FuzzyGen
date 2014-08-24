@@ -71,15 +71,18 @@ void GALoop() {
         if(kRandomStart) //average random start scores
           cont[c].score = score / kRandomStartTests;
 
-        if(cont[c].score > BEST_SCORE)
+        if(cont[c].score > BEST_SCORE) {
           BEST_SCORE = cont[c].score;
+          CleanController(BEST_CONTROLLER);
+          CopyController(cont[c],BEST_CONTROLLER);
+        }
 
         if(cont[c].score > BEST_GEN_SCORE) {
           BEST_GEN_SCORE = cont[c].score;
           BEST_GEN_CONTROLLER = c;
         }
     }
-    
+
     cout << "OK\n";
     if(g < kNumGenerations - 1){
       cout << "Breeding Controllers           ";

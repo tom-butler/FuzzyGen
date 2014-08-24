@@ -16,10 +16,10 @@ void DrawMoonSets(int window) {
   glClear(GL_COLOR_BUFFER_BIT);
   
   //Y
-  DrawBestCollection(-1,0, 0.5f, "Y Velocity", cont[BEST_GEN_CONTROLLER].input[1]);
+  DrawBestCollection(-1,0, 0.5f, "Y Velocity", BEST_CONTROLLER.input[1]);
   DrawCollection(-1,0, 0.5f, "Y Velocity", cont[controller].input[1]);
   DrawPlot(-1, 0, 0.5f);
-  DrawBestCollection(-1,0.5f, 0.5f, "Height", cont[BEST_GEN_CONTROLLER].input[0]);
+  DrawBestCollection(-1,0.5f, 0.5f, "Height", BEST_CONTROLLER.input[0]);
   DrawCollection(-1,0.5f, 0.5f, "Height", cont[controller].input[0]);
   DrawPlot(-1, 0.5f, 0.5f);
   //rules
@@ -29,10 +29,10 @@ void DrawMoonSets(int window) {
   DrawAccumulator(-1, -0.999, "Throttle", cont[controller].output[0]);
 
   //X
-  DrawBestCollection(0,0, 0.5f, "X Velocity", cont[BEST_GEN_CONTROLLER].input[2]);
+  DrawBestCollection(0,0, 0.5f, "X Velocity", BEST_CONTROLLER.input[2]);
   DrawCollection(0,0, 0.5f, "X Velocity", cont[controller].input[2]);
   DrawPlot(0, 0, 0.5f);
-  DrawBestCollection(0,0.5f, 0.5f, "SafeDist", cont[BEST_GEN_CONTROLLER].input[3]);
+  DrawBestCollection(0,0.5f, 0.5f, "SafeDist", BEST_CONTROLLER.input[3]);
   DrawCollection(0,0.5f, 0.5f, "SafeDist", cont[controller].input[3]);
   DrawPlot(0, 0.5f, 0.5f);
   //rules

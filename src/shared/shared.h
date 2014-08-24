@@ -111,6 +111,7 @@ const short int kSelectMean = 2;
 
 //runtime --------------------------------
 extern short int  BEST_SCORE;
+extern Controller BEST_CONTROLLER;
 extern short int  BEST_GEN;
 extern short int  BEST_GEN_SCORE;
 extern short int  BEST_GEN_CONTROLLER;
@@ -122,7 +123,7 @@ extern int        random;
 extern std::string *LOG;
 extern FuzzyVar *simInput;
 extern Accumulator *simOutput;
-extern FuzzyVar * simFitness;
+extern FuzzyVar *simFitness;
 extern Controller *cont;
 
 void InitSystem();
@@ -139,4 +140,6 @@ float DegToRad(float deg);
 float RadToDeg(float rad);
 double sqr(double value);
 void ForceBounds(float &var, float min, float max);
+void CleanController(Controller &controller);
+void CopyController(Controller parent, Controller &child);
 #endif

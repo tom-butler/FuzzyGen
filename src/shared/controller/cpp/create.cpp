@@ -41,6 +41,7 @@ void CreateControllers(int num_controllers, FuzzyVar input[], Accumulator output
       CreateRules(i, o);
     }
   }
+  CopyController(cont[0], BEST_CONTROLLER);
 }
 
 //@TODO: REPLACE MULTIPLE ARRAY CALLS WITH POINTER

@@ -123,15 +123,6 @@ void Display() {
     
     if(tick % speed == 0) {
       result = RunSim(controller);
-      if(!bestOnly && result != -1) {
-        if(cont[controller].score > BEST_SCORE){
-          BEST_SCORE = cont[controller].score;
-        }
-        if(cont[controller].score > BEST_GEN_SCORE){
-          BEST_GEN_SCORE = cont[controller].score;
-          BEST_GEN_CONTROLLER = controller;
-        }
-      }
     }
   }
 
@@ -161,8 +152,21 @@ void Display() {
         run++;
       }
       else if(controller < kNumPop - 1){
-        if(kRandomStart)
+        if(kRandomStart) {
           cont[controller].score = multi_run_score / kRandomStartTests;
+          multi_run_score = 0;
+        }
+        if(!bestOnly) {
+          if(cont[controller].score > BEST_SCORE){
+            BEST_SCORE = cont[controller].score;
+            CleanController(BEST_CONTROLLER);
+            CopyController(cont[controller], BEST_CONTROLLER);
+          }
+          if(cont[controller].score > BEST_GEN_SCORE){
+            BEST_GEN_SCORE = cont[controller].score;
+            BEST_GEN_CONTROLLER = controller;
+          }
+        }
         controller++;
         InitSimulation(controller);
         result = -1;
@@ -183,20 +187,23 @@ void Display() {
 void RunAll(){
   BEST_GEN_SCORE = 0;
   for(int c = 0; c < kNumPop; ++c) {
-    int score = 0;
+    int multiscore = 0;
     for(int t = 0; t < kRandomStartTests; t++) {
       InitSimulation(c);
       int result = -1;
       while(result == -1) {
         result = RunSim(c);
       }
-      score += cont[c].score;
+      multiscore += cont[c].score;
     }
     if(kRandomStart) //average random start scores
-      cont[c].score = score / kRandomStartTests;
+      cont[c].score = multiscore / kRandomStartTests;
 
-    if(cont[c].score > BEST_SCORE)
+    if(cont[c].score > BEST_SCORE) {
       BEST_SCORE = cont[c].score;
+      CleanController(BEST_CONTROLLER);
+      CopyController(cont[controller], BEST_CONTROLLER);
+    }
 
     if(cont[c].score > BEST_GEN_SCORE){
       BEST_GEN_SCORE = cont[c].score;

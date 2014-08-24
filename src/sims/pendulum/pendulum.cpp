@@ -129,12 +129,12 @@ int PendulumNextStep(int controller) {
       return -1;
     }
     else {
-      *score = pendulum_score;//(pendulum_score / kPendulumMaxScore) * 100;
+      *score = (pendulum_score / kPendulumMaxScore) * 100;
       return 0;
     }
   }
   else {
-    *score = pendulum_score;//(pendulum_score / kPendulumMaxScore) * 100;
+    *score = (pendulum_score / kPendulumMaxScore) * 100;
     return 1;
   }
 }

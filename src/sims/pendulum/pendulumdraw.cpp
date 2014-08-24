@@ -18,13 +18,13 @@ void DrawPendulumSets(int window) {
   glClear(GL_COLOR_BUFFER_BIT);
   
   //Y
-  DrawBestCollection(-1,0.5, 0.5f, "Angle", cont[BEST_GEN_CONTROLLER].input[0]);
+  DrawBestCollection(-1,0.5, 0.5f, "Angle", BEST_CONTROLLER.input[0]);
   DrawCollection(-1,0.5, 0.5f, "Angle", cont[controller].input[0]);
   DrawPlot(-1, 0.5, 0.5f);
-  DrawBestCollection(-1,0, 0.5f, "Centre Distance", cont[BEST_GEN_CONTROLLER].input[1]);
+  DrawBestCollection(-1,0, 0.5f, "Centre Distance", BEST_CONTROLLER.input[1]);
   DrawCollection(-1,0, 0.5f, "Centre Distance", cont[controller].input[1]);
   DrawPlot(-1, 0, 0.5f);
-  DrawBestCollection(-1,-0.5, 0.5f, "Cart Velocity", cont[BEST_GEN_CONTROLLER].input[2]);
+  DrawBestCollection(-1,-0.5, 0.5f, "Cart Velocity", BEST_CONTROLLER.input[2]);
   DrawCollection(-1,-0.5, 0.5f, "Cart Velocity", cont[controller].input[2]);
   DrawPlot(-1, -0.5, 0.5f);
   //rules
@@ -49,14 +49,14 @@ void DrawPendulumSim(int window) {
   PrintFloat(0.5, 0.3f ,"Sim Speed"    , 10 - (speed / 1000));
   PrintFloat(0.5, 0.25f,"MAX BEST"     , BEST_SCORE);
   PrintFloat(0.5, 0.2f ,"BEST"         , BEST_GEN_SCORE);
-  PrintFloat(0.5, 0.15f,"Average"         , AVG_GEN);
+  PrintFloat(0.5, 0.15f,"Average"      , AVG_GEN);
   PrintFloat(0.5, 0.1f ,"LOW"          , LOW_GEN);
 
-  PrintFloat(0.5, 0.05f ,"Score"       , pendulum_score);
+  //PrintFloat(0.5, 0.05f ,"Score"       , pendulum_score);
   PrintFloat(0.5, 0.0f  ,"Angle"       , cont[controller].input[0].value );
   PrintFloat(0.5, -0.05f,"Centre Dist" , cont[controller].input[1].value);
   PrintFloat(0.5, -0.1f,"Cart Velocity", cont[controller].input[2].value);
-  PrintFloat(0.5, -0.15f,"Thrust"       , cont[controller].output[0].output);
+  PrintFloat(0.5, -0.15f,"Thrust"      , cont[controller].output[0].output);
 
   //ground
   glColor3f(0.8f,0.8f,0.8f);
