@@ -35,7 +35,7 @@ const short int kPendulumAngleMax = 90;
 const short int kThrustMax = 10;
 const float kTimeMax = 10.0f;
 const short int kPendulumMaxScore = (kTimeMax / pendulum_time_step) * (kPendulumSimWidth/2);
-short int kPendulumSimWidth = 2;
+short int kPendulumSimWidth = 200;
 static short int kTerminalVelocity = 100;
 
 float * thrust;
@@ -50,7 +50,7 @@ float pendulum_pos;
 
 //throttle accumulator
 static FuzzyVar pendulum_angle_set  = {kPendulumAngleMin, kPendulumAngleMax, 0.1f, 0, 0};
-static FuzzyVar centre_distance_set = {-kPendulumSimWidth/2, kPendulumSimWidth/2, 0, 0, 0};
+static FuzzyVar centre_distance_set = {-kPendulumSimWidth / 2, kPendulumSimWidth / 2, 0, 0, 0};
 static FuzzyVar cart_velocity_set = {-kTerminalVelocity, kTerminalVelocity, 0, 0, 0};
 
 //output
@@ -95,7 +95,7 @@ void PendulumInitSim(int controller) {
   if(kRandomStart){
     *angle = 0 + GetRandInt(-kThrustMax, kThrustMax);
     *velocity = GetRandFloat(-kMaxStartVelocity, kMaxStartVelocity);
-    *centre_dist = 0;//GetRandFloat(-kMaxStartDistance, kMaxStartDistance);
+    *centre_dist = GetRandFloat(-kPendulumSimWidth / 20, kPendulumSimWidth / 20);
   }
   else{
     *angle = 0;// + GetRandInt(-5, 5);
@@ -104,7 +104,7 @@ void PendulumInitSim(int controller) {
   }
   pendulum_score = 0.0f;
   pendulum_angular_position = DegToRad(*angle);
-  pendulum_cart_position = *centre_dist ;
+  pendulum_cart_position = *centre_dist  / (kPendulumSimWidth / 2);
 }
 
 int PendulumNextStep(int controller) {
@@ -116,12 +116,12 @@ int PendulumNextStep(int controller) {
 
       //pendulum_angular_position += DegToRad(GetRandFloat(-1,1));
       *angle = RadToDeg(pendulum_angular_position);
-      *centre_dist = pendulum_cart_position;
+      *centre_dist = pendulum_cart_position * (kPendulumSimWidth / 2);
       *velocity = pendulum_cart_velocity ;
 
       //cap it at the bounds
       ForceBounds(*angle,kPendulumAngleMin,kPendulumAngleMax);
-      ForceBounds(*centre_dist, -kPendulumSimWidth/2, kPendulumSimWidth/2);
+      ForceBounds(*centre_dist, -kPendulumSimWidth / 2, kPendulumSimWidth / 2);
       ForceBounds(*velocity, -kTerminalVelocity, kTerminalVelocity);
 
       //move 

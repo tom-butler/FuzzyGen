@@ -25,7 +25,7 @@ using namespace std;
   bool kElitism                   = false;
 
   bool kForceSetRelationship      = false;
-  float kForceSetOverlap          = 0.3f; //0 for none
+  float kForceSetOverlap          = 0.4f; //0 for none
   bool kForceSetCoverage          = true;
 
   //mutation

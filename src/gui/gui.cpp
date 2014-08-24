@@ -201,14 +201,16 @@ void RunAll(){
 
     if(cont[c].score > BEST_SCORE) {
       BEST_SCORE = cont[c].score;
-      CleanController(BEST_CONTROLLER);
-      CopyController(cont[controller], BEST_CONTROLLER);
     }
 
     if(cont[c].score > BEST_GEN_SCORE){
       BEST_GEN_SCORE = cont[c].score;
       BEST_GEN_CONTROLLER = c;
     }
+  }
+  if(BEST_GEN_SCORE > BEST_SCORE) {
+    CleanController(BEST_CONTROLLER);
+    CopyController(cont[BEST_GEN_CONTROLLER], BEST_CONTROLLER);
   }
 }
 
