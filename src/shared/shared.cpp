@@ -31,6 +31,7 @@ using namespace std;
   //mutation
   float kMutationChance           = 0.4f;
   float kVariance                 = 0.10f;
+  float kBreedPercent             = 0.3f;
 
   bool kCollectionInitialMutaion  = true;
   bool kCollectionGrowMutation    = true;
@@ -57,6 +58,7 @@ using namespace std;
 
   short int kSim                  = kPendulumCartSim;
   short int kSelect               = kSelectAvg;
+  short int kBreed                = kBisexual;
 
   //runtime variables ---------------------------
   short int kNumInput             = 0;
@@ -255,7 +257,7 @@ void CleanController(Controller &controller) {
     for(int r = 0; r < controller.output[o].num_rules; r++) {
       delete [] controller.output[o].rules[r].sets;
     }
-    delete [] controller.output[o].vars;
+    //delete [] controller.output[o].vars;
     delete [] controller.output[o].rules;
     delete [] controller.output[o].scale;
     delete [] controller.output[o].value;
@@ -272,12 +274,14 @@ void CopyController(Controller parent, Controller &child) {
   child.input  = new FuzzyVar[kNumInput];
   copy(parent.input , parent.input + kNumInput, child.input);
   for(int i = 0; i < kNumInput; i++) {
-    child.input[i].sets = new Set[parent.input[i].num_sets];
-    copy(parent.input[i].sets, parent.input[i].sets + parent.input[i].num_sets, child.input[i].sets);
+    child.input[i] = parent.input[i];
+    child.input[i].sets = new Set[kNumSetsMax];
+    copy(parent.input[i].sets, parent.input[i].sets + kNumSetsMax, child.input[i].sets);
   }
   child.output = new Accumulator[kNumOutput];
   copy(parent.output, parent.output + kNumOutput, child.output);
   for(int o = 0; o < kNumOutput; o++){
+    child.output[o] = parent.output[o];
     child.output[o].value = new float[parent.output[o].num_rules];
     copy(parent.output[o].value, parent.output[o].value + parent.output[o].num_rules, child.output[o].value);
     
@@ -287,12 +291,14 @@ void CopyController(Controller parent, Controller &child) {
     child.output[o].rules = new Rule[parent.output[o].num_rules];
     copy(parent.output[o].rules, parent.output[o].rules + parent.output[o].num_rules, child.output[o].rules);
     
-    child.output[o].vars = new short int[parent.output[o].num_vars];
-    copy(parent.output[o].vars , parent.output[o].vars + parent.output[o].num_vars , child.output[o].vars);
+    //child.output[o].vars = new short int[parent.output[o].num_vars];
+    //copy(parent.output[o].vars , parent.output[o].vars + parent.output[o].num_vars , child.output[o].vars);
+    
+
     for(int r = 0; r < parent.output[o].num_rules; r++){
+      child.output[o].rules[r] = parent.output[o].rules[r];
       child.output[o].rules[r].sets = new short int[parent.output[o].num_vars];
       copy(parent.output[o].rules[r].sets , parent.output[o].rules[r].sets + parent.output[o].num_vars , child.output[o].rules[r].sets);
-    
     }
   }
 

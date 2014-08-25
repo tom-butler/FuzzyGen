@@ -33,8 +33,6 @@ void SelectControllers() {
     SelectHalf();
   else if(kSelect == kSelectAvg)
     SelectAvg(avg);
-  else if(kSelect == kSelectAvg)
-    SelectAvg(avg);
 }
 
 //selects the highest scoring half
@@ -73,9 +71,8 @@ void SelectAvg(float avg){
     }
   }
 //if not enough are selected
-  if(c < kNumAncestor - 1){
+  if(c < kNumAncestor){
     int unmarked[(kNumPop-1) - c];
-    //int unmarked[(kNumPop-1) - c];
     memset(unmarked, 0, (kNumPop-1) - c);
     int index = 0;
     for(int i = 0; i < kNumPop; ++i){
@@ -84,13 +81,13 @@ void SelectAvg(float avg){
         index++;
       }
     }
+    int offset = c;
     while(c < kNumAncestor){
-      random = GetRandInt(0,(kNumPop-1) - c);
+      random = GetRandInt(0,(kNumPop-1) - offset);
       cont[unmarked[random]].score = -2;
       parents[c] = unmarked[random];
       c++;
     }
-    //delete [] unmarked;
   }
   BreedControllers(parents);
 

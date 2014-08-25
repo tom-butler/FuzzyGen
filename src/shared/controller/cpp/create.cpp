@@ -41,7 +41,11 @@ void CreateControllers(int num_controllers, FuzzyVar input[], Accumulator output
       CreateRules(i, o);
     }
   }
+  //initialise the BEST CONTROLLER 
+  BEST_CONTROLLER.output = new Accumulator[kNumOutput];
+  copy(output,output + kNumOutput, BEST_CONTROLLER.output);
   CopyController(cont[0], BEST_CONTROLLER);
+
 }
 
 //@TODO: REPLACE MULTIPLE ARRAY CALLS WITH POINTER
@@ -54,10 +58,10 @@ void CreateSets(int controller, int variable,short int numSets) {
   short int centre = start;
   for(int j = 0; j < numSets; j++) {
 
-  short int lbase = (0.7 * space) + GetRandInt(0.0f, (end - start)* kVariance);
-  short int rbase = 0.7 * space + GetRandInt(0.0f, (end - start)* kVariance);
-  short int ltop = 0.3 * space + GetRandInt(0.0f, (end - start)* kVariance);
-  short int rtop = 0.3 * space + GetRandInt(0.0f, (end - start)* kVariance);
+    short int lbase = (0.7 * space) + GetRandInt(0.0f, (end - start)* kVariance);
+    short int rbase = 0.7 * space + GetRandInt(0.0f, (end - start)* kVariance);
+    short int ltop = 0.3 * space + GetRandInt(0.0f, (end - start)* kVariance);
+    short int rtop = 0.3 * space + GetRandInt(0.0f, (end - start)* kVariance);
 
     //check set variables for compliance
     if(centre - ltop < start) {

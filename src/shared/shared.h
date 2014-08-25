@@ -71,6 +71,7 @@ extern bool kForceSetCoverage;
 //Mutations
 extern float      kMutationChance;
 extern float      kVariance;
+extern float      kBreedPercent;
 
 extern bool       kCollectionInitialMutaion;
 extern bool       kCollectionGrowMutation;
@@ -108,6 +109,10 @@ extern short int kSelect;
 const short int kSelectHalf = 0;
 const short int kSelectAvg = 1;
 const short int kSelectMean = 2;
+
+extern short int kBreed;
+const short int kAsexual = 0;
+const short int kBisexual = 1;
 
 //runtime --------------------------------
 extern short int  BEST_SCORE;
