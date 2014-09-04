@@ -200,6 +200,6 @@ void IntegrateForwardRungeKutta4(double step)
   pendulum_time_tag += pendulum_time_step;
 }
 //manually created controller to prove the system works
-void PendulumControlController(int controller) {
+void PendulumControlController(int controller, FuzzyVar input[], Accumulator output[]) {
 
 }

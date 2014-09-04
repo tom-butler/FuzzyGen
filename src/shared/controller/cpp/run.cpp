@@ -39,7 +39,6 @@ float EvaluateRule(int controller, int accumulator, int rule){
   return best_result;
 }
 
-//@TODO: repalce sets[setID] with a pointer
 float EvaluateSet(int controller, int inputVar, int setID, int variable) {
   Set set = cont[controller].input[inputVar].sets[setID];
   //check if it is inside the set

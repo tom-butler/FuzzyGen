@@ -8,12 +8,14 @@
 
 using namespace std;
 
-void CreateSets(int controller, int variable,short int numSets);
 
 //initialisation
 void CreateControllers(int num_controllers, FuzzyVar input[], Accumulator output[]) {
 
- for(int i = 0; i < num_controllers;i++) {
+  for(int i = 0; i < num_controllers;i++) {
+    if(kIncludeControl && i == 0){
+      continue;
+    }
     //create input sets
     cont[i].input = new FuzzyVar[kNumInput];
     copy(input,input + kNumInput, cont[i].input);
@@ -48,8 +50,7 @@ void CreateControllers(int num_controllers, FuzzyVar input[], Accumulator output
 
 }
 
-//@TODO: REPLACE MULTIPLE ARRAY CALLS WITH POINTER
-void CreateSets(int controller, int variable,short int numSets) {
+void CreateSets(int controller, int variable, short int numSets) {
   //create initial variables
   short int start = cont[controller].input[variable].low;
   short int end = cont[controller].input[variable].high;

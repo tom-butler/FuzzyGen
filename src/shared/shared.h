@@ -145,6 +145,11 @@ float DegToRad(float deg);
 float RadToDeg(float rad);
 double sqr(double value);
 void ForceBounds(float &var, float min, float max);
+
 void CleanController(Controller &controller);
+void CleanAccumulators(Controller &controller);
+void CleanSets(Controller &controller);
+void CleanRules(Controller &controller, int output);
+
 void CopyController(Controller parent, Controller &child);
 #endif

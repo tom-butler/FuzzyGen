@@ -32,11 +32,11 @@ int SimNextStep(int controller) {
     return PendulumNextStep(controller);
 }
 
-void SimControlController(int controller) {
+void SimControlController(int controller, FuzzyVar input[], Accumulator output[]) {
   if(kSim == kMoonLanderSim)
-    MoonControlController(controller);
+    MoonControlController(controller,input,output);
   else if(kSim == kHarrierSim)
-    HarrierControlController(controller);
+    HarrierControlController(controller,input,output);
   else if(kSim == kPendulumCartSim)
-    PendulumControlController(controller);
+    PendulumControlController(controller,input,output);
 }

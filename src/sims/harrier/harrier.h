@@ -1,10 +1,12 @@
 #ifndef FUZZYGEN_SIMS_HARRIER_H
 #define FUZZYGEN_SIMS_HARRIER_H
 
+#include "..\..\shared\shared.h"
+
 void HarrierCreateVars();
 void HarrierInitSim(int controller);
 int HarrierNextStep(int controller);
-void HarrierControlController(int controller);
+void HarrierControlController(int controller, FuzzyVar input[], Accumulator output[]);
 
 extern float harrier_y_position;
 extern float harrier_x_position;

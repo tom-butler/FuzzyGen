@@ -18,9 +18,9 @@ using namespace std;
   //genetic
   short int kNumPop               = 200;
   short int kNumGenerations       = 1000;
-  bool kIncludeControl            = false;
+  bool kIncludeControl            = true;
   bool kLogging                   = true;
-  bool kRandomStart               = true;
+  bool kRandomStart               = false;
   short int kRandomStartTests     = 3;
   bool kElitism                   = false;
 
@@ -51,12 +51,12 @@ using namespace std;
   bool kRuleAddAllMutation        = true;
 
   //fuzzy
-  short int kNumSetsMin           = 2;
+  short int kNumSetsMin           = 3;
   short int kNumSetsMax           = 3;
   float     kSetHeightMin         = 0.5;
   float     kSetHeightMax         = 1;
 
-  short int kSim                  = kPendulumCartSim;
+  short int kSim                  = /*kHarrierSim;*/ kMoonLanderSim; /*kPendulumSim*/
   short int kSelect               = kSelectAvg;
   short int kBreed                = kBisexual;
 
@@ -252,22 +252,36 @@ void ForceBounds(float &var, float min, float max) {
   if(var > max)
     var = max;
 }
+
 void CleanController(Controller &controller) {
+  CleanAccumulators(controller);
+  CleanSets(controller);
+}
+
+void CleanAccumulators(Controller &controller){
   for(int o = 0; o < kNumOutput; o++) {
-    for(int r = 0; r < controller.output[o].num_rules; r++) {
-      delete [] controller.output[o].rules[r].sets;
-    }
-    //delete [] controller.output[o].vars;
-    delete [] controller.output[o].rules;
-    delete [] controller.output[o].scale;
-    delete [] controller.output[o].value;
+    CleanRules(controller, o);
   }
   delete [] controller.output;
-  for(int i = 0; i < kNumInput; i++) {
+}
+
+void CleanSets(Controller &controller) {
+for(int i = 0; i < kNumInput; i++) { 
     delete [] controller.input[i].sets;
   }
   delete [] controller.input;
 }
+
+void CleanRules(Controller &controller, int output) {
+    for(int r = 0; r < controller.output[output].num_rules; r++) {
+      delete [] controller.output[output].rules[r].sets;
+    }
+    delete [] controller.output[output].rules;
+    delete [] controller.output[output].scale;
+    delete [] controller.output[output].value;
+
+}
+
 void CopyController(Controller parent, Controller &child) {
   //child = new Controller;
   child = parent;

@@ -6,6 +6,7 @@
 
 #include "..\..\shared\shared.h"
 #include "..\..\gui\gui.h"
+#include "..\..\shared\controller\h\create.h"
 
 using namespace std;
 
@@ -252,91 +253,531 @@ float Apportion(float in_low, float in_high, float in, float out_low, float out_
   return Lerp(1 - value, out_low, out_high);
 }
 //manually created controller to prove the system works
-void HarrierControlController(int controller) {
+void HarrierControlController(int controller, FuzzyVar input[], Accumulator output[]) {
 
-  /*
-  //height
+    //set the iterators to -1 to ensure error if incorrectly used
+    int var = -1;
+    int set;
+    int out = -1;
+    int rule;
 
-  //landing
-  cont[controller].input[0].sets[0].height = 1;
-  cont[controller].input[0].sets[0].centreX = 0;
-  cont[controller].input[0].sets[0].leftBase = 0;
-  cont[controller].input[0].sets[0].rightBase = 50;
-  cont[controller].input[0].sets[0].leftTop = 0;
-  cont[controller].input[0].sets[0].rightTop = 25;
+  //create input sets
+  cont[controller].input = new FuzzyVar[kNumInput];
+  copy(input,input + kNumInput, cont[controller].input);
 
-  //low
-  cont[controller].input[0].sets[1].height = 1;
-  cont[controller].input[0].sets[1].centreX = 60;
-  cont[controller].input[0].sets[1].leftBase = 50;
-  cont[controller].input[0].sets[1].rightBase = 45;
-  cont[controller].input[0].sets[1].leftTop = 10;
-  cont[controller].input[0].sets[1].rightTop = 10;
+   //height
+  var++;
+  cont[controller].input[var].sets = new Set[kNumSetsMax];
+  CreateSets(controller,var,3);
+  set = -1;
+    //landing
+    set++;
+    cont[controller].input[var].sets[set].height = 1;
+    cont[controller].input[var].sets[set].centre_x = 0;
+    cont[controller].input[var].sets[set].left_base = 0;
+    cont[controller].input[var].sets[set].right_base = kHarrierSimHeight/2;
+    cont[controller].input[var].sets[set].left_top = 0;
+    cont[controller].input[var].sets[set].right_top = 25;
 
-  //high
-  cont[controller].input[0].sets[2].height = 1;
-  cont[controller].input[0].sets[2].centreX = 100;
-  cont[controller].input[0].sets[2].leftBase = 60;
-  cont[controller].input[0].sets[2].rightBase = 900;
-  cont[controller].input[0].sets[2].leftTop = 10;
-  cont[controller].input[0].sets[2].rightTop = 200;
+    //low
+    set++;
+    cont[controller].input[var].sets[set].height = 1;
+    cont[controller].input[var].sets[set].centre_x = kHarrierSimHeight/2;
+    cont[controller].input[var].sets[set].left_base = kHarrierSimHeight/4;
+    cont[controller].input[var].sets[set].right_base = kHarrierSimHeight/4;
+    cont[controller].input[var].sets[set].left_top = 10;
+    cont[controller].input[var].sets[set].right_top = 10;
 
-  //velocity
+    //high
+    set++;
+    cont[controller].input[var].sets[set].height = 1;
+    cont[controller].input[var].sets[set].centre_x = kHarrierSimHeight;
+    cont[controller].input[var].sets[set].left_base = kHarrierSimHeight/2;
+    cont[controller].input[var].sets[set].right_base = 0;
+    cont[controller].input[var].sets[set].left_top = 10;
+    cont[controller].input[var].sets[set].right_top = 0;
 
-  //up
-  cont[controller].input[1].sets[0].height = 1;
-  cont[controller].input[1].sets[0].centreX = -30;
-  cont[controller].input[1].sets[0].leftBase = 0;
-  cont[controller].input[1].sets[0].rightBase = 28;
-  cont[controller].input[1].sets[0].leftTop = 0;
-  cont[controller].input[1].sets[0].rightTop = 15;
 
-  //slow
-  cont[controller].input[1].sets[1].height = 1;
-  cont[controller].input[1].sets[1].centreX = 0;
-  cont[controller].input[1].sets[1].leftBase = 10;
-  cont[controller].input[1].sets[1].rightBase = 10;
-  cont[controller].input[1].sets[1].leftTop = 5;
-  cont[controller].input[1].sets[1].rightTop = 5;
+  //Y velocity
+  var++;
+  cont[controller].input[var].sets = new Set[kNumSetsMax];
+  CreateSets(controller,var,3);
+  set = -1;
+    //up
+    set++;
+    cont[controller].input[var].sets[set].height = 1;
+    cont[controller].input[var].sets[set].centre_x = -kTerminalVelocity;
+    cont[controller].input[var].sets[set].left_base = 0;
+    cont[controller].input[var].sets[set].right_base = kTerminalVelocity;
+    cont[controller].input[var].sets[set].left_top = 0;
+    cont[controller].input[var].sets[set].right_top = kTerminalVelocity/2;
 
-  //fast
-  cont[controller].input[1].sets[2].height = 1;
-  cont[controller].input[1].sets[2].centreX = 30;
-  cont[controller].input[1].sets[2].leftBase = 28;
-  cont[controller].input[1].sets[2].rightBase = 0;
-  cont[controller].input[1].sets[2].leftTop = 10;
-  cont[controller].input[1].sets[2].rightTop = 0;
+    //slow
+    set++;
+    cont[controller].input[var].sets[set].height = 1;
+    cont[controller].input[var].sets[set].centre_x = 0;
+    cont[controller].input[var].sets[set].left_base = kTerminalVelocity/4;
+    cont[controller].input[var].sets[set].right_base = kTerminalVelocity/4;
+    cont[controller].input[var].sets[set].left_top = kTerminalVelocity/8;
+    cont[controller].input[var].sets[set].right_top = kTerminalVelocity/8;
 
-  //rules
-  //if height landing and vel up
-   Rule r0 = {0,0,"AND",1,0, 2.0f, false};
-  //if height landing and vel slow
-   Rule r1 = {0,0,"AND",1,1, 8.0f, false};
-  //if height landing and vel fast
-   Rule r2 = {0,0,"AND",1,2, 9.0f, false};
+    //fast
+    set++;
+    cont[controller].input[var].sets[set].height = 1;
+    cont[controller].input[var].sets[set].centre_x = kTerminalVelocity;
+    cont[controller].input[var].sets[set].left_base = kTerminalVelocity;
+    cont[controller].input[var].sets[set].right_base = 0;
+    cont[controller].input[var].sets[set].left_top = kTerminalVelocity/2;
+    cont[controller].input[var].sets[set].right_top = 0;
 
-  //if height low and vel up
-   Rule r3 = {0,1,"AND",1,0, 1.0f, false};
-  //if height low and vel slow
-   Rule r4 = {0,1,"AND",1,1, 5.0f, false};
-  //if height low and vel fast
-   Rule r5 = {0,1,"AND",1,2, 7.0f, false};
+  //X velocity
+  var++;
+  cont[controller].input[var].sets = new Set[kNumSetsMax];
+  CreateSets(controller,var,2);
+  set = -1;
+    //left
+    set++;
+    cont[controller].input[var].sets[set].height = 1;
+    cont[controller].input[var].sets[set].centre_x = -kTerminalVelocity;
+    cont[controller].input[var].sets[set].left_base = 0;
+    cont[controller].input[var].sets[set].right_base = kTerminalVelocity * 1.2;
+    cont[controller].input[var].sets[set].left_top = 0;
+    cont[controller].input[var].sets[set].right_top = kTerminalVelocity * 0.75;
 
-  //if height high and vel up
-   Rule r6 = {0,2,"AND",1,0, 1.0f, false};
-  //if height high and vel slow
-   Rule r7 = {0,2,"AND",1,1, 5.0f, false};
-  //if height high and vel fast
-   Rule r8 = {0,2,"AND",1,2, 6.0f,false};
+    //right
+    set++;
+    cont[controller].input[var].sets[set].height = 1;
+    cont[controller].input[var].sets[set].centre_x = kTerminalVelocity;
+    cont[controller].input[var].sets[set].left_base = kTerminalVelocity * 1.2;
+    cont[controller].input[var].sets[set].right_base = 0;
+    cont[controller].input[var].sets[set].left_top = kTerminalVelocity * 0.75;
+    cont[controller].input[var].sets[set].right_top = 0;
 
-  cont[controller].rules[0] = r0;
-  cont[controller].rules[1] = r1;
-  cont[controller].rules[2] = r2;
-  cont[controller].rules[3] = r3;
-  cont[controller].rules[4] = r4;
-  cont[controller].rules[5] = r5;
-  cont[controller].rules[6] = r6;
-  cont[controller].rules[7] = r7;
-  cont[controller].rules[8] = r8;
-*/
+  //distance
+  var++;
+  cont[controller].input[var].sets = new Set[kNumSetsMax];
+  CreateSets(controller,var,2);
+  set = -1;
+    //left
+    set++;
+    cont[controller].input[var].sets[set].height = 1;
+    cont[controller].input[var].sets[set].centre_x = -kHarrierSimWidth/2;
+    cont[controller].input[var].sets[set].left_base = 0;
+    cont[controller].input[var].sets[set].right_base = kHarrierSimWidth * 1.25;
+    cont[controller].input[var].sets[set].left_top = 0;
+    cont[controller].input[var].sets[set].right_top = kHarrierSimWidth/8;
+
+    //right
+    set++;
+    cont[controller].input[var].sets[set].height = 1;
+    cont[controller].input[var].sets[set].centre_x = kHarrierSimWidth/2;
+    cont[controller].input[var].sets[set].left_base = kHarrierSimWidth * 1.25;
+    cont[controller].input[var].sets[set].right_base = 0;
+    cont[controller].input[var].sets[set].left_top = kHarrierSimWidth/8;
+    cont[controller].input[var].sets[set].right_top = 0;
+
+  
+  //create accumulators
+  cont[controller].output = new Accumulator[kNumOutput];
+  copy(output,output + kNumOutput, cont[controller].output);
+
+  //Main Thrust
+  out++;
+  rule = -1;
+
+  cont[controller].output[out].num_rules = 1;
+  for(int p = 0; p < cont[controller].output[out].num_vars; p++){
+    cont[controller].output[out].num_rules *= cont[controller].input[cont[controller].output[out].vars[p]].num_sets;
+  }
+  cont[controller].output[out].value = new float[cont[controller].output[out].num_rules];
+  cont[controller].output[out].scale = new float[cont[controller].output[out].num_rules];
+  cont[controller].output[out].rules = new  Rule[cont[controller].output[out].num_rules];
+  CreateRules(controller, out);
+
+//Y VEL LOW
+
+    //HEIGHT LOW
+
+      //SAFE LEFT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 1.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 3.0f;
+
+      //SAFE RIGHT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 3.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 1.0f;
+
+    //HEIGHT MED
+
+      //SAFE LEFT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 0.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 0.0f;
+
+      //SAFE RIGHT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 0.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 0.0f;
+
+    //HEIGHT HIGH
+
+      //SAFE LEFT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 0.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 0.0f;
+
+      //SAFE RIGHT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 0.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 0.0f;
+
+  //Y VEL MED
+  
+    //HEIGHT LOW
+
+      //SAFE LEFT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 0.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 0.0f;
+
+      //SAFE RIGHT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 0.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 0.0f;
+
+    //HEIGHT MED
+
+      //SAFE LEFT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 0.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 0.0f;
+
+      //SAFE RIGHT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 0.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 0.0f;
+
+    //HEIGHT HIGH
+
+      //SAFE LEFT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 0.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 0.0f;
+
+      //SAFE RIGHT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 0.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 0.0f;
+
+  //Y VEL FAST
+
+    //HEIGHT LOW
+
+      //SAFE LEFT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 0.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 0.0f;
+
+      //SAFE RIGHT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 0.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 0.0f;
+
+    //HEIGHT MED
+
+      //SAFE LEFT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 0.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 0.0f;
+
+      //SAFE RIGHT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 0.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 0.0f;
+
+    //HEIGHT HIGH
+
+      //SAFE LEFT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 0.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 0.0f;
+
+      //SAFE RIGHT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 0.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 0.0f;
+
+  //vector
+    out++;
+    rule = -1;
+
+  cont[controller].output[out].num_rules = 1;
+  for(int p = 0; p < cont[controller].output[out].num_vars; p++){
+    cont[controller].output[out].num_rules *= cont[controller].input[cont[controller].output[out].vars[p]].num_sets;
+  }
+  cont[controller].output[out].value = new float[cont[controller].output[out].num_rules];
+  cont[controller].output[out].scale = new float[cont[controller].output[out].num_rules];
+  cont[controller].output[out].rules = new  Rule[cont[controller].output[out].num_rules];
+  CreateRules(controller, out);
+
+
+  //Y VEL LOW
+
+    //HEIGHT LOW
+
+      //SAFE LEFT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 2.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 3.0f;
+
+      //SAFE RIGHT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 3.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 2.0f;
+
+    //HEIGHT MED
+
+      //SAFE LEFT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 1.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 3.0f;
+
+      //SAFE RIGHT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 3.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 1.0f;
+
+    //HEIGHT HIGH
+
+      //SAFE LEFT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 0.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 2.0f;
+
+      //SAFE RIGHT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 2.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 0.0f;
+
+  //Y VEL MED
+  
+    //HEIGHT LOW
+
+      //SAFE LEFT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 1.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 2.0f;
+
+      //SAFE RIGHT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 2.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 1.0f;
+
+    //HEIGHT MED
+
+      //SAFE LEFT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 1.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 2.0f;
+
+      //SAFE RIGHT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 2.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 1.0f;
+
+    //HEIGHT HIGH
+
+      //SAFE LEFT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 3.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 1.0f;
+
+      //SAFE RIGHT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 3.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 1.0f;
+
+  //Y VEL FAST
+
+    //HEIGHT LOW
+
+      //SAFE LEFT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 3.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 3.0f;
+
+      //SAFE RIGHT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 3.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 3.0f;
+
+    //HEIGHT MED
+
+      //SAFE LEFT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 3.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 3.0f;
+
+      //SAFE RIGHT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 3.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 3.0f;
+
+    //HEIGHT HIGH
+
+      //SAFE LEFT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 2.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 2.0f;
+
+      //SAFE RIGHT
+
+        //X VEL LEFT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 2.0f;
+        //X VEL RIGHT
+          rule++;
+          cont[controller].output[out].rules[rule].output = 2.0f;
+
 }

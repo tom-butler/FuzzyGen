@@ -15,9 +15,9 @@
 using namespace std;
 
 void InitControllers() {
-  Create(kNumPop, simInput, simOutput);
   if(kIncludeControl)
-    SimControlController(0);
+    SimControlController(0, simInput, simOutput);
+  Create(kNumPop, simInput, simOutput);
 }
 
 void InitSimulation(int controller) {

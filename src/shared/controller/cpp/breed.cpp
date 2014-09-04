@@ -72,7 +72,7 @@ void BisexualBreeding(int parents[]) {
   }
 }
 
-
+//helper function for bisexual breeding
 void BreedVars(int parent, int child){
   random = GetRandInt(0, kNumInput-1);
   delete [] cont[child].input[random].sets;
@@ -106,6 +106,8 @@ void BreedVars(int parent, int child){
     }
   }
 }
+
+//helpe function for bisxual breeding
 void BreedSets(int parent, int child){
   random = GetRandInt(0, kNumInput-1);
   int child_set = GetRandInt(0, cont[child].input[random].num_sets-1);

@@ -5,6 +5,7 @@
 #include "..\..\shared.h"
 
 void CreateControllers(int num, FuzzyVar input[], Accumulator output[]);
+void CreateSets(int controller, int variable, short int numSets);
 void CreateRules(int controller, int accumulator);
 
 #endif
