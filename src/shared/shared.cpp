@@ -16,22 +16,21 @@ using namespace std;
   //define the standard options ----------------
 
   //genetic
-  short int kNumPop               = 200;
-  short int kNumGenerations       = 1000;
-  bool kIncludeControl            = true;
+  short int kNumPop               = 500; 
+  short int kNumGenerations       = 500; 
+  bool kIncludeControl            = false;
   bool kLogging                   = true;
   bool kRandomStart               = true;
   short int kNumTests             = 3;
-  bool kElitism                   = false;
 
-  bool kForceSetRelationship      = false;
-  float kForceSetOverlap          = 0.4f; //0 for none
+  bool kElitism                   = false;
+  float kForceSetOverlap          = 0.5f; //0 for none
   bool kForceSetCoverage          = true;
 
   //mutation
-  float kMutationChance           = 0.4f;
-  float kVariance                 = 0.10f;
-  float kBreedPercent             = 0.3f;
+  float kMutationChance           = 0.5f;
+  float kVariance                 = 0.1f;
+  float kBreedPercent             = 0.5f;
 
   bool kCollectionInitialMutaion  = true;
   bool kCollectionGrowMutation    = true;
@@ -51,14 +50,14 @@ using namespace std;
   bool kRuleAddAllMutation        = true;
 
   //fuzzy
-  short int kNumSetsMin           = 3;
-  short int kNumSetsMax           = 3;
-  float     kSetHeightMin         = 0.5;
-  float     kSetHeightMax         = 1;
+  short int kNumSetsMin           = 3;   //0-5
+  short int kNumSetsMax           = 3;   //0-5 (higher than min)
+  float     kSetHeightMin         = 0.5; //0 - 1
+  float     kSetHeightMax         = 1;   //0 - 1 (higher than min)
 
-  short int kSim                  = /*kHarrierSim;*/ kMoonLanderSim;  /*kPendulumCartSim;*/
-  short int kSelect               = kSelectAvg;
-  short int kBreed                = kBisexual;
+  short int kSim                  = /*kHarrierSim;*/ /*kMoonLanderSim;*/ kPendulumCartSim;
+  short int kSelect               = /*kSelectHalf;*/ kSelectAvg;
+  short int kBreed                = /*kAsexual;*/ kBisexual;
 
   //runtime variables ---------------------------
   short int kNumInput             = 0;

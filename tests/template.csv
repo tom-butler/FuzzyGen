@@ -1,17 +1,33 @@
-POP,500
-GENERATIONS,1000
-VARIANCE,0.10
-MUT_CHANCE,0.4
-INCLUDE_CONTROL,0
-LOGGING,1
-NUM_INPUT,2
-NUM_SETS,3
-HEIGHT,1
-SIM,0
-START_HEIGHT,1000
-START_FUEL,500
-START_VEL,3
-THRUST_MAX,10
-TERMINAL_VELOCITY,30
-FORCE,2.0
-CRASH_SPEED,10
+var name,min,max,step,test 1,test 2,test 3,test 4,test 5,test 6,test 7,test 8,test 9,test 10,test 11,test 12,test 13
+,,,,,,,,,,,,,,,,
+populations,0,30000,1,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000
+generations,0,30000,1,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000
+logging,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+random start,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+number of tests,1,10,1,10,10,10,10,10,10,10,10,10,10,10,10,10
+elitism,0,1,1,,,,,,,,,,,,,
+force set overlap,0,1,1,,,,,,,,,,,,,
+force set coverage,0,1,1,,,,,,,,,,,,,
+mutation chance,0,1,1,,,,,,,,,,,,,
+variance,0,1,1,,,,,,,,,,,,,
+breed percent,0,1,0.1,,,,,,,,,,,,,
+collection initial mutation,0,1,1,,,,,,,,,,,,,
+collection grow mutation,0,1,1,,,,,,,,,,,,,
+collection slide mutation,0,1,1,,,,,,,,,,,,,
+collection add mutation,0,1,1,,,,,,,,,,,,,
+set initial mutation,0,1,1,,,,,,,,,,,,,
+set grow top mutation,0,1,1,,,,,,,,,,,,,
+set grow bottom mutation,0,1,1,,,,,,,,,,,,,
+set slide mutation ,0,1,1,,,,,,,,,,,,,
+set slide top mutation,0,1,1,,,,,,,,,,,,,
+set slide bottom mutation,0,1,1,,,,,,,,,,,,,
+set add mutation,0,1,1,,,,,,,,,,,,,
+rule randomisation mutation,0,1,1,,,,,,,,,,,,,
+rule add all mutation,0,1,1,,,,,,,,,,,,,
+sets num min,0,5,1,,,,,,,,,,,,,
+sets num max,sets num min,5,1,,,,,,,,,,,,,
+sets height min,0,1,0.1,,,,,,,,,,,,,
+sets height max,sets height min,1,0.2,,,,,,,,,,,,,
+sim,0,3,1,,,,,,,,,,,,,
+select method,0,1,1,,,,,,,,,,,,,
+breed method,0,1,1,,,,,,,,,,,,,

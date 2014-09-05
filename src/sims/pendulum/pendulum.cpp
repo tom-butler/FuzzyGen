@@ -32,7 +32,7 @@ const float kMaxStartVelocity = 0.3;
 const float kMaxStartDistance = 0.5f;
 const short int kPendulumAngleMin = -90;
 const short int kPendulumAngleMax = 90;
-const short int kThrustMax = 10;
+const short int kThrustMax = 100;
 const float kTimeMax = 10.0f;
 const short int kPendulumMaxScore = (kTimeMax / pendulum_time_step) * (kPendulumSimWidth/2);
 short int kPendulumSimWidth = 200;
@@ -93,7 +93,7 @@ void PendulumInitSim(int controller) {
   pendulum_cart_position = 0;
   pendulum_time_tag = 0;
   if(kRandomStart){
-    *angle = 0 + GetRandInt(-kThrustMax, kThrustMax);
+    *angle = 1 + GetRandInt(-kPendulumAngleMax / 10, kPendulumAngleMax / 10);
     *velocity = GetRandFloat(-kMaxStartVelocity, kMaxStartVelocity);
     *centre_dist = GetRandFloat(-kPendulumSimWidth / 20, kPendulumSimWidth / 20);
   }

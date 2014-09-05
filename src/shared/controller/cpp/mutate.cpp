@@ -7,17 +7,22 @@
 
 void MutateCol(int controller, int var);
 void MutateSet(int controller, int var, int setID);
+void MutateRules(int controller, int accumulator);
 void MutateRule(int controller, int accumulator, int ruleID);
 
 void MutateControllers(int id, int var) {
-  random = GetRandInt(0, 2);
+  random = GetRandInt(0, 3);
   if(random == 0){
     MutateSet(id, var, GetRandInt(0,cont[id].input[var].num_sets - 1));
   }
   else if (random == 1){
     MutateCol(id, var);
   }
-  else{
+  else if (random == 2){
+    int accumulator = GetRandInt(0, kNumOutput - 1);
+    MutateRules(id,accumulator);
+  }
+  else{ //random == 3
     int accumulator = GetRandInt(0, kNumOutput - 1);
     MutateRule(id,accumulator, GetRandInt(0, cont[id].output[accumulator].num_rules -1 ));
   }
@@ -107,8 +112,24 @@ void MutateSet(int controller, int var, int setID) {
   cont[controller].input[var].sets[setID] = set;
 }
 
+void MutateRules(int controller, int accumulator) {
+  cont[controller].num_mutations++;
+  if(kRuleAddAllMutation) {
+    random = GetRandFloat(cont[controller].output[accumulator].low, cont[controller].output[accumulator].high);
+    for(int r = 0; r < cont[controller].output[accumulator].num_rules; r++) {
+      cont[controller].output[accumulator].rules[r].output += random;
+
+      //if it goes over the max, loop it around
+      if(cont[controller].output[accumulator].rules[r].output > cont[controller].output[accumulator].high)
+        cont[controller].output[accumulator].rules[r].output -= cont[controller].output[accumulator].low;
+    }
+  }
+}
+
 void MutateRule(int controller, int accumulator, int ruleID) {
   cont[controller].num_mutations++;
-  random = GetRandFloat(cont[controller].output[accumulator].low,cont[controller].output[accumulator].high);
-  cont[controller].output[accumulator].rules[ruleID].output = random;
+  if(kRuleRandomMutation) {
+    random = GetRandFloat(cont[controller].output[accumulator].low,cont[controller].output[accumulator].high);
+    cont[controller].output[accumulator].rules[ruleID].output = random;
+  }
 }

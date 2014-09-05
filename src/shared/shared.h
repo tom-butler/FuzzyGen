@@ -62,9 +62,8 @@ extern bool       kIncludeControl;
 extern bool       kLogging;
 extern bool       kRandomStart;
 extern short int  kNumTests;
-extern bool       kElitism;
 
-extern bool kForceSetRelationship;
+extern bool       kElitism;
 extern float kForceSetOverlap;
 extern bool kForceSetCoverage;
 
@@ -79,7 +78,7 @@ extern bool       kCollectionSlideMutation;
 extern bool       kCollectionAddMutation;
 
 extern bool       kSetInitialMutation;
-extern bool       kSetNumberMutation;
+//extern bool       kSetNumberMutation;
 extern bool       kSetGrowTopMutation;
 extern bool       kSetGrowBottomMutation;
 extern bool       kSetSlideMutation;
@@ -108,7 +107,6 @@ const short int   kHarrierSim = 2;
 extern short int kSelect;
 const short int kSelectHalf = 0;
 const short int kSelectAvg = 1;
-const short int kSelectMean = 2;
 
 extern short int kBreed;
 const short int kAsexual = 0;
