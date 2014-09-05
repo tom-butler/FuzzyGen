@@ -12,10 +12,16 @@
 #include "..\shared\gen.h"
 #include "..\shared\controller\controller.h"
 
+
+#define LOAD 1
+#define RUN 2
+#define BREED 3
+#define FINISH 4
+
 using namespace std;
 
 bool bestOnly = false;
-bool breed = false;
+bool isbreed = false;
 
 int generation = 0;
 int speed = 5000;
@@ -25,10 +31,12 @@ int result = -1;
 int tick = 0;
 
 int multi_run_score = 0;
-int run = kRandomStartTests;
+int run = kNumTests;
 void ProcessNormalKeys(unsigned char key, int x, int y);
 void ProcessSpecialKeys(int key, int x, int y);
 void Display(void);
+void InitNextController();
+void Idle();
 void RunAll();
 int main(int argc, char *argv[])
 {
@@ -42,6 +50,7 @@ int main(int argc, char *argv[])
   glutKeyboardFunc(&ProcessNormalKeys);
   glutSpecialFunc(&ProcessSpecialKeys);
   glutDisplayFunc(&Display);
+  glutIdleFunc(&Idle);
 
   state = 1;
   glutMainLoop();
@@ -88,107 +97,114 @@ void ProcessSpecialKeys(int key, int x, int y)
 }
 
 void Display() {
-  //end
-  if(state == 5) {
-    PrintFloat(-0.5f, 0.2f, "FINISHED: ",BEST_SCORE);
-  }
 
+  if(state == RUN)
+    DrawSim();
+  if(result == 0)
+    PrintFloat(-0.5f, 0.0f, "SUCCESS", cont[controller].score);
+  if(result == 1)
+    PrintFloat(-0.5f, 0.0f, "FAILED", cont[controller].score);
+  //end
+  if(state == FINISH)
+    PrintFloat(-0.5f, 0.2f, "FINISHED: ",BEST_SCORE);
   //breed
-  if(state == 4) {
+  if(state == BREED)
+    PrintFloat(-0.5f, 0.1f, "BREEDING", 0.0f);
+  
+  //swap to idle
+  glutSwapBuffers();
+}
+
+//sim logic
+void Idle() {
+
+  //Breed
+  if(state == BREED) {
     if(generation < kNumGenerations - 1) {
-      PrintFloat(-0.5f, 0.1f, "BREEDING", 0.0f);
       Breed();
       generation++;
       controller = -1;
-      state = 1;
+      state = LOAD;
     }
     else
-      state = 5;
+      state = FINISH;
   }
 
-  //run
-  if(state == 2){
-    DrawSim();
-    if(result == 0){
-      PrintFloat(-0.5f, 0.0f, "SUCCESS", cont[controller].score);
-      if(tick % speed == 0)
-      	state = 1;
-    }
-    
-    else if(result == 1){
-      PrintFloat(-0.5f, 0.0f, "FAILED", cont[controller].score);
-      if(tick % speed == 0) 
-      	state = 1;
-    }
-    
+  //Run
+  if(state == RUN) {
+    if(result != -1)
+      state = LOAD;
     if(tick % speed == 0) {
       result = RunSim(controller);
     }
   }
 
-  //load
-  if(state == 1) {
+  //Load
+  if(state == LOAD) {
     if(bestOnly){
-      if(!breed){
-        breed = true;
+      if(!isbreed){
+        isbreed = true;
         PrintFloat(-0.5f, 0.0f, "RUNNING", generation);
         RunAll();
         controller = BEST_GEN_CONTROLLER;
-        InitSimulation(controller);
-        result = -1;
-        state = 2;
+        InitNextController();
       }
       else{
-        breed = false;
-        state = 4;
+        isbreed = false;
+        state = BREED;
       }
     }
     else{
-      if(kRandomStart && run < kRandomStartTests) {
+      if(controller < 0) {
+        controller++;
+        InitNextController();
+        if(kRandomStart)
+          run = 0;
+      }
+      else if(run < kNumTests) {
         multi_run_score += cont[controller].score;
-        InitSimulation(controller);
-        result = -1;
-        state = 2;
+        InitNextController();
         run++;
       }
       else if(controller < kNumPop - 1){
         if(kRandomStart) {
-          cont[controller].score = multi_run_score / kRandomStartTests;
+          cont[controller].score = multi_run_score / kNumTests;
           multi_run_score = 0;
+          run = 0;
         }
-        if(!bestOnly) {
-          if(cont[controller].score > BEST_SCORE){
-            BEST_SCORE = cont[controller].score;
-            CleanController(BEST_CONTROLLER);
-            CopyController(cont[controller], BEST_CONTROLLER);
-          }
-          if(cont[controller].score > BEST_GEN_SCORE){
-            BEST_GEN_SCORE = cont[controller].score;
-            BEST_GEN_CONTROLLER = controller;
-          }
+        if(cont[controller].score > BEST_SCORE){
+          BEST_SCORE = cont[controller].score;
+          CleanController(BEST_CONTROLLER);
+          CopyController(cont[controller], BEST_CONTROLLER);
+        }
+        if(cont[controller].score > BEST_GEN_SCORE){
+          BEST_GEN_SCORE = cont[controller].score;
+          BEST_GEN_CONTROLLER = controller;
         }
         controller++;
-        InitSimulation(controller);
-        result = -1;
-        state = 2;
-        run = 0;
+        InitNextController();
       }
       else{
-        state = 4;//breed
+        state = BREED;
       }
     }
   }
-
   tick+= 100;
+
+  //set flag to draw
   glutPostRedisplay();
-  glutSwapBuffers();
 }
 
+void InitNextController() {
+  InitSimulation(controller);
+  result = -1;
+  state = 2;
+}
 void RunAll(){
   BEST_GEN_SCORE = 0;
   for(int c = 0; c < kNumPop; ++c) {
     int multiscore = 0;
-    for(int t = 0; t < kRandomStartTests; t++) {
+    for(int t = 0; t < kNumTests; t++) {
       InitSimulation(c);
       int result = -1;
       while(result == -1) {
@@ -196,8 +212,8 @@ void RunAll(){
       }
       multiscore += cont[c].score;
     }
-    if(kRandomStart) //average random start scores
-      cont[c].score = multiscore / kRandomStartTests;
+    if(kRandomStart)
+      cont[c].score = multiscore / kNumTests;
 
     if(cont[c].score > BEST_SCORE) {
       BEST_SCORE = cont[c].score;
@@ -214,7 +230,11 @@ void RunAll(){
   }
 }
 
-//util functions
+
+/**
+ *util functions
+ */
+
 void DrawPlot(float x, float y, float width){
   glColor3f(1.0f, 0.0f, 0.0f);
   //draw x plane
@@ -320,8 +340,6 @@ void DrawBestCollection(float x, float y, float width, string name, FuzzyVar col
     //rBase /= scale;
     float height = collection.sets[i].height / 2.5f;
 
-    float value = collection.value - collection.low;
-    value /= scale;
     //draw the lines
   glColor3f(0.2f, 0.2f, 0.2f);
     glBegin(GL_LINES);

@@ -119,7 +119,18 @@ void HarrierInitSim(int controller) {
   harrier_score = &cont[controller].score;
 
   if(kRandomStart){
-    //random pos
+    harrier_x_position = 15 + GetRandFloat(-5, 5);
+    harrier_y_position = 170 + GetRandFloat(-30, 30);
+    harrier_x_velocity = 46 + GetRandFloat(-5, 5);
+    *harrier_y_velocity = 2 + GetRandFloat(-5, 5);
+    harrier_ship_speed = 22 + GetRandFloat(-5, 5);
+    *harrier_vector = 0 + GetRandFloat(1, 1);
+    *harrier_relative_x_velocity = harrier_ship_speed;
+    //*harrier_throttle = 89;
+    harrier_ground_effect = true;
+    harrier_safe_x_position = 400;
+    harrier_safe_y_position = 16;
+    harrier_safe_width = 20;
   }
   else{
     harrier_x_position = 15;

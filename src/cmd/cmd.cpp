@@ -59,7 +59,7 @@ void GALoop() {
     for(int c = 0; c < kNumPop; ++c) {
       //if we have random tests run several times
       int score = 0;
-      for(int t = 0; t < kRandomStartTests; t++) {
+      for(int t = 0; t < kNumTests; t++) {
         InitSimulation(c);
         int result = -1;
         while(result == -1) {
@@ -67,9 +67,7 @@ void GALoop() {
         }
         score += cont[c].score;
       }
-
-        if(kRandomStart) //average random start scores
-          cont[c].score = score / kRandomStartTests;
+        cont[c].score = score / kNumTests;
 
         if(cont[c].score > BEST_SCORE) {
           BEST_SCORE = cont[c].score;

@@ -60,6 +60,7 @@ void SelectHalf(){
 void SelectAvg(float avg){
   int parents[kNumAncestor];
   int c = 0;
+
 //select for breeding
   for(int i = 0; i < kNumPop; ++i) {
     if(cont[i].score >= avg){
@@ -81,12 +82,13 @@ void SelectAvg(float avg){
         index++;
       }
     }
-    int offset = c;
     while(c < kNumAncestor){
-      random = GetRandInt(0,(kNumPop-1) - offset);
-      cont[unmarked[random]].score = -2;
-      parents[c] = unmarked[random];
-      c++;
+      if(index > 0) {
+        random = GetRandInt(0,index - 1);
+        cont[unmarked[random]].score = -2;
+        parents[c] = unmarked[random];
+        c++;
+      }
     }
   }
   BreedControllers(parents);

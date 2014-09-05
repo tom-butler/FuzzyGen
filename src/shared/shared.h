@@ -61,7 +61,7 @@ extern short int  kNumAncestor;
 extern bool       kIncludeControl;
 extern bool       kLogging;
 extern bool       kRandomStart;
-extern short int  kRandomStartTests;
+extern short int  kNumTests;
 extern bool       kElitism;
 
 extern bool kForceSetRelationship;

@@ -105,7 +105,7 @@ void MoonInitSim(int controller) {
     moon_lander_x_pos = 100 + GetRandInt(0, 150);
   }
   else{ //no random start
-    *moon_height = kSafeHeight + 250;
+    *moon_height = kSafeHeight + 150;
     *moon_y_velocity = 0;
     *moon_x_velocity = 0;
     moon_safe_x_pos = 500;

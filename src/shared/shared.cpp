@@ -20,8 +20,8 @@ using namespace std;
   short int kNumGenerations       = 1000;
   bool kIncludeControl            = true;
   bool kLogging                   = true;
-  bool kRandomStart               = false;
-  short int kRandomStartTests     = 3;
+  bool kRandomStart               = true;
+  short int kNumTests             = 3;
   bool kElitism                   = false;
 
   bool kForceSetRelationship      = false;
@@ -56,7 +56,7 @@ using namespace std;
   float     kSetHeightMin         = 0.5;
   float     kSetHeightMax         = 1;
 
-  short int kSim                  = /*kHarrierSim;*/ kMoonLanderSim; /*kPendulumSim*/
+  short int kSim                  = /*kHarrierSim;*/ kMoonLanderSim;  /*kPendulumCartSim;*/
   short int kSelect               = kSelectAvg;
   short int kBreed                = kBisexual;
 
@@ -91,7 +91,7 @@ void InitSystem() {
   if(kLogging)
     LOG = new string[kNumGenerations];
   if(!kRandomStart)
-    kRandomStartTests = 0;
+    kNumTests = 1;
 }
 int InitTest(int test) {
   ifstream file;
