@@ -32,26 +32,30 @@ using namespace std;
   float kVariance                 = 0.1f;
   float kBreedPercent             = 0.5f;
 
-  bool kCollectionInitialMutaion  = true;
-  bool kCollectionGrowMutation    = true;
-  bool kCollectionSlideMutation   = true;
-  bool kCollectionAddMutation     = true;
+  bool  kInitialMutation             = true;
+  bool    kCollectionInitialMutaion  = true;
+  bool    kSetInitialMutation        = true;
+  bool    kRuleInitialMutation       = true;
 
-  bool kSetInitialMutation        = true;
-  bool kSetNumberMutation         = true;
-  bool kSetGrowTopMutation        = true;
-  bool kSetGrowBottomMutation     = true;
-  bool kSetSlideMutation          = true;
-  bool kSetSlideTopMutation       = true;
-  bool kSetSlideBottomMutation    = true;
-  bool kSetAddMutation            = true;
+  bool  kGrowMutation                = true;
+  bool    kCollectionGrowMutation    = true;
+  bool    kSetGrowTopMutation        = true;
+  bool    kSetGrowBottomMutation     = true;
+  bool    kRuleGrowMutation          = true;
 
-  bool kRuleRandomMutation        = true;
-  bool kRuleAddAllMutation        = true;
+  bool  kSlideMutation               = true;    
+  bool    kCollectionSlideMutation   = true;
+  bool    kSetSlideMutation          = true;
+  bool    kSetSlideTopMutation       = true;
+  bool    kSetSlideBottomMutation    = true;
+  bool    kRuleSlideMutation         = true;
 
   //fuzzy
   short int kNumSetsMin           = 3;   //0-5
   short int kNumSetsMax           = 3;   //0-5 (higher than min)
+  bool kSetNumberMutation         = true;
+
+
   float     kSetHeightMin         = 0.5; //0 - 1
   float     kSetHeightMax         = 1;   //0 - 1 (higher than min)
 
@@ -91,6 +95,11 @@ void InitSystem() {
     LOG = new string[kNumGenerations];
   if(!kRandomStart)
     kNumTests = 1;
+  if(kNumSetsMin > kNumSetsMax) {
+    kNumSetsMin = kNumSetsMax;
+    kSetNumberMutation = false;
+  }
+
 }
 int InitTest(int test) {
   ifstream file;

@@ -72,28 +72,33 @@ extern float      kMutationChance;
 extern float      kVariance;
 extern float      kBreedPercent;
 
-extern bool       kCollectionInitialMutaion;
-extern bool       kCollectionGrowMutation;
-extern bool       kCollectionSlideMutation;
-extern bool       kCollectionAddMutation;
+extern bool       kInitialMutation;
+extern bool         kCollectionInitialMutaion;
+extern bool         kSetInitialMutation;
+extern bool         kRuleInitialMutation;
 
-extern bool       kSetInitialMutation;
-//extern bool       kSetNumberMutation;
-extern bool       kSetGrowTopMutation;
-extern bool       kSetGrowBottomMutation;
-extern bool       kSetSlideMutation;
-extern bool       kSetSlideTopMutation;
-extern bool       kSetSlideBottomMutation;
-//extern bool       kSetAddMutation;
+extern bool       kGrowMutation;
+extern bool         kCollectionGrowMutation;
+extern bool         kSetGrowTopMutation;
+extern bool         kSetGrowBottomMutation;
+extern bool         kRuleGrowMutation;
 
-extern bool       kRuleRandomMutation;
-extern bool       kRuleAddAllMutation;
+extern bool       kSlideMutation;
+extern bool         kCollectionSlideMutation;
+extern bool         kSetSlideMutation;
+extern bool         kSetSlideTopMutation;
+extern bool         kSetSlideBottomMutation;
+extern bool         kRuleSlideMutation;
+
+
+
 
 //fuzzy
 extern short int  kNumInput;
 extern short int  kNumOutput;
 extern short int  kNumSetsMin;
 extern short int  kNumSetsMax;
+extern bool         kSetNumberMutation;
 extern float      kSetHeightMin;
 extern float      kSetHeightMax;
 

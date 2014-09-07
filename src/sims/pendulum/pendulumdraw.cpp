@@ -18,15 +18,19 @@ void DrawPendulumSets(int window) {
   glClear(GL_COLOR_BUFFER_BIT);
   
   //Y
-  DrawBestCollection(-1,0.5, 0.5f, "Angle", BEST_CONTROLLER.input[0]);
-  DrawCollection(-1,0.5, 0.5f, "Angle", cont[controller].input[0]);
+  DrawBestCollection(-1,0.5, 0.5f, "CartX", BEST_CONTROLLER.input[0]);
+  DrawCollection(-1,0.5, 0.5f, "CartX", cont[controller].input[0]);
   DrawPlot(-1, 0.5, 0.5f);
-  DrawBestCollection(-1,0, 0.5f, "Centre Distance", BEST_CONTROLLER.input[1]);
-  DrawCollection(-1,0, 0.5f, "Centre Distance", cont[controller].input[1]);
+  DrawBestCollection(-1,0, 0.5f, "Cart Vel", BEST_CONTROLLER.input[1]);
+  DrawCollection(-1,0, 0.5f, "Cart Vel", cont[controller].input[1]);
   DrawPlot(-1, 0, 0.5f);
-  DrawBestCollection(-1,-0.5, 0.5f, "Cart Velocity", BEST_CONTROLLER.input[2]);
-  DrawCollection(-1,-0.5, 0.5f, "Cart Velocity", cont[controller].input[2]);
-  DrawPlot(-1, -0.5, 0.5f);
+
+  DrawBestCollection(0, 0.5, 0.5f, "Pole Angle", BEST_CONTROLLER.input[2]);
+  DrawCollection(0,0.5, 0.5f, "Pole Angle", cont[controller].input[2]);
+  DrawPlot(0, 0.5, 0.5f);
+  DrawBestCollection(0, 0, 0.5f, "Pole Vel", BEST_CONTROLLER.input[3]);
+  DrawCollection(0,0, 0.5f, "Pole Vel", cont[controller].input[3]);
+  DrawPlot(0, 0, 0.5f);
   //rules
   DrawRules(-0.5f, 0.95f, controller, 0);
   //draw accumulator
@@ -57,6 +61,7 @@ void DrawPendulumSim(int window) {
   PrintFloat(0.5, -0.05f,"Centre Dist" , cont[controller].input[1].value);
   PrintFloat(0.5, -0.1f,"Cart Velocity", cont[controller].input[2].value);
   PrintFloat(0.5, -0.15f,"Thrust"      , cont[controller].output[0].output);
+  PrintFloat(0.5, -0.2f,"Score"      , (score_count / kMaxTime) * 100 );
 
   //ground
   glColor3f(0.8f,0.8f,0.8f);
@@ -75,7 +80,7 @@ void DrawPendulumSim(int window) {
   glEnd();
 
   //cart
-  float x = cont[controller].input[1].value / (kPendulumSimWidth / 2);
+  float x = -1 * ConvertToSimScale(cont[controller].input[0].value, -kCartMoveRadius * 10, kCartMoveRadius * 10);
   glColor3f(0.0f,0.0f,1.0f);
   glBegin(GL_POLYGON);
     glVertex2f(x - 0.1,-0.9);
@@ -89,8 +94,8 @@ void DrawPendulumSim(int window) {
   DrawCircle(x + 0.08, -0.9, 0.05);
 
   //pendulum
-  float rod_length = kRodLength / 5;
-  float angle = DegToRad(90 - cont[controller].input[0].value);
+  float rod_length = kPoleLength / 5;
+  float angle = DegToRad(90 - cont[controller].input[2].value);
   float xx = x + rod_length * cos(angle);
   float yy = -0.8 + rod_length * sin(angle);
   //thrust

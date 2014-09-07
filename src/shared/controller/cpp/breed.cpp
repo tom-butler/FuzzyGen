@@ -31,7 +31,6 @@ void AsexualBreeding(int parents[]) {
         CleanController(cont[i]);
         CopyController(cont[parents[c]], cont[i]);
         c++;
-        //cout << c << "\n";
       }
       float mut = GetRandFloat(0.0f, 1.0f);
       if(mut <= kMutationChance)
@@ -45,6 +44,8 @@ void BisexualBreeding(int parents[]) {
   for(int i = 0; i < kNumPop - 1; i += 2) {
     if(cont[i].score != -2){
       if(parents[c] < kNumPop){
+        cout << c << "\n";
+        cout << parents[c + 1] << "\n\n";
         CleanController(cont[i]);
         CopyController(cont[parents[c]], cont[i]);
         CleanController(cont[i + 1]);

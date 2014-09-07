@@ -31,15 +31,15 @@ void MutateControllers(int id, int var) {
 
 void MutateCol(int controller, int var) {
 
-  short int mut = GetRandInt(0, 2);
+  short int mut = GetRandInt(0, 1);
   int region = cont[controller].input[var].high - cont[controller].input[var].low;
   random = GetRandFloat(-region * 0.05f, region * 0.05f);
   switch(mut){
     case 0:
       if(kCollectionGrowMutation){
           for(int s = 0; s < cont[controller].input[var].num_sets; s++){
-            cont[controller].input[var].sets[s].left_top -= random;
-            cont[controller].input[var].sets[s].left_base -= random;
+            cont[controller].input[var].sets[s].left_top += random;
+            cont[controller].input[var].sets[s].left_base += random;
             cont[controller].input[var].sets[s].right_top += random;
             cont[controller].input[var].sets[s].right_base += random;
           }
@@ -49,16 +49,6 @@ void MutateCol(int controller, int var) {
       if(kCollectionSlideMutation){
         for(int s = 0; s < cont[controller].input[var].num_sets; s++){
             cont[controller].input[var].sets[s].centre_x += random;
-          }
-        break;
-      }
-    case 2:
-      if(kCollectionAddMutation){
-          for(int s = 0; s < cont[controller].input[var].num_sets; s++){
-            cont[controller].input[var].sets[s].left_top += random;
-            cont[controller].input[var].sets[s].left_base += random;
-            cont[controller].input[var].sets[s].right_top += random;
-            cont[controller].input[var].sets[s].right_base += random;
           }
         break;
       }
@@ -78,25 +68,25 @@ void MutateSet(int controller, int var, int setID) {
   switch(mut){
     case 0: //grow top
       if(kSetGrowTopMutation){
-        set.left_top -= random;
+        set.left_top += random;
         set.right_top += random;
         break;
       }
     case 1: //grow bottom
       if(kSetGrowBottomMutation){
-        set.left_base -=random;
+        set.left_base +=random;
         set.right_base +=random;
         break;
       }
     case 2: //slide top
       if(kSetSlideTopMutation){
-        set.left_top +=random;
+        set.left_top -=random;
         set.right_top +=random;
         break;
       }
     case 3: //slide bottom
       if(kSetSlideBottomMutation){
-        set.left_base +=random;
+        set.left_base -=random;
         set.right_base +=random;
         break;
       }
@@ -114,7 +104,7 @@ void MutateSet(int controller, int var, int setID) {
 
 void MutateRules(int controller, int accumulator) {
   cont[controller].num_mutations++;
-  if(kRuleAddAllMutation) {
+  if(kRuleSlideMutation) {
     random = GetRandFloat(cont[controller].output[accumulator].low, cont[controller].output[accumulator].high);
     for(int r = 0; r < cont[controller].output[accumulator].num_rules; r++) {
       cont[controller].output[accumulator].rules[r].output += random;
@@ -128,7 +118,7 @@ void MutateRules(int controller, int accumulator) {
 
 void MutateRule(int controller, int accumulator, int ruleID) {
   cont[controller].num_mutations++;
-  if(kRuleRandomMutation) {
+  if(kRuleGrowMutation) {
     random = GetRandFloat(cont[controller].output[accumulator].low,cont[controller].output[accumulator].high);
     cont[controller].output[accumulator].rules[ruleID].output = random;
   }

@@ -6,200 +6,191 @@
 #include "..\..\shared\shared.h"
 #include "..\..\gui\gui.h"
 
-//http://www.control.isy.liu.se/student/tsrt03/files/invpendpmenglish.pdf
+//https://github.com/222464/ERL/blob/master/ERL/experiments/polebalancing.lua
 using namespace std;
 
-//sim vars
-const float kCartMass = 10.0;
-const float kPendulumMass = 1.0;
-float kRodLength = 1.0;
-const float kGravity = 9.8f;
-const float kLinearFriction = 0.0;
-const float kAngularFriction = 1.0;
-const float kInertia = 0.006;
+const float PI = 3.14159;
 
-float pendulum_current_force = 0.0;
-float pendulum_previous_force = 0.0;
-float pendulum_angular_position = 0.1;
-float pendulum_angular_velocity = 0.0;
-float pendulum_cart_position = 0.0;
-float pendulum_cart_velocity = 0.0;
-float pendulum_time_step = 0.1;
-float pendulum_time_tag = 0.0;
+const float kPixelsPerMeter = 128.0;
+const float kPoleLength = 1.0;
+const float kGravity = -2.8;
+const float kMassMass = 20.0;
+const float kCartMass = 2.0;
+const float kDT = 0.017;
+const float kCartFriction = 0.02;
+const float kMaxSpeed = 3.0;
+const float kCartMoveRadius = 1.8;
+const float kPoleRotationalFriction = 0.008;
+const int   kMaxTime = 500;
+const int kMaxPoleAngle = 90;
+const int kMaxPoleVel = 5;
+int ticks;
+float cart_accel_x;
+float pole_angle_accel;
+float score_count;
+//AI interface
+float * agent_force;
+float * cart_x;
+float * cart_vel;
+float * pole_angle;
+float * pole_vel;
+short int * pendulum_score;
+//Input Sets
+static FuzzyVar cart_x_set = {-kCartMoveRadius * 10, kCartMoveRadius * 10, 0.0f, 0, 0};
+static FuzzyVar cart_vel_x = {-kMaxSpeed, kMaxSpeed, 0.0f, 0, 0};
+static FuzzyVar pole_angle_set = {-kMaxPoleAngle, kMaxPoleAngle, 0.0f, 0, 0};
+static FuzzyVar pole_angle_vel_set = {-kMaxPoleVel, kMaxPoleVel, 0.0f, 0, 0};
 
+//Output Sets
+static Accumulator agent_force_set = {-1, 1, 0.0f, 0, 0, 0, 0, 0, 0};
 
-const float kMaxStartVelocity = 0.3;
-const float kMaxStartDistance = 0.5f;
-const short int kPendulumAngleMin = -90;
-const short int kPendulumAngleMax = 90;
-const short int kThrustMax = 100;
-const float kTimeMax = 10.0f;
-const short int kPendulumMaxScore = (kTimeMax / pendulum_time_step) * (kPendulumSimWidth/2);
-short int kPendulumSimWidth = 200;
-static short int kTerminalVelocity = 100;
-
-float * thrust;
-float * angle;
-float * centre_dist;
-float * velocity;
-short int * score;
-
-float pendulum_score;
-
-float pendulum_pos;
-
-//throttle accumulator
-static FuzzyVar pendulum_angle_set  = {kPendulumAngleMin, kPendulumAngleMax, 0.1f, 0, 0};
-static FuzzyVar centre_distance_set = {-kPendulumSimWidth / 2, kPendulumSimWidth / 2, 0, 0, 0};
-static FuzzyVar cart_velocity_set = {-kTerminalVelocity, kTerminalVelocity, 0, 0, 0};
-
-//output
-static Accumulator thrust_set = {-kThrustMax, kThrustMax, 0.0f, 0, 0, 0, 0, 0, 0};
-void IntegrateForwardEuler(double step);
-void IntegrateForwardRungeKutta4(double step);
+/**
+ * Initialise the simulation
+ * Called once each test
+ */
 void PendulumCreateVars(){
   //sim input vars
-  kNumInput = 3;
+  kNumInput = 4;
   simInput = new FuzzyVar[kNumInput];
 
-  simInput[0] = pendulum_angle_set;
-  simInput[1] = centre_distance_set;
-  simInput[2] = cart_velocity_set;
+  simInput[0] = cart_x_set;
+  simInput[1] = cart_vel_x;
+  simInput[2] = pole_angle_set;
+  simInput[3] = pole_angle_vel_set;
 
   //sim output vars
   kNumOutput = 1;
   simOutput = new Accumulator[kNumOutput];
-  simOutput[0] = thrust_set;
-  simOutput[0].vars = new short int[3];
+  simOutput[0] = agent_force_set;
+  simOutput[0].vars = new short int[4];
   simOutput[0].vars[0] = 0;
   simOutput[0].vars[1] = 1;
   simOutput[0].vars[2] = 2;
-  simOutput[0].num_vars = 3;
+  simOutput[0].vars[3] = 3;
+  simOutput[0].num_vars = 4;
+
 }
 
+/**
+ * Initialise the simulation for this controller
+ * Called for each controller each generation
+ * @param controller controller to be tested
+ */
 void PendulumInitSim(int controller) {
-  thrust = &cont[controller].output[0].output ;
 
-  angle = &cont[controller].input[0].value;
-  centre_dist = &cont[controller].input[1].value;
-  velocity = &cont[controller].input[2].value;
+  agent_force = &cont[controller].output[0].output;
+  cart_x = &cont[controller].input[0].value;
+  cart_vel = &cont[controller].input[1].value;
+  pole_angle = &cont[controller].input[2].value;
+  pole_vel = &cont[controller].input[3].value;
+  pendulum_score = &cont[controller].score;
 
-  score = &cont[controller].score;
-  pendulum_current_force = 0;
-  pendulum_previous_force = 0;
-  pendulum_cart_velocity = 0;
-  pendulum_angular_position = 0;
-  pendulum_angular_velocity = 0;
-  pendulum_cart_position = 0;
-  pendulum_time_tag = 0;
-  if(kRandomStart){
-    *angle = 1 + GetRandInt(-kPendulumAngleMax / 10, kPendulumAngleMax / 10);
-    *velocity = GetRandFloat(-kMaxStartVelocity, kMaxStartVelocity);
-    *centre_dist = GetRandFloat(-kPendulumSimWidth / 20, kPendulumSimWidth / 20);
-  }
-  else{
-    *angle = 0;// + GetRandInt(-5, 5);
-    *velocity = 0;
-    *centre_dist = 0;
-  }
-  pendulum_score = 0.0f;
-  pendulum_angular_position = DegToRad(*angle);
-  pendulum_cart_position = *centre_dist  / (kPendulumSimWidth / 2);
-}
-
-int PendulumNextStep(int controller) {
-  if(*angle > -90 && *angle < 90 ) {
-    if(pendulum_time_tag < kTimeMax){
-
-      pendulum_current_force = *thrust;
-      IntegrateForwardEuler(pendulum_time_step);
-
-      //pendulum_angular_position += DegToRad(GetRandFloat(-1,1));
-      *angle = RadToDeg(pendulum_angular_position);
-      *centre_dist = pendulum_cart_position * (kPendulumSimWidth / 2);
-      *velocity = pendulum_cart_velocity ;
-
-      //cap it at the bounds
-      ForceBounds(*angle,kPendulumAngleMin,kPendulumAngleMax);
-      ForceBounds(*centre_dist, -kPendulumSimWidth / 2, kPendulumSimWidth / 2);
-      ForceBounds(*velocity, -kTerminalVelocity, kTerminalVelocity);
-
-      //move 
-      pendulum_score += (kPendulumSimWidth/2 - abs(*centre_dist));
-      return -1;
-    }
-    else {
-      *score = (pendulum_score / kPendulumMaxScore) * 100;
-      return 0;
-    }
+  //random
+  if(kRandomStart) {
+    *cart_x = GetRandFloat((-kCartMoveRadius * 10)* 0.3,(kCartMoveRadius * 10)* 0.3);
+    *pole_angle = GetRandFloat(-kMaxPoleAngle * 0.1,kMaxPoleAngle * 0.1 );
   }
   else {
-    *score = (pendulum_score / kPendulumMaxScore) * 100;
-    return 1;
+    //not random
+    *cart_x = 0.0;
+  }
+
+
+  *cart_vel = 0.0;
+  *pole_angle = 0.0;
+  *pole_vel = 0.0;  
+  *pendulum_score = 0;
+  ticks = 0;
+  cart_accel_x = 0.0;
+  pole_angle_accel = 0.0;
+  score_count = 0.0f;
+}
+
+/**
+ * Takes the next step in testing the controller
+ * @param  controller controller being tested
+ * @return            -1: continue, 0: success, 1: failed
+ */
+int PendulumNextStep(int controller) {
+  ticks++;
+  if(ticks < kMaxTime){
+
+    *cart_x /= 10;
+    *agent_force *= 4000.0f;
+    float pendulum_cart_accel_x = cart_accel_x;
+    float pole_angle_rad = DegToRad(*pole_angle);
+
+    if (pole_angle_rad < 0.0f)
+      pole_angle_rad += PI * 2.0f;
+    if (pole_angle_rad > 2 * PI)
+      pole_angle_rad -= 2 * PI;
+
+    if (*cart_x < -kCartMoveRadius)
+      pendulum_cart_accel_x = 0.0;
+    else if (*cart_x > kCartMoveRadius)
+      pendulum_cart_accel_x = 0.0f;
+    
+
+    pole_angle_accel = pendulum_cart_accel_x * cos(pole_angle_rad) + kGravity * sin(pole_angle_rad);
+    *pole_vel = *pole_vel - kPoleRotationalFriction * *pole_vel + pole_angle_accel * kDT;
+    pole_angle_rad = pole_angle_rad + *pole_vel * kDT;
+
+    float force = 0.0f;
+
+    if (*cart_vel < kMaxSpeed && *cart_vel > -kMaxSpeed)
+      force = max(-4000.0f, min(4000.0f, *agent_force));
+
+    if (*cart_x < -kCartMoveRadius){
+      *cart_x = -kCartMoveRadius;
+
+      cart_accel_x = -*cart_vel / kDT;
+      *cart_vel = -0.5f * *cart_vel;;
+    }
+    else if (*cart_x > kCartMoveRadius) {
+      *cart_x = kCartMoveRadius;
+
+      cart_accel_x = -*cart_vel / kDT;
+      *cart_vel = -0.5f * *cart_vel;
+    }
+
+    cart_accel_x = 0.25f * (force + kMassMass * kPoleLength * pole_angle_accel * cos(pole_angle_rad) - kMassMass * kPoleLength * *pole_vel * *pole_vel * sin(pole_angle_rad)) / (kMassMass + kCartMass);
+    *cart_vel = *cart_vel - kCartFriction * *cart_vel + cart_accel_x * kDT;
+    *cart_x = *cart_x + *cart_vel * kDT;
+
+    pole_angle_rad = fmod(pole_angle_rad, 2.0f * PI);
+
+    if (pole_angle_rad < 0.0f)
+      pole_angle_rad += PI * 2.0f;
+    if (pole_angle_rad > 2 * PI)
+      pole_angle_rad -= 2 * PI;
+
+    if(pole_angle_rad > 1.5f * PI)
+      *pole_angle = RadToDeg(pole_angle_rad - (2 * PI));
+    else
+      *pole_angle = RadToDeg(pole_angle_rad);
+
+    *cart_x *= 10;
+    *agent_force /= 4000.0f;
+    score_count += 0.1 * (((kCartMoveRadius * 10) - abs(*cart_x)) / kCartMoveRadius) ;
+    //failed
+    if(pole_angle_rad > (0.5f * PI) && pole_angle_rad < (1.5f * PI)) {
+      *pendulum_score = (score_count / kMaxTime) * 100;
+      return 1;
+    }
+    return -1;
+  }
+  else {
+    *pendulum_score = (score_count / kMaxTime) * 100;
+    return 0;
   }
 }
-void IntegrateForwardEuler(double step)
-{
-  double m=kPendulumMass, M=kCartMass, l=kRodLength, f_lin=kLinearFriction, f_ang=kAngularFriction, g=kGravity, h=step;
-  double z1=0.0, z2=0.0, z3=0.0, z4=0.0;
 
-  // Integration using Forward Euler.
-  z1 = pendulum_angular_position + h*pendulum_angular_velocity;
-  z2 = pendulum_angular_velocity + h*(pendulum_previous_force*cos(pendulum_angular_position) - (M+m)*g*sin(pendulum_angular_position) + m*l*cos(pendulum_angular_position)*sin(pendulum_angular_position)*sqr(pendulum_angular_velocity) + f_lin*cos(pendulum_angular_position)*pendulum_cart_velocity + (M+m)*f_ang/m*pendulum_angular_velocity)/(m*l*sqr(cos(pendulum_angular_position)) - (M+m)*l);
-  z3 = pendulum_cart_position + h*pendulum_cart_velocity;
-  z4 = pendulum_cart_velocity + h*(pendulum_previous_force + m*l*sin(pendulum_angular_position)*sqr(pendulum_angular_velocity) - m*g*cos(pendulum_angular_position)*sin(pendulum_angular_position) + cos(pendulum_angular_position)*f_ang*pendulum_angular_velocity)/(M + m - m*sqr(cos(pendulum_angular_position)));
-
-  pendulum_angular_position = z1;
-  pendulum_angular_velocity = z2;
-  pendulum_cart_position = z3;
-  pendulum_cart_velocity = z4;
-  pendulum_previous_force = pendulum_current_force;
-  pendulum_time_tag += pendulum_time_step;
-}
-
-void IntegrateForwardRungeKutta4(double step)
-{
-  double K1=0.0f, K2=0.0f, K3=0.0f, K4=0.0f;
-  double L1=0.0f, L2=0.0f, L3=0.0f, L4=0.0f;
-  double M1=0.0f, M2=0.0f, M3=0.0f, M4=0.0f;
-  double N1=0.0f, N2=0.0f, N3=0.0f, N4=0.0f;
-  double m=kPendulumMass, M=kCartMass, l=kRodLength, f_lin=kLinearFriction, f_ang=kAngularFriction, g=kGravity, h=step;
-  double z1=0.0, z2=0.0, z3=0.0, z4=0.0;
-
-  // Integration using Forward Runge-Kutta.
-  K1 = pendulum_angular_velocity;
-  L1 = (pendulum_previous_force*cos(pendulum_angular_position) - (M+m)*g*sin(pendulum_angular_position) + m*l*cos(pendulum_angular_position)*sin(pendulum_angular_position)*sqr(pendulum_angular_velocity) + f_lin*cos(pendulum_angular_position)*pendulum_cart_velocity + (M+m)*f_ang/m*pendulum_angular_velocity)/(m*l*sqr(cos(pendulum_angular_position)) - (M+m)*l);
-  M1 = pendulum_cart_velocity;
-  N1 = (pendulum_previous_force + m*l*sin(pendulum_angular_position)*sqr(pendulum_angular_velocity) - m*g*cos(pendulum_angular_position)*sin(pendulum_angular_position) + cos(pendulum_angular_position)*f_ang*pendulum_angular_velocity)/(M+m - m*sqr(cos(pendulum_angular_position)));
-    
-  K2 = pendulum_angular_velocity + h/2.0*L1;
-  L2 = ((pendulum_previous_force+pendulum_current_force)/2.0*cos(pendulum_angular_position+h/2.0*K1) - (M+m)*g*sin(pendulum_angular_position+h/2.0*K1) + m*l*cos(pendulum_angular_position+h/2.0*K1)*sin(pendulum_angular_position+h/2.0*K1)*sqr(pendulum_angular_velocity+h/2.0*L1) + f_lin*cos(pendulum_angular_position+h/2.0*K1)*(pendulum_cart_velocity+h/2.0*N1) + (M+m)*f_ang/m*(pendulum_angular_velocity+h/2.0*L1))/(m*l*sqr(cos(pendulum_angular_position+h/2.0*K1)) - (M+m)*l);
-  M2 = pendulum_cart_velocity + h/2.0*N1;
-  N2 = ((pendulum_previous_force+pendulum_current_force)/2.0 + m*l*sin(pendulum_angular_position+h/2.0*K1)*sqr(pendulum_angular_velocity+h/2.0*L1) - m*g*cos(pendulum_angular_position+h/2.0*K1)*sin(pendulum_angular_position+h/2.0*K1) + cos(pendulum_angular_position+h/2.0*K1)*f_ang*(pendulum_angular_velocity+h/2.0*L1))/(M+m - m*sqr(cos(pendulum_angular_position+h/2.0*K1)));
-    
-  K3 = pendulum_angular_velocity + h/2.0*L2;
-  L3 = ((pendulum_previous_force+pendulum_current_force)/2.0*cos(pendulum_angular_position+h/2.0*K2) - (M+m)*g*sin(pendulum_angular_position+h/2.0*K2) + m*l*cos(pendulum_angular_position+h/2.0*K2)*sin(pendulum_angular_position+h/2.0*K2)*sqr(pendulum_angular_velocity+h/2.0*L2) + f_lin*cos(pendulum_angular_position+h/2.0*K2)*(pendulum_cart_velocity+h/2.0*N2) + (M+m)*f_ang/m*(pendulum_angular_velocity+h/2.0*L2))/(m*l*sqr(cos(pendulum_angular_position+h/2.0*K2)) - (M+m)*l);
-  M3 = pendulum_cart_velocity + h/2.0*N2;
-  N3 = ((pendulum_previous_force+pendulum_current_force)/2.0 + m*l*sin(pendulum_angular_position+h/2.0*K2)*sqr(pendulum_angular_velocity+h/2.0*L2) - m*g*cos(pendulum_angular_position+h/2.0*K2)*sin(pendulum_angular_position+h/2.0*K2) + cos(pendulum_angular_position+h/2.0*K2)*f_ang*(pendulum_angular_velocity+h/2.0*L2))/(M+m - m*sqr(cos(pendulum_angular_position+h/2.0*K2)));
-    
-  K4 = pendulum_angular_velocity + h*L3;
-  L4 = (pendulum_previous_force *cos(pendulum_angular_position+h*K3) - (M+m)*g*sin(pendulum_angular_position+h*K3) + m*l*cos(pendulum_angular_position+h*K3)*sin(pendulum_angular_position+h*K3)*sqr(pendulum_angular_velocity+h*L3) + f_lin*cos(pendulum_angular_position+h*K3)*(pendulum_cart_velocity+h*N3) + (M+m)*f_ang/m*(pendulum_angular_velocity+h*L3))/(m*l*sqr(cos(pendulum_angular_position+h*K3)) - (M+m)*l);
-  M4 = pendulum_cart_velocity + h*N3;
-  N4 = (pendulum_previous_force + m*l*sin(pendulum_angular_position+h*K3)*sqr(pendulum_angular_velocity+h*L3) - m*g*cos(pendulum_angular_position+h*K3)*sin(pendulum_angular_position+h*K3) + cos(pendulum_angular_position+h*K3)*f_ang*(pendulum_angular_velocity+h*L3))/(M+m - m*sqr(cos(pendulum_angular_position+h*K3)));
-
-  z1 = pendulum_angular_position + h*(1.0/6.0*K1 + 2.0/6.0*K2 + 2.0/6.0*K3 + 1.0/6.0*K4);
-  z2 = pendulum_angular_velocity + h*(1.0/6.0*L1 + 2.0/6.0*L2 + 2.0/6.0*L3 + 1.0/6.0*L4);
-  z3 = pendulum_cart_position    + h*(1.0/6.0*M1 + 2.0/6.0*M2 + 2.0/6.0*M3 + 1.0/6.0*M4);
-  z4 = pendulum_cart_velocity    + h*(1.0/6.0*N1 + 2.0/6.0*N2 + 2.0/6.0*N3 + 1.0/6.0*N4);
-
-  pendulum_angular_position = z1;
-  pendulum_angular_velocity = z2;
-  pendulum_cart_position = z3;
-  pendulum_cart_velocity = z4;
-  pendulum_previous_force = pendulum_current_force;
-  pendulum_time_tag += pendulum_time_step;
-}
-//manually created controller to prove the system works
+/**
+ * Manually create a controller, to prove system works
+ * @param controller controller id to be created
+ * @param input      input array
+ * @param output     output array
+ */
 void PendulumControlController(int controller, FuzzyVar input[], Accumulator output[]) {
 
 }
