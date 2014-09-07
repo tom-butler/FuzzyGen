@@ -26,7 +26,6 @@ void MutateControllers(int id, int var) {
     int accumulator = GetRandInt(0, kNumOutput - 1);
     MutateRule(id,accumulator, GetRandInt(0, cont[id].output[accumulator].num_rules -1 ));
   }
-  ForceVarBounds(id, var);
 }
 
 void MutateCol(int controller, int var) {

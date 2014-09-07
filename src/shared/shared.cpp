@@ -51,7 +51,7 @@ using namespace std;
   bool    kRuleSlideMutation         = true;
 
   //fuzzy
-  short int kNumSetsMin           = 3;   //0-5
+  short int kNumSetsMin           = 2;   //0-5
   short int kNumSetsMax           = 3;   //0-5 (higher than min)
   bool kSetNumberMutation         = true;
 

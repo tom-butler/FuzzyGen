@@ -87,8 +87,8 @@ void PendulumInitSim(int controller) {
 
   //random
   if(kRandomStart) {
-    *cart_x = GetRandFloat((-kCartMoveRadius * 10)* 0.3,(kCartMoveRadius * 10)* 0.3);
-    *pole_angle = GetRandFloat(-kMaxPoleAngle * 0.1,kMaxPoleAngle * 0.1 );
+    *cart_x = GetRandFloat((-kCartMoveRadius * 10)* 0.7,(kCartMoveRadius * 10)* 0.7);
+    *pole_angle = GetRandFloat(-kMaxPoleAngle * 0.3,kMaxPoleAngle * 0.3 );
   }
   else {
     //not random
@@ -125,10 +125,11 @@ int PendulumNextStep(int controller) {
     if (pole_angle_rad > 2 * PI)
       pole_angle_rad -= 2 * PI;
 
-    if (*cart_x < -kCartMoveRadius)
+    if (*cart_x < -kCartMoveRadius || *cart_x > kCartMoveRadius){
       pendulum_cart_accel_x = 0.0;
-    else if (*cart_x > kCartMoveRadius)
-      pendulum_cart_accel_x = 0.0f;
+      *cart_vel = 0.0f;
+    }
+
     
 
     pole_angle_accel = pendulum_cart_accel_x * cos(pole_angle_rad) + kGravity * sin(pole_angle_rad);
@@ -164,16 +165,24 @@ int PendulumNextStep(int controller) {
     if (pole_angle_rad > 2 * PI)
       pole_angle_rad -= 2 * PI;
 
+    ForceBounds(*cart_vel, -kMaxSpeed, kMaxSpeed);
+
     if(pole_angle_rad > 1.5f * PI)
       *pole_angle = RadToDeg(pole_angle_rad - (2 * PI));
     else
       *pole_angle = RadToDeg(pole_angle_rad);
 
     *cart_x *= 10;
+    ForceBounds(*cart_x, -kCartMoveRadius * 10, kCartMoveRadius * 10);
     *agent_force /= 4000.0f;
     score_count += 0.1 * (((kCartMoveRadius * 10) - abs(*cart_x)) / kCartMoveRadius) ;
     //failed
     if(pole_angle_rad > (0.5f * PI) && pole_angle_rad < (1.5f * PI)) {
+      *pendulum_score = (score_count / kMaxTime) * 100;
+      return 1;
+    }
+    //if it hits the wall it fails
+    if (*cart_x <= -kCartMoveRadius * 10 || *cart_x >= kCartMoveRadius * 10){
       *pendulum_score = (score_count / kMaxTime) * 100;
       return 1;
     }

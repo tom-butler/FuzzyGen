@@ -147,6 +147,7 @@ void ForceVarBounds(int controller, int var);
 float DegToRad(float deg);
 float RadToDeg(float rad);
 double sqr(double value);
+
 void ForceBounds(float &var, float min, float max);
 
 void CleanController(Controller &controller);

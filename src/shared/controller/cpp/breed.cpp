@@ -44,8 +44,6 @@ void BisexualBreeding(int parents[]) {
   for(int i = 0; i < kNumPop - 1; i += 2) {
     if(cont[i].score != -2){
       if(parents[c] < kNumPop){
-        cout << c << "\n";
-        cout << parents[c + 1] << "\n\n";
         CleanController(cont[i]);
         CopyController(cont[parents[c]], cont[i]);
         CleanController(cont[i + 1]);
@@ -66,6 +64,11 @@ void BisexualBreeding(int parents[]) {
         if(mut <= kMutationChance) {
           MutateControllers(i, GetRandInt(0,kNumInput -1));
           MutateControllers(i + 1, GetRandInt(0,kNumInput -1));
+        }
+        //ensure the sets aren't messed up
+        for(int var = 0; var < kNumInput;var++){
+          ForceVarBounds(i,var);
+          ForceVarBounds(i + 1, var);
         }
         c += 2;
       }
