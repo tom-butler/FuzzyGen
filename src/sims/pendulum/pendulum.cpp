@@ -23,7 +23,7 @@ const float kCartMoveRadius = 1.8;
 const float kPoleRotationalFriction = 0.008;
 const int   kMaxTime = 500;
 const int kMaxPoleAngle = 91;
-const int kMaxPoleVel = 50;
+const int kMaxPoleVel = 5;
 int ticks;
 float cart_accel_x;
 float pole_angle_accel;
@@ -39,7 +39,7 @@ short int * pendulum_score;
 static FuzzyVar cart_x_set = {-kCartMoveRadius * 10, kCartMoveRadius * 10, 0.0f, 0, 0};
 static FuzzyVar cart_vel_x = {-kMaxSpeed, kMaxSpeed, 0.0f, 0, 0};
 static FuzzyVar pole_angle_set = {-kMaxPoleAngle, kMaxPoleAngle, 0.0f, 0, 0};
-static FuzzyVar pole_angle_vel_set = {-kMaxPoleVel, kMaxPoleVel, 0.0f, 0, 0};
+static FuzzyVar pole_angle_vel_set = {-kMaxPoleVel * 10, kMaxPoleVel * 10, 0.0f, 0, 0};
 
 //Output Sets
 static Accumulator agent_force_set = {-1, 1, 0.0f, 0, 0, 0, 0, 0, 0};
@@ -121,6 +121,7 @@ int PendulumNextStep(int controller) {
   if(ticks < kMaxTime){
 
     *cart_x /= 10;
+    *pole_vel /= 10;
     *agent_force *= 4000.0f;
     float pendulum_cart_accel_x = cart_accel_x;
     float pole_angle_rad = DegToRad(*pole_angle);
@@ -161,7 +162,7 @@ int PendulumNextStep(int controller) {
 
     cart_accel_x = 0.25f * (force + kMassMass * kPoleLength * pole_angle_accel * cos(pole_angle_rad) - kMassMass * kPoleLength * *pole_vel * *pole_vel * sin(pole_angle_rad)) / (kMassMass + kCartMass);
     *cart_vel = *cart_vel - kCartFriction * *cart_vel + cart_accel_x * kDT;
-    *cart_x = *cart_x + *cart_vel * kDT;
+    *cart_x = *cart_x - *cart_vel * kDT;
 
     pole_angle_rad = fmod(pole_angle_rad, 2.0f * PI);
 
@@ -177,10 +178,11 @@ int PendulumNextStep(int controller) {
       *pole_angle = RadToDeg(pole_angle_rad);
 
     *cart_x *= 10;
+    *pole_vel *= 10;
     ForceBounds(*cart_x, -kCartMoveRadius * 10, kCartMoveRadius * 10);
     ForceBounds(*cart_vel, -kMaxSpeed, kMaxSpeed);
     ForceBounds(*pole_angle, -kMaxPoleAngle, kMaxPoleAngle);
-    ForceBounds(*pole_vel, -kMaxPoleVel, kMaxPoleVel);
+    ForceBounds(*pole_vel, -kMaxPoleVel * 10, kMaxPoleVel * 10);
     *agent_force /= 4000.0f;
     score_count += 0.1 * (((kCartMoveRadius * 10) - abs(*cart_x)) / kCartMoveRadius) ;
     //failed

@@ -51,8 +51,8 @@ void BisexualBreeding(int parents[]) {
 
         //cross breed some vars
         for(int b = 0; b < (kNumInput * kBreedPercent); b++) {
-          BreedVars(parents[c + 1], i);
-          BreedVars(parents[c]    , i + 1);
+        //  BreedVars(parents[c + 1], i);
+        //  BreedVars(parents[c]    , i + 1);
         }
         //cross breed some sets
         for(int b = 0; b < (kNumInput * kNumSetsMax * kBreedPercent); b++) {
@@ -65,13 +65,13 @@ void BisexualBreeding(int parents[]) {
           MutateControllers(i, GetRandInt(0,kNumInput -1));
           MutateControllers(i + 1, GetRandInt(0,kNumInput -1));
         }
-        //ensure the sets aren't messed up
-        for(int var = 0; var < kNumInput; var++){
-          ForceVarBounds(i,var);
-          ForceVarBounds(i + 1, var);
-        }
         c += 2;
       }
+    }
+  }
+ for(int i = 0; i < kNumPop; i++){
+    for(int var = 0; var < kNumInput; var++){
+      ForceVarBounds(i, var);
     }
   }
 }

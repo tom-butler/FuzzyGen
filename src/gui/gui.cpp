@@ -18,6 +18,9 @@
 #define BREED 3
 #define FINISH 4
 
+float r[5] = {1.0f,0.2f,0.1f,0.3f,0.8f};
+float g[5] = {0.1f,0.3f,0.0f,1.0f,0.4f};
+float b[5] = {0.3f,0.5f,1.0f,0.0f,0.5f};
 using namespace std;
 
 bool bestOnly = false;
@@ -300,7 +303,7 @@ void DrawCollection(float x, float y, float width, string name, FuzzyVar collect
       glVertex2f(x, y + 1 / 2.5f);
       glVertex2f(x + width, y + 1 / 2.5f);
      glEnd();
-    glColor3f(0.0f, 0.0f, 1.0f);
+    glColor3f(r[i],g[i],b[i]);
     //draw the lines
     glBegin(GL_LINES);
       glVertex2f(x + (centre - l_base), y);
@@ -407,9 +410,9 @@ void DrawCircle(float x, float y, float radius){
 }
 
 void DrawSetValues(int input, float x, float y) {
-  glColor3f(1.0f, 0.0f, 0.0f);
     for(int set = 0; set < cont[controller].input[input].num_sets; set++) {
-      PrintFloat(x,y - (set * 0.3), "height",cont[controller].input[input].sets[set].height);
+      glColor3f(r[set],g[set],b[set]);
+      PrintFloat(x,y - (set * 0.3), "H",cont[controller].input[input].sets[set].height);
       PrintFloat(x,y - (set * 0.3) - 0.04f, "L Base",cont[controller].input[input].sets[set].left_base);
       PrintFloat(x,y - (set * 0.3) - 0.08f, "L Top ",cont[controller].input[input].sets[set].left_top);
       PrintFloat(x,y - (set * 0.3) - 0.12f, "C X   ",cont[controller].input[input].sets[set].centre_x);
@@ -418,4 +421,12 @@ void DrawSetValues(int input, float x, float y) {
       PrintFloat(x,y - (set * 0.3)- 0.24f, "",cont[controller].input[input].low);
       PrintFloat(x + 0.1f ,y - (set * 0.3)- 0.24f, "",cont[controller].input[input].high);
     }
+}
+
+void ResetColor(){
+
+}
+
+void NextColor() {
+
 }

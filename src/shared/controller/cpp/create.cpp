@@ -64,6 +64,14 @@ void CreateSets(int controller, int variable, short int numSets) {
     short int ltop = 0.3 * space + GetRandInt(0.0f, (end - start)* kVariance);
     short int rtop = 0.3 * space + GetRandInt(0.0f, (end - start)* kVariance);
 
+    //literally the only way to force the var on startup, 
+    //an entire day was spent on this
+    if(centre - ltop <= start){
+      ltop = start - centre;
+      lbase = 0;
+    }
+
+
     //build the set
     Set s = {GetRandFloat(kSetHeightMin, kSetHeightMax), centre, lbase, rbase, ltop, rtop};
 

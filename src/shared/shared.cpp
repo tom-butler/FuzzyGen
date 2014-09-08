@@ -59,7 +59,7 @@ using namespace std;
   float     kSetHeightMin         = 0.5; //0 - 1
   float     kSetHeightMax         = 1;   //0 - 1 (higher than min)
 
-  short int kSim                  = /*kHarrierSim;*/ /*kMoonLanderSim;*/ kPendulumCartSim;
+  short int kSim                  = 1;/*kHarrierSim;*/ /*kMoonLanderSim;*//* kPendulumCartSim*/;
   short int kSelect               = /*kSelectHalf;*/ kSelectAvg;
   short int kBreed                = /*kAsexual;*/ kBisexual;
 
@@ -83,7 +83,7 @@ using namespace std;
   Accumulator *simOutput;
   FuzzyVar *simFitness;
   Controller *cont;
-
+void CheckSet(int controller, int var, int set);
 void InitSystem() {
   //seed random
   srand(static_cast <unsigned>(time(0)));
@@ -166,7 +166,7 @@ void ForceVarBounds(int controller, int var) {
     if(kForceSetCoverage){
       //set the first set to be adjusted to the left
       if(i == 0 && set.centre_x - set.left_top != cont[controller].input[var].low){
-        set.left_top = set.centre_x - cont[controller].input[var].low;
+        set.left_top = fabs(cont[controller].input[var].low - set.centre_x);
         set.left_base = set.left_top;
       }
       //set the last set to be adjusted to the right
@@ -192,40 +192,44 @@ void ForceVarBounds(int controller, int var) {
           last.right_base = centre - last.centre_x + overlap1;
           set.left_base = set.centre_x - centre + overlap2;
           cont[controller].input[var].sets[i-1] = last;
+          CheckSet(controller, var, i - 1);
         }
         last = set;
       }
     }
 
-    //centre
-    if(set.centre_x < cont[controller].input[var].low)
+    cont[controller].input[var].sets[i] = set;
+
+    CheckSet(controller, var, i);
+  }
+}
+
+
+void CheckSet(int controller, int var, int s) {
+  Set set = cont[controller].input[var].sets[s];
+    if(set.centre_x <= cont[controller].input[var].low ) {
       set.centre_x = cont[controller].input[var].low;
-    if(set.centre_x > cont[controller].input[var].high)
-      set.centre_x = cont[controller].input[var].low; 
-    if(set.centre_x == cont[controller].input[var].low) {
       set.left_base = 0;
       set.left_top = 0;
     }
-    if(set.centre_x == cont[controller].input[var].high) {
+
+    if(set.centre_x >= cont[controller].input[var].high) {
+      set.centre_x = cont[controller].input[var].high; 
       set.right_base = 0;
       set.right_top = 0;
     }
 
     //top
-    if(set.centre_x - set.left_top < cont[controller].input[var].low)
-      set.left_top = set.centre_x - cont[controller].input[var].low;
-    if(set.centre_x + set.right_top < cont[controller].input[var].low)
-      set.right_top = set.centre_x + cont[controller].input[var].low;
-
-    //base
     
-
-
-    //force set formation
-
-    //SAVE SET
-    cont[controller].input[var].sets[i] = set;
-  }
+    if(set.centre_x - set.left_top <= cont[controller].input[var].low){
+      set.left_top = abs(set.centre_x - cont[controller].input[var].low);
+      set.left_base = 0;
+    }
+    if(set.centre_x + set.right_top >= cont[controller].input[var].high){
+      set.right_top = abs(cont[controller].input[var].high - set.centre_x);
+      set.right_base = 0;
+    }
+    cont[controller].input[var].sets[s] = set;
 }
 
 //clean the controller accumulator variable
@@ -320,5 +324,4 @@ void CopyController(Controller parent, Controller &child) {
       copy(parent.output[o].rules[r].sets , parent.output[o].rules[r].sets + parent.output[o].num_vars , child.output[o].rules[r].sets);
     }
   }
-
 }

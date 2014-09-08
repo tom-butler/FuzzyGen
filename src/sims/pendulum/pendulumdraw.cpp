@@ -86,7 +86,7 @@ void DrawPendulumSim(int window) {
   glEnd();
 
   //cart
-  float x = -1 * ConvertToSimScale(cont[controller].input[0].value, -kCartMoveRadius * 10, kCartMoveRadius * 10);
+  float x = ConvertToSimScale(cont[controller].input[0].value, -kCartMoveRadius * 10, kCartMoveRadius * 10);
   glColor3f(0.0f,0.0f,1.0f);
   glBegin(GL_POLYGON);
     glVertex2f(x - 0.1,-0.9);
