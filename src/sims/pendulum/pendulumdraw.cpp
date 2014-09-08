@@ -16,27 +16,32 @@ void InitPendulumDraw(){
 void DrawPendulumSets(int window) {
   glutSetWindow(window);
   glClear(GL_COLOR_BUFFER_BIT);
-  
-  //Y
-  DrawBestCollection(-0.5,0.5, 0.5f, "CartX", BEST_CONTROLLER.input[0]);
-  DrawCollection(-0.5,0.5, 0.5f, "CartX", cont[controller].input[0]);
-  DrawPlot(-0.5, 0.5, 0.5f);
-  DrawBestCollection(-0.5,0, 0.5f, "Cart Vel", BEST_CONTROLLER.input[1]);
-  DrawCollection(-0.5,0, 0.5f, "Cart Vel", cont[controller].input[1]);
-  DrawPlot(-0.5, 0, 0.5f);
 
+  DrawSetValues(0, -1, 0.5);
+  DrawBestCollection(-0.8,0.5, 0.5f, "CartX", BEST_CONTROLLER.input[0]);
+  DrawCollection(-0.8,0.5, 0.5f, "CartX", cont[controller].input[0]);
+  DrawPlot(-0.8, 0.5, 0.5f);
+
+  DrawSetValues(1, -1, -0.5);
+  DrawBestCollection(-0.8,0, 0.5f, "Cart Vel", BEST_CONTROLLER.input[1]);
+  DrawCollection(-0.8,0, 0.5f, "Cart Vel", cont[controller].input[1]);
+  DrawPlot(-0.8, 0, 0.5f);
+
+  DrawSetValues(2, -0.2, 0.5);
   DrawBestCollection(0, 0.5, 0.5f, "Pole Angle", BEST_CONTROLLER.input[2]);
   DrawCollection(0,0.5, 0.5f, "Pole Angle", cont[controller].input[2]);
   DrawPlot(0, 0.5, 0.5f);
+
+  DrawSetValues(3, -0.2, -0.5);
   DrawBestCollection(0, 0, 0.5f, "Pole Vel", BEST_CONTROLLER.input[3]);
   DrawCollection(0,0, 0.5f, "Pole Vel", cont[controller].input[3]);
   DrawPlot(0, 0, 0.5f);
   //rules
   DrawRules(0.5f, 0.95f, controller, 0);
   //draw accumulator
-  DrawPlot(-1, -0.999, 1);
-  DrawAccumulator(-1, -0.999, "Force", cont[controller].output[0]);
-  PrintFloat(-0.3,-0.99,"Rules",cont[controller].output[0].num_rules);
+  DrawPlot(-0.8, -1, 1);
+  DrawAccumulator(-0.8, -1, "Force", cont[controller].output[0]);
+  PrintFloat(0.2,-1,"Rules",cont[controller].output[0].num_rules);
   
 }
 
@@ -99,7 +104,7 @@ void DrawPendulumSim(int window) {
   float angle = DegToRad(90 - cont[controller].input[2].value);
   float xx = x + rod_length * cos(angle);
   float yy = -0.8 + rod_length * sin(angle);
-  DrawCircle(xx,yy,kMassMass * 0.001f);
+  DrawCircle(xx,yy,kMassMass * 0.002f);
   //thrust
   glBegin(GL_LINES);
     glVertex2f(x, -0.8);

@@ -24,8 +24,8 @@ using namespace std;
   short int kNumTests             = 3;
 
   bool kElitism                   = false;
-  float kForceSetOverlap          = 0.5f; //0 for none
-  bool kForceSetCoverage          = true;
+  float kForceSetOverlap          = 0.3f; //0 for none
+  bool kForceSetCoverage          = false;
 
   //mutation
   float kMutationChance           = 0.5f;
@@ -158,15 +158,18 @@ float Intersect(float x1, float y1, float x2, float y2, float value) {
 }
 
 void ForceVarBounds(int controller, int var) {
+
   Set last;
-  for(int i = 0; i < cont[controller].input[var].num_sets; ++i){
+  for(int i = 0; i < cont[controller].input[var].num_sets; i++){
     Set set = cont[controller].input[var].sets[i];
 
     if(kForceSetCoverage){
+      //set the first set to be adjusted to the left
       if(i == 0 && set.centre_x - set.left_top != cont[controller].input[var].low){
         set.left_top = set.centre_x - cont[controller].input[var].low;
         set.left_base = set.left_top;
       }
+      //set the last set to be adjusted to the right
       if(i == cont[controller].input[var].num_sets -1 && set.centre_x + set.right_top != cont[controller].input[var].high){
         set.right_top = cont[controller].input[var].high -  set.centre_x;
         set.right_base = set.right_top;
@@ -175,8 +178,9 @@ void ForceVarBounds(int controller, int var) {
 
     //check overlap
     if(kForceSetOverlap > 0.0f){
-      if(i == 0)
+      if(i == 0) {
         last = set;
+      }
       else{
         //if the sets overlap less that FORCE_OVERLAP stretch them out
         if((last.centre_x + last.right_base - set.centre_x - set.left_base < (last.right_base) * kForceSetOverlap) ||
@@ -193,39 +197,32 @@ void ForceVarBounds(int controller, int var) {
       }
     }
 
-    //ensure they are in bounds
+    //centre
     if(set.centre_x < cont[controller].input[var].low)
       set.centre_x = cont[controller].input[var].low;
     if(set.centre_x > cont[controller].input[var].high)
-      set.centre_x = cont[controller].input[var].high;
+      set.centre_x = cont[controller].input[var].low; 
+    if(set.centre_x == cont[controller].input[var].low) {
+      set.left_base = 0;
+      set.left_top = 0;
+    }
+    if(set.centre_x == cont[controller].input[var].high) {
+      set.right_base = 0;
+      set.right_top = 0;
+    }
 
+    //top
     if(set.centre_x - set.left_top < cont[controller].input[var].low)
       set.left_top = set.centre_x - cont[controller].input[var].low;
-    if(set.centre_x + set.right_top > cont[controller].input[var].high)
-      set.right_top = cont[controller].input[var].high - set.centre_x;
+    if(set.centre_x + set.right_top < cont[controller].input[var].low)
+      set.right_top = set.centre_x + cont[controller].input[var].low;
+
+    //base
+    
+
 
     //force set formation
-    if(set.left_top > set.left_base)
-      set.left_base = set.left_top;
-    if(set.right_top > set.right_base)
-      set.right_base = set.right_top;
 
-    if(set.centre_x - set.left_base < cont[controller].input[var].low)
-      set.left_base = set.centre_x - cont[controller].input[var].low;
-    if(set.centre_x + set.right_base > cont[controller].input[var].high)
-      set.right_base = cont[controller].input[var].high - set.centre_x;
-
-    if(set.left_top < 0)
-      set.left_top = 0;
-    if(set.right_top < 0)
-      set.right_top = 0;
-    if(set.left_base < 0)
-      set.left_base = 0;
-    if(set.right_base < 0)
-      set.right_base = 0;
-
-
-    //check relational compliance
     //SAVE SET
     cont[controller].input[var].sets[i] = set;
   }

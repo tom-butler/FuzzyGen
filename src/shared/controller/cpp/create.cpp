@@ -64,24 +64,15 @@ void CreateSets(int controller, int variable, short int numSets) {
     short int ltop = 0.3 * space + GetRandInt(0.0f, (end - start)* kVariance);
     short int rtop = 0.3 * space + GetRandInt(0.0f, (end - start)* kVariance);
 
-    //check set variables for compliance
-    if(centre - ltop < start) {
-      ltop = centre - start;
-      lbase = centre - start;
-    }
-    if(rtop + centre > end) {
-      rtop = end - centre;
-      rbase = end - centre;
-    }
-
     //build the set
     Set s = {GetRandFloat(kSetHeightMin, kSetHeightMax), centre, lbase, rbase, ltop, rtop};
 
-      cont[controller].input[variable].sets[j] = s;
+    cont[controller].input[variable].sets[j] = s;
     //increment the centre for next set
     centre += space;
   }
   cont[controller].input[variable].num_sets = numSets;
+  ForceVarBounds(controller,variable);
 }
 
 void CreateRules(int controller, int accumulator) {

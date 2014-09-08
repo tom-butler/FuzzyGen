@@ -22,8 +22,8 @@ const float kMaxSpeed = 3.0;
 const float kCartMoveRadius = 1.8;
 const float kPoleRotationalFriction = 0.008;
 const int   kMaxTime = 500;
-const int kMaxPoleAngle = 90;
-const int kMaxPoleVel = 5;
+const int kMaxPoleAngle = 91;
+const int kMaxPoleVel = 50;
 int ticks;
 float cart_accel_x;
 float pole_angle_accel;
@@ -87,7 +87,12 @@ void PendulumInitSim(int controller) {
 
   //random
   if(kRandomStart) {
-    *cart_x = GetRandFloat((-kCartMoveRadius * 10)* 0.7,(kCartMoveRadius * 10)* 0.7);
+    //give us a random location in the outer quarters 
+    //to minimise the system landing on 0 and getting a high score doing nothing
+    *cart_x = GetRandFloat((kCartMoveRadius * 10)* 0.5, (kCartMoveRadius * 10));
+    if(GetRandInt(0, 1) == 0)
+      *cart_x *= -1;
+
     *pole_angle = GetRandFloat(-kMaxPoleAngle * 0.3,kMaxPoleAngle * 0.3 );
   }
   else {
@@ -165,7 +170,6 @@ int PendulumNextStep(int controller) {
     if (pole_angle_rad > 2 * PI)
       pole_angle_rad -= 2 * PI;
 
-    ForceBounds(*cart_vel, -kMaxSpeed, kMaxSpeed);
 
     if(pole_angle_rad > 1.5f * PI)
       *pole_angle = RadToDeg(pole_angle_rad - (2 * PI));
@@ -174,6 +178,9 @@ int PendulumNextStep(int controller) {
 
     *cart_x *= 10;
     ForceBounds(*cart_x, -kCartMoveRadius * 10, kCartMoveRadius * 10);
+    ForceBounds(*cart_vel, -kMaxSpeed, kMaxSpeed);
+    ForceBounds(*pole_angle, -kMaxPoleAngle, kMaxPoleAngle);
+    ForceBounds(*pole_vel, -kMaxPoleVel, kMaxPoleVel);
     *agent_force /= 4000.0f;
     score_count += 0.1 * (((kCartMoveRadius * 10) - abs(*cart_x)) / kCartMoveRadius) ;
     //failed

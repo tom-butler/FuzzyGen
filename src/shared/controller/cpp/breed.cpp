@@ -66,7 +66,7 @@ void BisexualBreeding(int parents[]) {
           MutateControllers(i + 1, GetRandInt(0,kNumInput -1));
         }
         //ensure the sets aren't messed up
-        for(int var = 0; var < kNumInput;var++){
+        for(int var = 0; var < kNumInput; var++){
           ForceVarBounds(i,var);
           ForceVarBounds(i + 1, var);
         }
@@ -86,7 +86,7 @@ void BreedVars(int parent, int child){
   
   //regen any rules in accumulator that uses the random var
   for(int o = 0; o < kNumOutput; o++){
-    for(int v = 0; v < cont[child].output[o].num_vars; ++v){
+    for(int v = 0; v < cont[child].output[o].num_vars; v++){
       if(cont[child].output[o].vars[v] == random){
 
         //clean the existing rules
@@ -120,6 +120,4 @@ void BreedSets(int parent, int child){
   float old_centre = cont[child].input[random].sets[child_set].centre_x;
   cont[child].input[random].sets[child_set] = cont[parent].input[random].sets[parent_set];
   cont[child].input[random].sets[child_set].centre_x = old_centre;
-
-  ForceVarBounds(child, random);  
 }

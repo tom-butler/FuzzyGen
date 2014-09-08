@@ -263,7 +263,7 @@ void DrawAccumulator(float x, float y, string name, Accumulator output) {
     glEnd();
   }
   //draw output
-  glColor3f(1.0f, 0.0f, 0.0f);
+  glColor3f(1.0f, 1.0f, 0.0f);
   float xPos = x + (output.output - output.low) * xScale;
   glBegin(GL_LINES);
     glVertex2f(xPos, y + 0.51f);
@@ -278,7 +278,6 @@ void DrawCollection(float x, float y, float width, string name, FuzzyVar collect
   //find the appropriate scale
   float scale = (collection.high - collection.low) / width;
   // for height
-
   for(int i = 0; i < collection.num_sets;i++) {
     //scale the points
     float centre = collection.sets[i].centre_x - collection.low;
@@ -301,6 +300,7 @@ void DrawCollection(float x, float y, float width, string name, FuzzyVar collect
       glVertex2f(x, y + 1 / 2.5f);
       glVertex2f(x + width, y + 1 / 2.5f);
      glEnd();
+    glColor3f(0.0f, 0.0f, 1.0f);
     //draw the lines
     glBegin(GL_LINES);
       glVertex2f(x + (centre - l_base), y);
@@ -404,4 +404,18 @@ void DrawCircle(float x, float y, float radius){
       glVertex2f(cx,cy);
     }
   glEnd();
+}
+
+void DrawSetValues(int input, float x, float y) {
+  glColor3f(1.0f, 0.0f, 0.0f);
+    for(int set = 0; set < cont[controller].input[input].num_sets; set++) {
+      PrintFloat(x,y - (set * 0.3), "height",cont[controller].input[input].sets[set].height);
+      PrintFloat(x,y - (set * 0.3) - 0.04f, "L Base",cont[controller].input[input].sets[set].left_base);
+      PrintFloat(x,y - (set * 0.3) - 0.08f, "L Top ",cont[controller].input[input].sets[set].left_top);
+      PrintFloat(x,y - (set * 0.3) - 0.12f, "C X   ",cont[controller].input[input].sets[set].centre_x);
+      PrintFloat(x,y - (set * 0.3) - 0.16f, "R Top ",cont[controller].input[input].sets[set].right_top);
+      PrintFloat(x,y - (set * 0.3) - 0.2f, "R Base",cont[controller].input[input].sets[set].right_base);
+      PrintFloat(x,y - (set * 0.3)- 0.24f, "",cont[controller].input[input].low);
+      PrintFloat(x + 0.1f ,y - (set * 0.3)- 0.24f, "",cont[controller].input[input].high);
+    }
 }
