@@ -16,15 +16,15 @@ using namespace std;
   //define the standard options ----------------
 
   //genetic
-  short int kNumPop               = 500; 
-  short int kNumGenerations       = 500; 
+  short int kNumPop               = 100; 
+  short int kNumGenerations       = 100; 
   bool kIncludeControl            = false;
   bool kLogging                   = true;
   bool kRandomStart               = true;
   short int kNumTests             = 3;
 
   bool kElitism                   = false;
-  float kForceSetOverlap          = 0.3f; //0 for none
+  float kForceSetOverlap          = 0.5f; //0 for none
   bool kForceSetCoverage          = false;
 
   //mutation
@@ -207,29 +207,18 @@ void ForceVarBounds(int controller, int var) {
 
 void CheckSet(int controller, int var, int s) {
   Set set = cont[controller].input[var].sets[s];
-    if(set.centre_x <= cont[controller].input[var].low ) {
-      set.centre_x = cont[controller].input[var].low;
-      set.left_base = 0;
-      set.left_top = 0;
-    }
 
-    if(set.centre_x >= cont[controller].input[var].high) {
-      set.centre_x = cont[controller].input[var].high; 
-      set.right_base = 0;
-      set.right_top = 0;
-    }
+  ForceBounds(set.centre_x,cont[controller].input[var].low, cont[controller].input[var].high);
 
-    //top
-    
-    if(set.centre_x - set.left_top <= cont[controller].input[var].low){
-      set.left_top = abs(set.centre_x - cont[controller].input[var].low);
-      set.left_base = 0;
-    }
-    if(set.centre_x + set.right_top >= cont[controller].input[var].high){
-      set.right_top = abs(cont[controller].input[var].high - set.centre_x);
-      set.right_base = 0;
-    }
-    cont[controller].input[var].sets[s] = set;
+  ForceBounds(set.left_top, 0, abs(cont[controller].input[var].low - set.centre_x));
+  ForceBounds(set.left_base, 0, abs(cont[controller].input[var].low - set.centre_x));
+  ForceBounds(set.left_top, 0, set.left_base);
+
+  ForceBounds(set.right_top, 0, abs(cont[controller].input[var].high - set.centre_x));
+  ForceBounds(set.right_base, 0, abs(cont[controller].input[var].high - set.centre_x));
+  ForceBounds(set.right_top, 0, set.right_base);
+  
+  cont[controller].input[var].sets[s] = set;
 }
 
 //clean the controller accumulator variable

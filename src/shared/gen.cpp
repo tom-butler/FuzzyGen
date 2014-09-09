@@ -35,7 +35,7 @@ void Breed() {
 
 void UpdateLog(int g){
   ostringstream ss;
-  ss << g << "," << BEST_SCORE << "," << BEST_GEN << "," << AVG_GEN << "," << LOW_GEN << "\n";
+  ss << g << "," << BEST_SCORE << "," << BEST_GEN_SCORE << "," << AVG_GEN << "," << LOW_GEN << "\n";
   string text(ss.str());
   LOG[g] = text;
 }
