@@ -33,14 +33,14 @@ void Breed() {
   Select();
 }
 
-void UpdateLog(int g){
+void UpdateLog(int g) {
   ostringstream ss;
   ss << g << "," << BEST_SCORE << "," << BEST_GEN_SCORE << "," << AVG_GEN << "," << LOW_GEN << "\n";
   string text(ss.str());
   LOG[g] = text;
 }
 
-void WriteLog(){
+void WriteLog() {
 
     time_t now = time(0);
     ostringstream ss;

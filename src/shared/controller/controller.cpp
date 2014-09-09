@@ -5,12 +5,12 @@
 #include "h\run.h"
 #include "h\select.h"
 
-void Create(int num, FuzzyVar input[], Accumulator output[]){
+void Create(int num, FuzzyVar input[], Accumulator output[]) {
   CreateControllers(num,input,output);
 }
-void Run(int controller){
+void Run(int controller) {
   RunController(controller);
 }
-void Select(){
+void Select() {
   SelectControllers();
 }

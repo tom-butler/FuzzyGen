@@ -9,12 +9,12 @@
 
 using namespace std;
 
+void AsexualBreeding(int parents[]);
+void BisexualBreeding(int parents[]);
+
 void BreedVars(int id1, int id2);
 void BreedSets(int id1, int id2);
 void BreedRules(int id1, int id2);
-
-void AsexualBreeding(int parents[]);
-void BisexualBreeding(int parents[]);
 
 void BreedControllers(int parents[]){
   if(kBreed == kAsexual)

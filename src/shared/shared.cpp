@@ -146,7 +146,7 @@ float GetRandFloat(float low, float high) {
   return low + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(high-low)));
 }
 
-float Lerp(float value, float low, float high){
+float Lerp(float value, float low, float high) {
   return low + (value*(high - low));
 }
 
@@ -256,7 +256,7 @@ void CleanController(Controller &controller) {
   CleanSets(controller);
 }
 
-void CleanAccumulators(Controller &controller){
+void CleanAccumulators(Controller &controller) {
   for(int o = 0; o < kNumOutput; o++) {
     CleanRules(controller, o);
   }

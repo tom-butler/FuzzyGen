@@ -1,0 +1,146 @@
+This file gives details on each file and its components:
+
+/build : Holds the object files created during make, used to minimise build time
+
+/libs  : Holds External libs
+
+/libs/catch.hpp  : Single include file of the catch testing framework
+
+/logs  : Holds all logs recorded after a system run
+
+/logs/controller : records the controller values at the end of a run
+
+/logs/gen : records the statistics of each generation per run
+
+/logs/input : records the input used in a run
+
+/logs/rule : records the rule values of each controller at the end of the run
+
+/logs/set : records the set values of each controller at the end of the run
+
+/logs/var : records the variable valus of each controller at the end of the run
+
+/src : holds all internal source files
+
+/src/cmd : holds cmd-line ui builds front end
+
+/src/cmd/cmd.cpp : The command line ui
+	- int main(int argc, char *argv[])
+	- void GALoop()
+
+/src/cmd/catch.cpp : the unit testing build
+
+/src/gui : the free-glut front end build
+
+/src/gui/gui.(cpp|h) : The ui and ui util functions
+	- void ProcessNormalKeys(unsigned char key, int x, int y)
+	- void ProcessSpecialKeys(int key, int x, int y)
+	- void Display() 
+	- void Idle()
+	- void InitNextController()
+	- void RunAll()
+	+ void DrawPlot(float x, float y, float width)
+	+ void DrawAccumulator(float x, float y, string name, Accumulator output) 
+	+ void DrawCollection(float x, float y, float width, string name, FuzzyVar collection)
+	+ void DrawBestCollection(float x, float y, float width, string name, FuzzyVar collection)
+	+ void PrintFloat(float x, float y, string name, float value)
+	+ void DrawRules(float x, float y, int controller, int accumulator)
+	float ConvertToSimScale(float var, float min, float max)
+	+ void DrawCircle(float x, float y, float radius)
+	+ void DrawSetValues(int input, float x, float y)
+
+/src/shared : Shared logic used in both cmd and gui builds
+
+/src/shared/gen.(cpp|h) : Common interface of system for ui and cmd
+	+ void InitControllers()
+	+ void InitSimulation(int controller)
+	+ int RunSim(int controller)
+	+ void Breed()
+	+ void UpdateLog(int g)
+	+ void WriteLog()
+
+/src/shared/shared.cpp : defines shared variables, structures and functions for the system
+	+ void InitSystem()
+	+ int InitTest(int test)
+	+ short int GetRandInt(short int low, short int high)
+	+ float GetRandFloat(float low, float high)
+	+ float Lerp(float value, float low, float high)
+	+ float Intersect(float x1, float y1, float x2, float y2, float value)
+	+ void ForceVarBounds(int controller, int var)
+	- void CheckSet(int controller, int var, int s)
+	+ void ResetAccumulator(int controller, int accumulator)
+	+ float DegToRad(float deg)
+	+ float RadToDeg(float rad)
+	+ double sqr(double value)
+	+ void ForceBounds(float &var, float min, float max)
+	+ void CleanController(Controller &controller)
+	+ void CleanAccumulators(Controller &controller)
+	+ void CleanSets(Controller &controller)
+	+ void CleanRules(Controller &controller, int output)
+	+ void CopyController(Controller parent, Controller &child)
+
+/src/shared/controller/ : contains the controller logic
+
+/src/shared/controller/controller.(cpp|h) interface to the controller components
+	+ void Create(int num, FuzzyVar input[], Accumulator output[])
+	+ void Run(int controller)
+	+ void Select()
+
+/src/shared/controller/h : contains the header files of the controller components
+
+/src/shared/controller/cpp : contains the .cpp files of the controller components
+
+/src/shared/controller/cpp/breed.cpp : Manages controller breeding
+	+ void BreedControllers(int parents[])
+ 	- void AsexualBreeding(int parents[])
+	- void BisexualBreeding(int parents[])
+	- void BreedVars(int id1, int id2)
+	- void BreedSets(int id1, int id2)
+	- void BreedRules(int id1, int id2)
+
+/src/shared/controller/cpp/create.cpp : Manages the createion of controllers
+	+ void CreateControllers(int num_controllers, FuzzyVar input[], Accumulator output[])
+	- void CreateSets(int controller, int variable, short int numSets)
+	+ void CreateRules(int controller, int accumulator)
+
+/src/shared/controller/cpp/mutate.cpp : Manages mutation of controllers during the breeding process
+	+ void MutateControllers(int id, int var)
+	- void MutateCol(int controller, int var)
+	- void MutateSet(int controller, int var, int setID)
+	- void MutateRules(int controller, int accumulator)
+	- void MutateRule(int controller, int accumulator, int ruleID)
+
+/src/shared/controller/cpp/run.cpp : Manages the runtime systems of a controller
+	+ void RunController(int controller)
+	- float EvaluateRule(int controller, int accumulator, int rule)
+	- float EvaluateSet(int controller, int inputVar, int setID, int variable)
+	- void EvaluateOutput(int controller, int accumulator)
+
+/src/shared/controller/cpp/select.cpp : Selects which controllers move forward to the breed process
+	+ void SelectControllers()
+	- void SelectHalf();
+	- void SelectAvg(float avg);
+
+/src/sims : Holds the user generated simulations and interfaces
+
+/src/sims/sim.(cpp|h) : Interface to the simulations
+	+ void SimCreateSim()
+	+ void SimInitSim(int controller)
+	+ int SimNextStep(int controller)
+	+ void SimControlController(int controller, FuzzyVar input[], Accumulator output[])
+
+/src/sims/simgui.(cpp|h) : Extra Interface for the gui
+	+ void DrawSim() 
+/src/sims/_template : template files that can be used to create a sim
+
+/src/sims/_template/template.(cpp|h) : simulation logic
+	+ void TemplateCreateVars()
+	+ void TemplateInitSim(int controller)
+	+ int TemplateNextStep(int controller)
+	+ void TemplateControlController(int controller, FuzzyVar input[], Accumulator output[])
+
+/src/sims/pendulum : Inverted Pendulum Cart simulation files, (as above in template)
+
+/src/sims/harrier : Harrier Jet simulation files, (as above in template)
+
+/src/sims/moon : Moonlander simulation files, (as above in template)

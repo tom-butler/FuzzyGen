@@ -203,7 +203,7 @@ void InitNextController() {
   result = -1;
   state = 2;
 }
-void RunAll(){
+void RunAll() {
   BEST_GEN_SCORE = 0;
   for(int c = 0; c < kNumPop; ++c) {
     int multiscore = 0;
@@ -238,7 +238,7 @@ void RunAll(){
  *util functions
  */
 
-void DrawPlot(float x, float y, float width){
+void DrawPlot(float x, float y, float width) {
   glColor3f(1.0f, 0.0f, 0.0f);
   //draw x plane
   glBegin(GL_LINES);
@@ -392,10 +392,10 @@ void DrawRules(float x, float y, int controller, int accumulator) {
   }
 }
 
-float ConvertToSimScale(float var, float min, float max){
+float ConvertToSimScale(float var, float min, float max) {
   return (((var - min) * 2) / (max - min)) - 1.0f;
 }
-void DrawCircle(float x, float y, float radius){
+void DrawCircle(float x, float y, float radius) {
   glBegin(GL_POLYGON);
     float cx = x + (float)radius * cos(359 * 3.14159f/180.0f);
     float cy = y + (float)radius * sin(359 * 3.14159f/180.0f);
@@ -421,12 +421,4 @@ void DrawSetValues(int input, float x, float y) {
       PrintFloat(x,y - (set * 0.3)- 0.24f, "",cont[controller].input[input].low);
       PrintFloat(x + 0.1f ,y - (set * 0.3)- 0.24f, "",cont[controller].input[input].high);
     }
-}
-
-void ResetColor(){
-
-}
-
-void NextColor() {
-
 }

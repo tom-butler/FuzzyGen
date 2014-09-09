@@ -6,9 +6,6 @@
 #include "pendulum\pendulumdraw.h"
 
 
-void DrawMoonSets(int window);
-void DrawMoonSim(int window);
-
 bool isInit = false;
 int sets;
 int vars;
