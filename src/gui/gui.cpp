@@ -372,11 +372,10 @@ void DrawRules(float x, float y, int controller, int accumulator) {
     else
       glColor3f(1.0f, 0.0f, 0.0f);
     ostringstream ss;
-    ss << "IF ";
     for(int s = 0; s < cont[controller].output[accumulator].num_vars; s++){
-      ss << cont[controller].output[accumulator].rules[i].sets[s] << " ";
+      ss << cont[controller].output[accumulator].rules[i].sets[s] << "";
     }
-    ss << "THEN " << setprecision(2) << cont[controller].output[accumulator].rules[i].output;
+    ss << " " <<  setprecision(2) << cont[controller].output[accumulator].rules[i].output;
     string text(ss.str());
     glRasterPos2f(x, y + (0.04f * -i));
     glutBitmapString(GLUT_BITMAP_8_BY_13, (const unsigned char *) text.c_str());
@@ -387,7 +386,7 @@ void DrawRules(float x, float y, int controller, int accumulator) {
     ss << setprecision(2) << cont[BEST_GEN_CONTROLLER].output[accumulator].rules[i].output;
     string text(ss.str());
     glColor3f(0.2f, 0.2f, 0.2f);
-    glRasterPos2f(x + 0.4f, y + (0.04f * -i));
+    glRasterPos2f(x + 0.25f, y + (0.04f * -i));
     glutBitmapString(GLUT_BITMAP_8_BY_13, (const unsigned char *) text.c_str());
   }
 }
@@ -410,15 +409,15 @@ void DrawCircle(float x, float y, float radius) {
 }
 
 void DrawSetValues(int input, float x, float y) {
-    for(int set = 0; set < cont[controller].input[input].num_sets; set++) {
-      glColor3f(r[set],g[set],b[set]);
-      PrintFloat(x,y - (set * 0.3), "H",cont[controller].input[input].sets[set].height);
-      PrintFloat(x,y - (set * 0.3) - 0.04f, "L Base",cont[controller].input[input].sets[set].left_base);
-      PrintFloat(x,y - (set * 0.3) - 0.08f, "L Top ",cont[controller].input[input].sets[set].left_top);
-      PrintFloat(x,y - (set * 0.3) - 0.12f, "C X   ",cont[controller].input[input].sets[set].centre_x);
-      PrintFloat(x,y - (set * 0.3) - 0.16f, "R Top ",cont[controller].input[input].sets[set].right_top);
-      PrintFloat(x,y - (set * 0.3) - 0.2f, "R Base",cont[controller].input[input].sets[set].right_base);
-      PrintFloat(x,y - (set * 0.3)- 0.24f, "",cont[controller].input[input].low);
-      PrintFloat(x + 0.1f ,y - (set * 0.3)- 0.24f, "",cont[controller].input[input].high);
-    }
+    PrintFloat(x,y, "",cont[controller].input[input].low);
+    PrintFloat(x + 0.21,y, "",cont[controller].input[input].high);
+  for(int set = 0; set < cont[controller].input[input].num_sets; set++) {
+    glColor3f(r[set],g[set],b[set]);
+    PrintFloat(x,y - (set * 0.3) - 0.04, "Height",cont[controller].input[input].sets[set].height);
+    PrintFloat(x,y - (set * 0.3) - 0.08f, "LBase",cont[controller].input[input].sets[set].left_base);
+    PrintFloat(x + 0.2,y - (set * 0.3) - 0.08f, "LTop",cont[controller].input[input].sets[set].left_top);
+    PrintFloat(x,y - (set * 0.3) - 0.12f, "C X   ",cont[controller].input[input].sets[set].centre_x);
+    PrintFloat(x,y - (set * 0.3) - 0.16f, "RTop",cont[controller].input[input].sets[set].right_top);
+    PrintFloat(x + 0.2,y - (set * 0.3) - 0.16f, "RBase",cont[controller].input[input].sets[set].right_base);
+  }
 }

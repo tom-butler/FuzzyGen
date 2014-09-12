@@ -17,32 +17,31 @@ void DrawPendulumSets(int window) {
   glutSetWindow(window);
   glClear(GL_COLOR_BUFFER_BIT);
 
-  DrawSetValues(0, -1, 0.5);
-  DrawBestCollection(-0.8,0.5, 0.5f, "CartX", BEST_CONTROLLER.input[0]);
-  DrawCollection(-0.8,0.5, 0.5f, "CartX", cont[controller].input[0]);
-  DrawPlot(-0.8, 0.5, 0.5f);
+  DrawSetValues(0, -1, 0);
+  DrawBestCollection(-1,0.5, 0.4f, "CartX", BEST_CONTROLLER.input[0]);
+  DrawCollection(-1,0.5, 0.4f, "CartX", cont[controller].input[0]);
+  DrawPlot(-1, 0.5, 0.4f);
 
-  DrawSetValues(1, -1, -0.5);
-  DrawBestCollection(-0.8,0, 0.5f, "Cart Vel", BEST_CONTROLLER.input[1]);
-  DrawCollection(-0.8,0, 0.5f, "Cart Vel", cont[controller].input[1]);
-  DrawPlot(-0.8, 0, 0.5f);
+  DrawSetValues(1, -0.6, 0);
+  DrawBestCollection(-0.6,0.5, 0.4f, "Cart Vel", BEST_CONTROLLER.input[1]);
+  DrawCollection(-0.6,0.5, 0.4f, "Cart Vel", cont[controller].input[1]);
+  DrawPlot(-0.6, 0.5, 0.4f);
 
-  DrawSetValues(2, -0.2, 0.5);
-  DrawBestCollection(0, 0.5, 0.5f, "Pole Angle", BEST_CONTROLLER.input[2]);
-  DrawCollection(0,0.5, 0.5f, "Pole Angle", cont[controller].input[2]);
-  DrawPlot(0, 0.5, 0.5f);
+  DrawSetValues(2, -0.2, 0);
+  DrawBestCollection(-0.2, 0.5, 0.4f, "Pole Angle", BEST_CONTROLLER.input[2]);
+  DrawCollection(-0.2,0.5, 0.4f, "Pole Angle", cont[controller].input[2]);
+  DrawPlot(-0.2, 0.5, 0.4f);
 
-  DrawSetValues(3, -0.2, -0.5);
-  DrawBestCollection(0, 0, 0.5f, "Pole Vel", BEST_CONTROLLER.input[3]);
-  DrawCollection(0,0, 0.5f, "Pole Vel", cont[controller].input[3]);
-  DrawPlot(0, 0, 0.5f);
-  //rules
-  DrawRules(0.5f, 0.95f, controller, 0);
+  DrawSetValues(3, 0.2, 0);
+  DrawBestCollection(0.2, 0.5, 0.4f, "Pole Vel", BEST_CONTROLLER.input[3]);
+  DrawCollection(0.2,0.5, 0.4f, "Pole Vel", cont[controller].input[3]);
+  DrawPlot(0.2, 0.5, 0.4f);
+
+  DrawRules(0.6f, 0.95f, controller, 0);
   //draw accumulator
-  DrawPlot(-0.8, -1, 1);
-  DrawAccumulator(-0.8, -1, "Force", cont[controller].output[0]);
+  DrawPlot(-1, -1, 1);
+  DrawAccumulator(-1, -1, "Force", cont[controller].output[0]);
   PrintFloat(0.2,-1,"Rules",cont[controller].output[0].num_rules);
-  
 }
 
 void DrawPendulumSim(int window) {

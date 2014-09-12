@@ -11,7 +11,7 @@ SIM_DIR = src\sims
 
 all: cmd
 
-t: test clean
+t: test
 
 g: gui
 
@@ -27,11 +27,11 @@ $(BUILD_DIR)\cmd.o: $(CMD_DIR)\cmd.cpp
 	g++ -o $(BUILD_DIR)\cmd.o -c -g $(CMD_DIR)\cmd.cpp -m64
 
 #TEST BUILD
-test: $(BUILD_DIR)\test.o $(BUILD_DIR)\controller.o $(BUILD_DIR)\moon.o $(BUILD_DIR)\gen.o $(BUILD_DIR)\shared.o
-	g++ -o $(BIN_DIR)\test $(BUILD_DIR)\test.o $(BUILD_DIR)\controller.o $(BUILD_DIR)\moon.o $(BUILD_DIR)\shared.o $(BUILD_DIR)\gen.o
+test: $(BUILD_DIR)\test.o $(BUILD_DIR)\gen.o $(BUILD_DIR)\shared.o $(BUILD_DIR)\controller.o $(BUILD_DIR)\breed.o $(BUILD_DIR)\create.o $(BUILD_DIR)\mutate.o $(BUILD_DIR)\run.o $(BUILD_DIR)\select.o $(BUILD_DIR)\sim.o $(BUILD_DIR)\moon.o $(BUILD_DIR)\harrier.o $(BUILD_DIR)\pendulum.o
+	g++ -o $(BIN_DIR)\test $(BUILD_DIR)\test.o $(BUILD_DIR)\gen.o $(BUILD_DIR)\shared.o $(BUILD_DIR)\controller.o $(BUILD_DIR)\breed.o $(BUILD_DIR)\create.o $(BUILD_DIR)\mutate.o $(BUILD_DIR)\run.o $(BUILD_DIR)\select.o $(BUILD_DIR)\sim.o $(BUILD_DIR)\moon.o $(BUILD_DIR)\harrier.o $(BUILD_DIR)\pendulum.o -m64
 
 $(BUILD_DIR)\test.o: $(CMD_DIR)\test.cpp
-	g++ -o $(BIN_DIR)\test.o -c -g $(CMD_DIR)\test.cpp -m64
+	g++ -o $(BUILD_DIR)\test.o -c -g $(CMD_DIR)\test.cpp -m64
 
 #GRAPHICAL USER INTERFACE
 gui: $(BUILD_DIR)\gui.o $(BUILD_DIR)\simgui.o $(BUILD_DIR)\gen.o $(BUILD_DIR)\shared.o $(BUILD_DIR)\controller.o $(BUILD_DIR)\breed.o $(BUILD_DIR)\create.o $(BUILD_DIR)\mutate.o $(BUILD_DIR)\run.o $(BUILD_DIR)\select.o $(BUILD_DIR)\sim.o $(BUILD_DIR)\moon.o $(BUILD_DIR)\moondraw.o $(BUILD_DIR)\harrier.o $(BUILD_DIR)\harrierdraw.o $(BUILD_DIR)\pendulum.o $(BUILD_DIR)\pendulumdraw.o

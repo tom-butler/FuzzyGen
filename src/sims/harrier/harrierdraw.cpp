@@ -42,13 +42,14 @@ void DrawHarrierSets(int window) {
   DrawBestCollection(0,0.5f, 0.5f, "SafeDist", BEST_CONTROLLER.input[3]);
   DrawCollection(0,0.5f, 0.5f, "SafeDist", cont[controller].input[3]);
   DrawPlot(0, 0.5f, 0.5f);
-  //rules
+    //rules
   DrawRules(0.5f, 0.95f, controller, 1);
   //draw accumulator
   DrawPlot(0, -0.999, 1);
   PrintFloat(0,-0.5,"Rules",cont[controller].output[0].num_rules);
   DrawAccumulator(0, -0.999, "Vector", cont[controller].output[1]);
 }
+
 
 void DrawHarrierSim(int window) {
   glutSetWindow(window);

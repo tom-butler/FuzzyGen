@@ -152,9 +152,13 @@ float Lerp(float value, float low, float high) {
 
 float Intersect(float x1, float y1, float x2, float y2, float value) {
   //find the percentage by the x values
-  float v = ((value - x1)/(x2 - x1));
+  //float v = ((value - x1)/(x2 - x1));
   //perform lerp
-  return Lerp(v, y1, y2);
+  //return Lerp(v, y1, y2);
+  if(x1 == x2 )
+    return max(y1,y2);
+  else
+    return ((value - x1) * (y2 - y1) / (x2 - x1)) + y1;
 }
 
 void ForceVarBounds(int controller, int var) {

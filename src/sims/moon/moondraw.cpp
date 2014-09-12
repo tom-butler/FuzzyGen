@@ -36,12 +36,12 @@ void DrawMoonSets(int window) {
   DrawCollection(0,0.5f, 0.5f, "SafeDist", cont[controller].input[3]);
   DrawPlot(0, 0.5f, 0.5f);
   //rules
+
   DrawRules(0.5f, 0.95f, controller, 1);
   //draw accumulator
   DrawPlot(0, -0.999, 1);
   DrawAccumulator(0, -0.999, "Thrust", cont[controller].output[1]);
 }
-
 
 void DrawMoonSim(int window) {
   glutSetWindow(window);
