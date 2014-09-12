@@ -146,15 +146,13 @@ float GetRandFloat(float low, float high) {
   return low + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(high-low)));
 }
 
+//single line lerp
 float Lerp(float value, float low, float high) {
   return low + (value*(high - low));
 }
 
+//two line lerp
 float Intersect(float x1, float y1, float x2, float y2, float value) {
-  //find the percentage by the x values
-  //float v = ((value - x1)/(x2 - x1));
-  //perform lerp
-  //return Lerp(v, y1, y2);
   if(x1 == x2 )
     return max(y1,y2);
   else
@@ -236,10 +234,21 @@ void ResetAccumulator(int controller, int accumulator) {
   cont[controller].output[accumulator].output = 0.0f;
   cont[controller].output[accumulator].num_active = 0;
 }
+
+/**
+ * Convert from deg to rad
+ * @param  deg [angle in degrees]
+ * @return     [non bounded or wrapped angle in rad]
+ */
 float DegToRad(float deg) {
   return (deg * 3.14159 / 180.0);
 }
 
+/**
+ * Convert from radian to degree
+ * @param  rad [angle in radians]
+ * @return     [non bounded or wrapped angle in degrees]
+ */
 float RadToDeg(float rad) {
   return (rad * 180.0 / 3.14159);
 }
