@@ -231,6 +231,12 @@ void ResetAccumulator(int controller, int accumulator) {
   cont[controller].output[accumulator].value = new float[cont[controller].output[accumulator].num_rules];
   cont[controller].output[accumulator].scale = new float[cont[controller].output[accumulator].num_rules];
 
+  //force values to 0
+  for(int r = 0; r < cont[controller].output[accumulator].num_rules; r++) {
+    cont[controller].output[accumulator].value[r] = 0;
+    cont[controller].output[accumulator].scale[r] = 0;
+  }
+
   cont[controller].output[accumulator].output = 0.0f;
   cont[controller].output[accumulator].num_active = 0;
 }
