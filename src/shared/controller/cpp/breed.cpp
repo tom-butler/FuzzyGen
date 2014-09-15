@@ -51,8 +51,8 @@ void BisexualBreeding(int parents[]) {
 
         //cross breed some vars
         for(int b = 0; b < (kNumInput * kBreedPercent); b++) {
-        //  BreedVars(parents[c + 1], i);
-        //  BreedVars(parents[c]    , i + 1);
+          BreedVars(parents[c + 1], i);
+          BreedVars(parents[c]    , i + 1);
         }
         //cross breed some sets
         for(int b = 0; b < (kNumInput * kNumSetsMax * kBreedPercent); b++) {
