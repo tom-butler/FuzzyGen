@@ -134,9 +134,6 @@ extern int        LOW_GEN;
 extern int        random;
 
 extern std::string *GEN_LOG;
-extern std::string *BEST_CONT_LOG;
-extern std::string *BEST_SET_LOG;
-extern std::string *BEST_RULE_LOG;
 
 extern FuzzyVar *simInput;
 extern Accumulator *simOutput;

@@ -85,9 +85,6 @@ using namespace std;
   int random                      = 0;
 
   string *GEN_LOG;
-  string *BEST_CONT_LOG;
-  string *BEST_SET_LOG;
-  string *BEST_RULE_LOG;
 
   Controller BEST_CONTROLLER;
   FuzzyVar  *simInput;
@@ -104,10 +101,6 @@ void InitSystem() {
   cont = new Controller[kNumPop];
   if(kLogging) {
     GEN_LOG = new string[kNumGenerations];
-    BEST_CONT_LOG = new string[kNumGenerations];
-    //max sets max Rules
-    BEST_SET_LOG = new string[kNumGenerations * 5];
-    BEST_RULE_LOG = new string[kNumGenerations * 625];
   }
   if(!kRandomStart)
     kNumTests = 1;

@@ -49,40 +49,6 @@ void UpdateLog(int g) {
   BEST_CONT_LOG[g] = text;
   ss.str("");
   ss.clear();
-
-  //sets
-  for(int i = 0; i < kNumInput; i++){
-    for(int s = 0; s < cont[controller].input[i].num_sets; s++) {
-      ss << g << "," << BEST_CONTROLLER << "," << i "," << s << ",";
-      ss << cont[BEST_CONTROLLER].input[i].sets[s].height << ",";
-      ss << cont[BEST_CONTROLLER].input[i].sets[s].centre_x << ",";
-      ss << cont[BEST_CONTROLLER].input[i].sets[s].left_base << ",";
-      ss << cont[BEST_CONTROLLER].input[i].sets[s].right_base << ",";
-      ss << cont[BEST_CONTROLLER].input[i].sets[s].left_top << ",";
-      ss << cont[BEST_CONTROLLER].input[i].sets[s].right_top << "\n";
-    }
-  }
-  string text(ss.str());
-  BEST_SET_LOG[g] = text;
-  ss.str("");
-  ss.clear();
-
-  //rules
-  for(int o = 0; o < kNumOutput; 0++){
-    for(int s = 0; s < cont[controller].output[0].num_rules; s++) {
-      ss << g << "," << BEST_CONTROLLER << "," << o "," << s << ",";
-      ss << " " << cont[controller].output[accumuator].rules[s].sets[0];
-      for(int v = 1; v < kNumInput; v++) {
-        ss << " " << cont[controller].output[accumuator].rules[s].sets[v];
-      }
-      ss << "," << cont[controller].output[accumuator].rules[s].output << "\n";
-      }
-    }
-  }
-  string text(ss.str());
-  BEST_RULE_LOG[g] = text;
-  ss.str("");
-  ss.clear();
   
 }
 
@@ -97,39 +63,6 @@ void WriteLog() {
     output << "Generation,Best Max,Gen Best,Mean,Low\n";
     for(int i = 0; i < kNumGenerations; i++){
       output << GEN_LOG[i];
-    }
-    output.close();
-    ss.str("");
-    ss.clear();
-
-    //best cont
-    ss << "logs/test/gen/" << kTestFile << "-" << kTest << "-" << kRunNum << "-gen-" << now << ".csv";
-    output.open(ss.str().c_str());
-    output << "Generation,Best Max,Gen Best,Mean,Low\n";
-    for(int i = 0; i < kNumGenerations; i++){
-      output << BEST_CONT_LOG[i];
-    }
-    output.close();
-    ss.str("");
-    ss.clear();
-
-    //best set
-    ss << "logs/test/gen/" << kTestFile << "-" << kTest << "-" << kRunNum << "-gen-" << now << ".csv";
-    output.open(ss.str().c_str());
-    output << "Generation,Best Max,Gen Best,Mean,Low\n";
-    for(int i = 0; i < kNumGenerations * 5; i++){
-      output << BEST_SET_LOG[i];
-    }
-    output.close();
-    ss.str("");
-    ss.clear();
-
-    //best rules
-    ss << "logs/test/gen/" << kTestFile << "-" << kTest << "-" << kRunNum << "-gen-" << now << ".csv";
-    output.open(ss.str().c_str());
-    output << "Generation,Best Max,Gen Best,Mean,Low\n";
-    for(int i = 0; i < kNumGenerations * 625; i++){
-      output << BEST_RULE_LOG[i];
     }
     output.close();
     ss.str("");
