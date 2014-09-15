@@ -42,13 +42,6 @@ void UpdateLog(int g) {
   GEN_LOG[g] = text;
   ss.str("");
   ss.clear();
-
-  //controller
-  ss << g << "," << BEST_CONTROLLER << "," << cont[BEST_CONTROLLER].score << "," << cont[BEST_CONTROLLER].num_mutations << "\n";
-  string text(ss.str());
-  BEST_CONT_LOG[g] = text;
-  ss.str("");
-  ss.clear();
   
 }
 
@@ -109,16 +102,16 @@ void WriteLog() {
     output.open(ss.str().c_str());
     output << "Controller,Accumulator,Rule,Inputs,Output Value\n";
     for(int controller = 0; controller < kNumPop; controller++) {
-      for(int accumulator = 0; accumulator < kNumOutput)
-      for(int i = 0; i < cont[controller].ruleNum; i++) {
+      for(int accumulator = 0; accumulator < kNumOutput; accumulator++)
+      for(int i = 0; i < cont[controller].output[accumulator].num_rules; i++) {
         output << controller << ",";
         output << accumulator << ",";
         output << i << ",";
-        output << cont[controller].output[accumuator].rules[i].sets[0];
+        output << cont[controller].output[accumulator].rules[i].sets[0];
         for(int v = 1; v < kNumInput; v++) {
-          output << " " << cont[controller].output[accumuator].rules[i].sets[v];
+          output << " " << cont[controller].output[accumulator].rules[i].sets[v];
         }
-        output << "," << cont[controller].output[accumuator].rules[i].output << "\n";
+        output << "," << cont[controller].output[accumulator].rules[i].output << "\n";
       }
     }
     output.close();
@@ -170,7 +163,7 @@ void WriteLog() {
     output << "kBreed" << "\n";
 
     //values
-    output << test << ",";
+    output << kTest << ",";
     output << kNumPop << ",";
     output << kNumGenerations << ",";
     output << kNumAncestor << ",";

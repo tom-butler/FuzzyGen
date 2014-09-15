@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     cout << "OK\n";
     cout << "Initalising Test              ";
     int r = InitTest(atoi(argv[1]), atoi(argv[2]));
-    kRunNum = argv[3];
+    kRunNum = atoi(argv[3]);
     if(r == 0) {
       cout << "OK\n";
       cout << "Initalising Controllers       ";
