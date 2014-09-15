@@ -155,19 +155,13 @@ TEST_CASE("Test the shared controller functions", "[Controller]") {
 		CHECK(cont[controller].output[0].output == 0);
 
 	}
-	SECTION( "CleanController") {
-
-	}
-	SECTION( "CleanAccumulators") {
-
-	}
-	SECTION( "CleanSets") {
-
-	}
-	SECTION( "CleanRules") {
-
-	}
 	SECTION( "CopyController") {
-
+		CleanController(cont[0]);
+		CopyController(cont[1],cont[0]);
+		REQUIRE_NOTHROW(cont[0].input[0].num_sets         = cont[1].input[0].num_sets);
+		REQUIRE_NOTHROW(cont[0].input[0].sets[0].centre_x = cont[0].input[0].sets[0].centre_x);
+		REQUIRE_NOTHROW(cont[0].output[0].num_active      = cont[0].output[0].num_active);
+		REQUIRE_NOTHROW(cont[0].output[0].rules[0].output = cont[0].output[0].rules[0].output);
+		CHECK_FALSE(&cont[0].output[0].rules[0].output == &cont[1].output[0].rules[0].output);
 	}
 }

@@ -1,5 +1,6 @@
 #include "shared.h"
 
+#include <vector>
 #include <cmath>
 #include <ctime>
 #include <cstdlib>
@@ -15,9 +16,15 @@
 using namespace std;
   //define the standard options ----------------
 
+
+  //test info
+  short int kTestFile             = 0;
+  short int kTest                 = 0;
+  short int kRunNum               = 0;
+
   //genetic
-  short int kNumPop               = 100; 
-  short int kNumGenerations       = 100; 
+  short int kNumPop               = 500; 
+  short int kNumGenerations       = 500;
   bool kIncludeControl            = false;
   bool kLogging                   = true;
   bool kRandomStart               = true;
@@ -77,7 +84,11 @@ using namespace std;
 
   int random                      = 0;
 
-  string *LOG;
+  string *GEN_LOG;
+  string *BEST_CONT_LOG;
+  string *BEST_SET_LOG;
+  string *BEST_RULE_LOG;
+
   Controller BEST_CONTROLLER;
   FuzzyVar  *simInput;
   Accumulator *simOutput;
@@ -91,8 +102,13 @@ void InitSystem() {
   SimCreateSim();
   //init system variables
   cont = new Controller[kNumPop];
-  if(kLogging)
-    LOG = new string[kNumGenerations];
+  if(kLogging) {
+    GEN_LOG = new string[kNumGenerations];
+    BEST_CONT_LOG = new string[kNumGenerations];
+    //max sets max Rules
+    BEST_SET_LOG = new string[kNumGenerations * 5];
+    BEST_RULE_LOG = new string[kNumGenerations * 625];
+  }
   if(!kRandomStart)
     kNumTests = 1;
   if(kNumSetsMin > kNumSetsMax) {
@@ -101,39 +117,140 @@ void InitSystem() {
   }
 
 }
-int InitTest(int test) {
+int InitTest(int filename, int test) {
+
+  int num_vars = 0;
+
+  //open the file
   ifstream file;
   ostringstream ss;
-  ss << "tests/" << test << ".csv";
+  ss << "tests/" << filename << ".csv";
   file.open(ss.str().c_str());
   if(!file){
     file.close();
     return 1;
   }
+
+  //read the variable names into the header
+  vector <string> header;
   string line;
-  while(getline(file,line)){
-    string key = strtok((char *) line.c_str(),",");
-    string value = strtok(NULL,",");
-    if(key == "POP")
-      kNumPop = atoi(value.c_str());
-    else if(key == "PARENTS")
-      kNumAncestor = kNumPop * atof(value.c_str());
-    else if(key == "GENERATIONS")
-      kNumGenerations = atoi(value.c_str());
-    else if(key == "VARIANCE")
-      kVariance = atof(value.c_str());
-    else if(key == "MUT_CHANCE")
-      kMutationChance = atof(value.c_str());
-    else if(key == "INCLUDE_CONTROL")
-      kIncludeControl = atoi(value.c_str());
-    else if(key == "LOGGING")
-      kLogging = atoi(value.c_str());
-    else if(key == "NUM_INPUT")
-      kNumInput = atoi(value.c_str());
-    else if(key == "SIM")
-      kSim = atoi(value.c_str());
+  getline(file,line);
+  //waste the first word
+  char* nextword = strtok( (char*) line.c_str(), ",");
+  while (nextword != NULL) {
+    nextword = strtok( NULL, ",");
+    if(nextword != NULL) {
+      header.push_back(nextword);
+      num_vars++;
+    }
   }
+
+  //waste the unnecesary lines
+  for(int i = 0; i < test; ++i){
+    getline(file, line);
+  }
+  //get the values we want
+  vector <string> values;
+  getline(file, line);
   file.close();
+  nextword = strtok( (char*) line.c_str(), ",");
+
+  while (nextword != NULL) {
+    nextword = strtok( NULL, ",");
+    if(nextword != NULL)
+      values.push_back(nextword);
+  }
+  //@TODO: Make this a switch
+  //assign the values to their variable
+  for(int i = 0; i < num_vars; i++){
+
+    //genetic
+    if(header[i] == "kNumPop")
+      kNumPop = atoi(values[i].c_str());
+    else if(header[i] == "NumGenerations")
+      kNumGenerations = atoi(values[i].c_str());
+    else if(header[i] == "NumAncestor")
+      kNumAncestor = atoi(values[i].c_str());
+    else if(header[i] == "IncludeControl")
+      kIncludeControl = atoi(values[i].c_str());
+    else if(header[i] == "Logging")
+      kLogging = atoi(values[i].c_str());
+    else if(header[i] == "RandomStart")
+      kRandomStart = atoi(values[i].c_str());
+    else if(header[i] == "NumTests")
+      kNumTests = atoi(values[i].c_str());
+    else if(header[i] == "Elitism")
+      kElitism = atoi(values[i].c_str());
+    else if(header[i] == "ForceSetOverlap")
+      kForceSetOverlap = atof(values[i].c_str());
+    else if(header[i] == "ForceSetCoverage")
+      kForceSetCoverage = atoi(values[i].c_str());
+
+    //Mutations
+    else if(header[i] == "MutationChance")
+      kMutationChance = atof(values[i].c_str());
+    else if(header[i] == "Variance")
+      kVariance = atof(values[i].c_str());
+    else if(header[i] == "BreedPercent")
+      kBreedPercent = atof(values[i].c_str());
+    else if(header[i] == "InitialMutation")
+      kInitialMutation = atoi(values[i].c_str());
+    else if(header[i] == "CollectionInitialMutaion")
+      kCollectionInitialMutaion = atoi(values[i].c_str());
+    else if(header[i] == "SetInitialMutation")
+      kSetInitialMutation = atoi(values[i].c_str());
+    else if(header[i] == "RuleInitialMutation")
+      kRuleInitialMutation = atoi(values[i].c_str());
+    else if(header[i] == "GrowMutation")
+      kGrowMutation = atoi(values[i].c_str());
+    else if(header[i] == "CollectionGrowMutation")
+      kCollectionGrowMutation = atoi(values[i].c_str());
+    else if(header[i] == "SetGrowTopMutation")
+      kSetGrowTopMutation = atoi(values[i].c_str());
+    else if(header[i] == "SetGrowBottomMutation")
+      kSetGrowBottomMutation = atoi(values[i].c_str());
+    else if(header[i] == "RuleGrowMutation")
+      kRuleGrowMutation = atoi(values[i].c_str());
+    else if(header[i] == "SlideMutation")
+      kSlideMutation = atoi(values[i].c_str());
+    else if(header[i] == "CollectionSlideMutation")
+      kCollectionSlideMutation = atoi(values[i].c_str());
+    else if(header[i] == "SetSlideMutation")
+      kSetSlideMutation = atoi(values[i].c_str());
+    else if(header[i] == "SetSlideTopMutation")
+      kSetSlideTopMutation = atoi(values[i].c_str());
+    else if(header[i] == "SetSlideBottomMutation")
+      kSetSlideBottomMutation = atoi(values[i].c_str());
+    else if(header[i] == "RuleSlideMutation")
+      kRuleSlideMutation = atoi(values[i].c_str());
+
+    //fuzzy
+    else if(header[i] == "NumInput")
+      kNumInput = atoi(values[i].c_str());
+    else if(header[i] == "NumOutput")
+      kNumOutput = atoi(values[i].c_str());
+    else if(header[i] == "NumSetsMin")
+      kNumSetsMin = atoi(values[i].c_str());
+    else if(header[i] == "NumSetsMax")
+      kNumSetsMax = atoi(values[i].c_str());
+    else if(header[i] == "SetNumberMutation")
+      kSetNumberMutation = atoi(values[i].c_str());
+    else if(header[i] == "SetHeightMin")
+      kSetHeightMin = atof(values[i].c_str());
+    else if(header[i] == "SetHeightMax")
+      kSetHeightMax = atof(values[i].c_str());
+
+    //sims
+    else if(header[i] == "Sim")
+      kSim = atoi(values[i].c_str());
+    else if(header[i] == "Select")
+      kSelect = atoi(values[i].c_str());
+    else if(header[i] == "Breed")
+      kBreed = atoi(values[i].c_str());
+
+  }
+  kTestFile = filename;
+  kTest = test;
   return 0;
 }
 

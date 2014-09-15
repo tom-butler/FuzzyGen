@@ -35,9 +35,55 @@ void Breed() {
 
 void UpdateLog(int g) {
   ostringstream ss;
+
+  //gen
   ss << g << "," << BEST_SCORE << "," << BEST_GEN_SCORE << "," << AVG_GEN << "," << LOW_GEN << "\n";
   string text(ss.str());
-  LOG[g] = text;
+  GEN_LOG[g] = text;
+  ss.str("");
+  ss.clear();
+
+  //controller
+  ss << g << "," << BEST_CONTROLLER << "," << cont[BEST_CONTROLLER].score << "," << cont[BEST_CONTROLLER].num_mutations << "\n";
+  string text(ss.str());
+  BEST_CONT_LOG[g] = text;
+  ss.str("");
+  ss.clear();
+
+  //sets
+  for(int i = 0; i < kNumInput; i++){
+    for(int s = 0; s < cont[controller].input[i].num_sets; s++) {
+      ss << g << "," << BEST_CONTROLLER << "," << i "," << s << ",";
+      ss << cont[BEST_CONTROLLER].input[i].sets[s].height << ",";
+      ss << cont[BEST_CONTROLLER].input[i].sets[s].centre_x << ",";
+      ss << cont[BEST_CONTROLLER].input[i].sets[s].left_base << ",";
+      ss << cont[BEST_CONTROLLER].input[i].sets[s].right_base << ",";
+      ss << cont[BEST_CONTROLLER].input[i].sets[s].left_top << ",";
+      ss << cont[BEST_CONTROLLER].input[i].sets[s].right_top << "\n";
+    }
+  }
+  string text(ss.str());
+  BEST_SET_LOG[g] = text;
+  ss.str("");
+  ss.clear();
+
+  //rules
+  for(int o = 0; o < kNumOutput; 0++){
+    for(int s = 0; s < cont[controller].output[0].num_rules; s++) {
+      ss << g << "," << BEST_CONTROLLER << "," << o "," << s << ",";
+      ss << " " << cont[controller].output[accumuator].rules[s].sets[0];
+      for(int v = 1; v < kNumInput; v++) {
+        ss << " " << cont[controller].output[accumuator].rules[s].sets[v];
+      }
+      ss << "," << cont[controller].output[accumuator].rules[s].output << "\n";
+      }
+    }
+  }
+  string text(ss.str());
+  BEST_RULE_LOG[g] = text;
+  ss.str("");
+  ss.clear();
+  
 }
 
 void WriteLog() {
@@ -46,17 +92,50 @@ void WriteLog() {
     ostringstream ss;
     ofstream output;
 
-    ss << "logs/gen/gen" << now << ".csv";
+    ss << "logs/test/gen/" << kTestFile << "-" << kTest << "-" << kRunNum << "-gen-" << now << ".csv";
     output.open(ss.str().c_str());
     output << "Generation,Best Max,Gen Best,Mean,Low\n";
     for(int i = 0; i < kNumGenerations; i++){
-      output << LOG[i];
+      output << GEN_LOG[i];
     }
     output.close();
     ss.str("");
     ss.clear();
 
-    ss << "logs/controller/cont" << now << ".csv";
+    //best cont
+    ss << "logs/test/gen/" << kTestFile << "-" << kTest << "-" << kRunNum << "-gen-" << now << ".csv";
+    output.open(ss.str().c_str());
+    output << "Generation,Best Max,Gen Best,Mean,Low\n";
+    for(int i = 0; i < kNumGenerations; i++){
+      output << BEST_CONT_LOG[i];
+    }
+    output.close();
+    ss.str("");
+    ss.clear();
+
+    //best set
+    ss << "logs/test/gen/" << kTestFile << "-" << kTest << "-" << kRunNum << "-gen-" << now << ".csv";
+    output.open(ss.str().c_str());
+    output << "Generation,Best Max,Gen Best,Mean,Low\n";
+    for(int i = 0; i < kNumGenerations * 5; i++){
+      output << BEST_SET_LOG[i];
+    }
+    output.close();
+    ss.str("");
+    ss.clear();
+
+    //best rules
+    ss << "logs/test/gen/" << kTestFile << "-" << kTest << "-" << kRunNum << "-gen-" << now << ".csv";
+    output.open(ss.str().c_str());
+    output << "Generation,Best Max,Gen Best,Mean,Low\n";
+    for(int i = 0; i < kNumGenerations * 625; i++){
+      output << BEST_RULE_LOG[i];
+    }
+    output.close();
+    ss.str("");
+    ss.clear();
+
+    ss << "logs/controller/" << kTestFile << "-" << kTest << "-" << kRunNum << "-cont-" << now << ".csv";
     output.open(ss.str().c_str());
     output << "Controller,Score,Mutations,Rule Number\n";
     for(int controller = 0; controller < kNumPop; controller++) {
@@ -68,21 +147,8 @@ void WriteLog() {
     ss.str("");
     ss.clear();
 
-    //input
-    ss << "logs/input/input" << now << ".csv";
-    output.open(ss.str().c_str());
-    output << "Input,Low,High\n";
-    for(int i = 0; i < kNumInput; i++){
-      output << i << ",";
-      output << cont[0].input[i].low << ",";
-      output << cont[0].input[i].high << "\n";
-    }
-    output.close();
-    ss.str("");
-    ss.clear();
-
     //Sets
-    ss << "logs/set/set" << now << ".csv";
+    ss << "logs/set/" << kTestFile << "-" << kTest << "-" << kRunNum << "-set-" << now << ".csv";
     output.open(ss.str().c_str());
     output << "Controller,Input,Set,Height,CentreX,Left Base,Right Base,Left Top,Right Top\n";
     for(int controller = 0; controller < kNumPop; controller++) {
@@ -105,43 +171,111 @@ void WriteLog() {
     ss.clear();
 
     //Rules
-    /*
-    ss << "logs/rule/rule" << now << ".csv";
+    
+    ss << "logs/rule/" << kTestFile << "-" << kTest << "-" << kRunNum << "-rule-" << now << ".csv";
     output.open(ss.str().c_str());
-    output << "Controller,Rule,Input Variable 1,Input Set 1,Modifier,Input Variable 2,Input Set 2,Output Value\n";
-    for(int controller = 0; controller < POP; controller++) {
+    output << "Controller,Accumulator,Rule,Inputs,Output Value\n";
+    for(int controller = 0; controller < kNumPop; controller++) {
+      for(int accumulator = 0; accumulator < kNumOutput)
       for(int i = 0; i < cont[controller].ruleNum; i++) {
         output << controller << ",";
+        output << accumulator << ",";
         output << i << ",";
-        output << cont[controller].rules[i].inputvar << ",";
-        output << cont[controller].rules[i].inputset << ",";
-        output << cont[controller].rules[i].modifier << ",";
-        output << cont[controller].rules[i].inputvar2 << ",";
-        output << cont[controller].rules[i].inputset2 << ",";
-        output << cont[controller].rules[i].output << "\n";
+        output << cont[controller].output[accumuator].rules[i].sets[0];
+        for(int v = 1; v < kNumInput; v++) {
+          output << " " << cont[controller].output[accumuator].rules[i].sets[v];
+        }
+        output << "," << cont[controller].output[accumuator].rules[i].output << "\n";
       }
     }
     output.close();
     ss.str("");
     ss.clear();
-*/
-    //Rules
-    ss << "logs/var/var" << now << ".csv";
-    output.open(ss.str().c_str());
-    //genetic
-    output << "POP," << kNumPop << "\n";
-    output << "GENERATIONS," << kNumGenerations << "\n";
-    output << "ANCESTOR," << kNumAncestor << "\n";
-    output << "VARIANCE," << kVariance << "\n";
-    output << "MUT_CHANCE," << kMutationChance << "\n";
-    output << "BEST," << BEST_GEN << "\n";
-    output << "BEST_CONT," << BEST_GEN_CONTROLLER << "\n";
-    output << "INCLUDE_CONTROL," << kIncludeControl << "\n";
-    output << "MEAN," << AVG_GEN << "\n";
-    output << "LOW," << LOW_GEN << "\n";
 
-    //fuzzy
-    output << "NUM_INPUT," << kNumInput << "\n";
+    //settings (this has been designed to be able to be loaded as a test)
+    ss << "logs/settings/" << kTestFile << "-" << kTest << "-" << kRunNum << "-settings-"  << now << ".csv";
+    output.open(ss.str().c_str());
+    //heading
+    output << "TestNo" << ",";
+    output << "NumPop" << ",";
+    output << "NumGenerations" << ",";
+    output << "NumAncestor" << ",";
+    output << "IncludeControl" << ",";
+    output << "Logging" << ",";
+    output << "RandomStart";
+    output << "NumTests" << ",";
+    output << "Elitism" << ",";
+    output << "ForceSetOverlap" << ",";
+    output << "ForceSetCoverage" << ",";
+    output << "MutationChance" << ",";
+    output << "Variance" << ",";
+    output << "BreedPercent" << ",";
+    output << "InitialMutation" << ",";
+    output << "CollectionInitialMutaion" << ",";
+    output << "SetInitialMutation" << ",";
+    output << "RuleInitialMutation" << ",";
+    output << "GrowMutation" << ",";
+    output << "CollectionGrowMutation" << ",";
+    output << "SetGrowTopMutation" << ",";
+    output << "SetGrowBottomMutation" << ",";
+    output << "RuleGrowMutation" << ",";
+    output << "SlideMutation" << ",";
+    output << "CollectionSlideMutation" << ",";
+    output << "SetSlideMutation" << ",";
+    output << "SetSlideTopMutation" << ",";
+    output << "SetSlideBottomMutation" << ",";
+    output << "RuleSlideMutation" << ",";
+    output << "kNumInput" << ",";
+    output << "kNumOutput" << ",";
+    output << "kNumSetsMin" << ",";
+    output << "kNumSetsMax" << ",";
+    output << "kSetNumberMutation" << ",";
+    output << "kSetHeightMin" << ",";
+    output << "kSetHeightMax" << ",";
+    output << "kSim" << ",";
+    output << "kSelect" << ",";
+    output << "kBreed" << "\n";
+
+    //values
+    output << test << ",";
+    output << kNumPop << ",";
+    output << kNumGenerations << ",";
+    output << kNumAncestor << ",";
+    output << kIncludeControl << ",";
+    output << kLogging << ",";
+    output << kRandomStart;
+    output << kNumTests << ",";
+    output << kElitism << ",";
+    output << kForceSetOverlap << ",";
+    output << kForceSetCoverage << ",";
+    output << kMutationChance << ",";
+    output << kVariance << ",";
+    output << kBreedPercent << ",";
+    output << kInitialMutation << ",";
+    output << kCollectionInitialMutaion << ",";
+    output << kSetInitialMutation << ",";
+    output << kRuleInitialMutation << ",";
+    output << kGrowMutation << ",";
+    output << kCollectionGrowMutation << ",";
+    output << kSetGrowTopMutation << ",";
+    output << kSetGrowBottomMutation << ",";
+    output << kRuleGrowMutation << ",";
+    output << kSlideMutation << ",";
+    output << kCollectionSlideMutation << ",";
+    output << kSetSlideMutation << ",";
+    output << kSetSlideTopMutation << ",";
+    output << kSetSlideBottomMutation << ",";
+    output << kRuleSlideMutation << ",";
+    output << kNumInput << ",";
+    output << kNumOutput << ",";
+    output << kNumSetsMin << ",";
+    output << kNumSetsMax << ",";
+    output << kSetNumberMutation << ",";
+    output << kSetHeightMin << ",";
+    output << kSetHeightMax << ",";
+    output << kSim << ",";
+    output << kSelect << ",";
+    output << kBreed << "\n";
 
     output.close();
     ss.str("");

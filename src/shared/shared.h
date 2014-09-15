@@ -54,6 +54,11 @@ typedef struct {
 
 //options-------------------------------------------
 
+//test info
+extern short int  kTestFile;
+extern short int  kTest;
+extern short int  kRunNum;
+
 //genetic
 extern short int  kNumPop;
 extern short int  kNumGenerations;
@@ -128,14 +133,18 @@ extern int        LOW_GEN;
 
 extern int        random;
 
-extern std::string *LOG;
+extern std::string *GEN_LOG;
+extern std::string *BEST_CONT_LOG;
+extern std::string *BEST_SET_LOG;
+extern std::string *BEST_RULE_LOG;
+
 extern FuzzyVar *simInput;
 extern Accumulator *simOutput;
 extern FuzzyVar *simFitness;
 extern Controller *cont;
 
 void InitSystem();
-int InitTest(int test);
+int InitTest(int file, int test);
 
 short int GetRandInt(short int low, short int high);
 float GetRandFloat(float low, float high);
