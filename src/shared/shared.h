@@ -162,4 +162,6 @@ void CleanSets(Controller &controller);
 void CleanRules(Controller &controller, int output);
 
 void CopyController(Controller parent, Controller &child);
+void CleanArray(void **array);
+void CleanPtr(void **ptr);
 #endif

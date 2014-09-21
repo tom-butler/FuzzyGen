@@ -390,22 +390,29 @@ void CleanAccumulators(Controller &controller) {
     CleanRules(controller, o);
   }
   delete [] controller.output;
+  controller.output = NULL;
 }
 
 void CleanSets(Controller &controller) {
 for(int i = 0; i < kNumInput; i++) { 
     delete [] controller.input[i].sets;
+    controller.input[i].sets = NULL;
   }
   delete [] controller.input;
+  controller.input = NULL;
 }
 
 void CleanRules(Controller &controller, int output) {
     for(int r = 0; r < controller.output[output].num_rules; r++) {
       delete [] controller.output[output].rules[r].sets;
+      controller.output[output].rules[r].sets = NULL;
     }
     delete [] controller.output[output].rules;
+    controller.output[output].rules = NULL;
     delete [] controller.output[output].scale;
+    controller.output[output].scale = NULL;
     delete [] controller.output[output].value;
+    controller.output[output].value = NULL;
 
 }
 
