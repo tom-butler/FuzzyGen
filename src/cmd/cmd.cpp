@@ -20,12 +20,14 @@ int main(int argc, char *argv[])
     GALoop();
   }
   else if(argc >= 4){ //run with predefined test data
+    cout << "Initalising Test ";
+    int r = InitTest(atoi(argv[1]), atoi(argv[2]));
+    kRunNum = atoi(argv[3]);
     cout << "Initalising System            ";
     InitSystem();
     cout << "OK\n";
-    cout << "Initalising Test              ";
-    int r = InitTest(atoi(argv[1]), atoi(argv[2]));
-    kRunNum = atoi(argv[3]);
+    cout << kNumPop << "-" << kTestFile <<  "-" << kTest << "-" << kRunNum << " ";
+    
     if(r == 0) {
       cout << "OK\n";
       cout << "Initalising Controllers       ";

@@ -51,7 +51,7 @@ void WriteLog() {
     ostringstream ss;
     ofstream output;
 
-    ss << "logs/test/gen/" << kTestFile << "-" << kTest << "-" << kRunNum << "-gen-" << now << ".csv";
+    ss << "logs/gen/" << kTestFile << "-" << kTest << "-" << kRunNum << "-gen-" << now << ".csv";
     output.open(ss.str().c_str());
     output << "Generation,Best Max,Gen Best,Mean,Low\n";
     for(int i = 0; i < kNumGenerations; i++){

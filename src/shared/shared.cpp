@@ -23,21 +23,21 @@ using namespace std;
   short int kRunNum               = 0;
 
   //genetic
-  short int kNumPop               = 250; 
-  short int kNumGenerations       = 250;
+  short int kNumPop               = 200; 
+  short int kNumGenerations       = 200;
   bool kIncludeControl            = false;
   bool kLogging                   = true;
   bool kRandomStart               = true;
   short int kNumTests             = 3;
 
-  bool kElitism                   = false;
-  float kForceSetOverlap          = 0.5f; //0 for none
-  bool kForceSetCoverage          = false;
+  bool kElitism                   = true;
+  float kForceSetOverlap          = 0.3f; //0 for none
+  bool kForceSetCoverage          = true;
 
   //mutation
-  float kMutationChance           = 0.5f;
-  float kVariance                 = 0.1f;
-  float kBreedPercent             = 0.5f;
+  float kMutationChance           = 0.03f;
+  float kVariance                 = 0.3f;
+  float kBreedPercent             = 0.3f;
 
   bool  kInitialMutation             = true;
   bool    kCollectionInitialMutaion  = true;
@@ -66,9 +66,9 @@ using namespace std;
   float     kSetHeightMin         = 0.5; //0 - 1
   float     kSetHeightMax         = 1;   //0 - 1 (higher than min)
 
-  short int kSim                  = 1;/*kHarrierSim;*/ /*kMoonLanderSim;*//* kPendulumCartSim*/;
-  short int kSelect               = /*kSelectHalf;*/ kSelectAvg;
-  short int kBreed                = /*kAsexual;*/ kBisexual;
+  short int kSim                  = 1;
+  short int kSelect               = kSelectAvg;
+  short int kBreed                = kBisexual;
 
   //runtime variables ---------------------------
   short int kNumInput             = 0;
@@ -139,7 +139,7 @@ int InitTest(int filename, int test) {
   }
 
   //waste the unnecesary lines
-  for(int i = 0; i < test; ++i){
+  for(int i = 0; i < test - 1; ++i){
     getline(file, line);
   }
   //get the values we want
@@ -158,7 +158,7 @@ int InitTest(int filename, int test) {
   for(int i = 0; i < num_vars; i++){
 
     //genetic
-    if(header[i] == "kNumPop")
+    if(header[i] == "NumPop")
       kNumPop = atoi(values[i].c_str());
     else if(header[i] == "NumGenerations")
       kNumGenerations = atoi(values[i].c_str());
