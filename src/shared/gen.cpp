@@ -128,7 +128,7 @@ void WriteLog() {
     output << "NumAncestor" << ",";
     output << "IncludeControl" << ",";
     output << "Logging" << ",";
-    output << "RandomStart";
+    output << "RandomStart" << ",";
     output << "NumTests" << ",";
     output << "Elitism" << ",";
     output << "ForceSetOverlap" << ",";
@@ -151,16 +151,16 @@ void WriteLog() {
     output << "SetSlideTopMutation" << ",";
     output << "SetSlideBottomMutation" << ",";
     output << "RuleSlideMutation" << ",";
-    output << "kNumInput" << ",";
-    output << "kNumOutput" << ",";
-    output << "kNumSetsMin" << ",";
-    output << "kNumSetsMax" << ",";
-    output << "kSetNumberMutation" << ",";
-    output << "kSetHeightMin" << ",";
-    output << "kSetHeightMax" << ",";
-    output << "kSim" << ",";
-    output << "kSelect" << ",";
-    output << "kBreed" << "\n";
+    output << "NumInput" << ",";
+    output << "NumOutput" << ",";
+    output << "NumSetsMin" << ",";
+    output << "NumSetsMax" << ",";
+    output << "SetNumberMutation" << ",";
+    output << "SetHeightMin" << ",";
+    output << "SetHeightMax" << ",";
+    output << "Sim" << ",";
+    output << "Select" << ",";
+    output << "Breed" << "\n";
 
     //values
     output << kTest << ",";
@@ -169,7 +169,7 @@ void WriteLog() {
     output << kNumAncestor << ",";
     output << kIncludeControl << ",";
     output << kLogging << ",";
-    output << kRandomStart;
+    output << kRandomStart << ",";
     output << kNumTests << ",";
     output << kElitism << ",";
     output << kForceSetOverlap << ",";

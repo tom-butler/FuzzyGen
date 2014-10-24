@@ -101,4 +101,4 @@ clean:
 
 .PHONY : clear
 clear:
-	del logs\controller\*.csv logs\gen\*.csv logs\input\*.csv logs\rule\*.csv logs\set\*.csv logs\var\*.csv
+	del logs\controller\*.csv logs\gen\*.csv logs\rule\*.csv logs\set\*.csv logs\settings\*.csv

@@ -32,7 +32,7 @@ int kHarrierSimHeight = 200;
 int kHarrierSimWidth = 600;
 const int   kWindSpeed = 10;
 const int   kWindGustMax = 20;
-const int   kVectorMax = 5;
+const int   kVectorMax = 10;
 
 
 const float kHarrierScoreMax = (kHarrierSimWidth/10) + kTerminalVelocity + kTerminalVelocity + kStartFuel;

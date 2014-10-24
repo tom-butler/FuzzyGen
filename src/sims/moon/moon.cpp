@@ -154,7 +154,7 @@ int MoonNextStep(int controller) {
     if(*moon_height <= 0.0f && *moon_y_velocity < kYCrashSpeed && abs(*moon_x_velocity) < kXCrashSpeed) { //safe
       *moon_score = (kSimHeight - *moon_height)/ 10 + (kSimWidth - abs(*moon_safe_distance)) / 10 + (kTerminalVelocity - *moon_y_velocity) + (kTerminalVelocity - abs(*moon_x_velocity)) + moon_fuel;
       *moon_score = (*moon_score / kMaxScore) * 100;
-      return 0; //fail
+      return 0; //safe
     }
     else if(*moon_height <= 0.0f) { //crashed
       *moon_score = (kSimHeight - *moon_height)/ 10 + (kSimWidth - abs(*moon_safe_distance)) / 10 + (kTerminalVelocity - *moon_y_velocity) + (kTerminalVelocity - abs(*moon_x_velocity));

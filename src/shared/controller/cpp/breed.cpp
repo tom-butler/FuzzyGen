@@ -43,31 +43,33 @@ void BisexualBreeding(int parents[]) {
   int c = 0;
   for(int i = 0; i < kNumPop - 2; i += 2) {
     if(cont[i].score != -2){
-      if(parents[c] < kNumPop){
-        if(parents[c] != i && parents[c+1] != i+1) {
-          CleanController(cont[i]);
-          CopyController(cont[parents[c]], cont[i]);
-          CleanController(cont[i + 1]);
-          CopyController(cont[parents[c + 1]], cont[i + 1]);
+      if(c < kNumAncestor) {
+        if(parents[c] < kNumPop){
+          if(parents[c] != i && parents[c+1] != i+1) {
+            CleanController(cont[i]);
+            CopyController(cont[parents[c]], cont[i]);
+            CleanController(cont[i + 1]);
+            CopyController(cont[parents[c + 1]], cont[i + 1]);
 
-          //cross breed some vars
-          for(int b = 0; b < (kNumInput * kBreedPercent); b++) {
-            BreedVars(parents[c + 1], i);
-            BreedVars(parents[c]    , i + 1);
-          }
-          //cross breed some sets
-          for(int b = 0; b < (kNumInput * kNumSetsMax * kBreedPercent); b++) {
-            BreedSets(parents[c + 1], i);
-            BreedSets(parents[c]    , i + 1);
-          }
+            //cross breed some vars
+            for(int b = 0; b < (kNumInput * kBreedPercent); b++) {
+              BreedVars(parents[c + 1], i);
+              BreedVars(parents[c]    , i + 1);
+            }
+            //cross breed some sets
+            for(int b = 0; b < (kNumInput * kNumSetsMax * kBreedPercent); b++) {
+              BreedSets(parents[c + 1], i);
+              BreedSets(parents[c]    , i + 1);
+            }
 
-          float mut = GetRandFloat(0.0f, 1.0f);
-          if(mut <= kMutationChance) {
-            MutateControllers(i, GetRandInt(0,kNumInput -1));
-            MutateControllers(i + 1, GetRandInt(0,kNumInput -1));
+            float mut = GetRandFloat(0.0f, 1.0f);
+            if(mut <= kMutationChance) {
+              MutateControllers(i, GetRandInt(0,kNumInput -1));
+              MutateControllers(i + 1, GetRandInt(0,kNumInput -1));
+            }
           }
+          c += 2;
         }
-        c += 2;
       }
     }
   }

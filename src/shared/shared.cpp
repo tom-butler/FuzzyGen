@@ -158,8 +158,10 @@ int InitTest(int filename, int test) {
   for(int i = 0; i < num_vars; i++){
 
     //genetic
-    if(header[i] == "NumPop")
+    if(header[i] == "NumPop") {
       kNumPop = atoi(values[i].c_str());
+      kNumAncestor = kNumPop/2;
+    }
     else if(header[i] == "NumGenerations")
       kNumGenerations = atoi(values[i].c_str());
     else if(header[i] == "NumAncestor")
@@ -286,7 +288,7 @@ void ForceVarBounds(int controller, int var) {
         set.right_top = cont[controller].input[var].high -  set.centre_x;
         set.right_base = set.right_top;
       }
-    }
+    } 
 
     //check overlap
     if(kForceSetOverlap > 0.0f){
@@ -330,6 +332,18 @@ void CheckSet(int controller, int var, int s) {
   ForceBounds(set.right_base, 0, abs(cont[controller].input[var].high - set.centre_x));
   ForceBounds(set.right_top, 0, set.right_base);
   
+//make sure the set is not squared if it is in the middle
+    if(set.left_base <= set.left_top + (cont[controller].input[var].high - cont[controller].input[var].low) * 0.1 )
+      if(set.centre_x - set.left_top - (kForceSetOverlap * set.left_top) < cont[controller].input[var].low)
+        set.left_base = set.centre_x - cont[controller].input[var].low;
+      else
+        set.left_base = kForceSetOverlap * set.left_top + set.left_top;
+    if(set.right_base <= set.right_top  + (cont[controller].input[var].high - cont[controller].input[var].low) * 0.1)
+      if(set.centre_x + set.right_top + (kForceSetOverlap * set.right_top) > cont[controller].input[var].high)
+        set.right_base = cont[controller].input[var].high - set.centre_x;
+      else
+        set.right_base = kForceSetOverlap * set.right_top + set.right_top;
+
   cont[controller].input[var].sets[s] = set;
 }
 
